@@ -1,0 +1,84 @@
+Configuration	STM32G431KB_TEST
+STM32CubeMX 	6.3.0
+Date	03/14/2023
+MCU	STM32G431KBTx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+FDCAN1	Activated	FDCAN1_RX	PA11
+FDCAN1	Activated	FDCAN1_TX	PA12
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	PF0-OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	PF1-OSC_OUT
+SYS	Serial Wire	SYS_JTCK-SWCLK	PA14
+SYS	Serial Wire	SYS_JTMS-SWDIO	PA13
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+USART2	Asynchronous	USART2_RX	PA3
+USART2	Asynchronous	USART2_TX	PA2
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PF0-OSC_IN	RCC_OSC_IN	
+3	PF1-OSC_OUT	RCC_OSC_OUT	
+7	PA2	USART2_TX	USART2_TX [ST-LINKV3E_VCP_RX]
+8	PA3	USART2_RX	USART2_RX [ST-LINKV3E_VCP_TX]
+21	PA11	FDCAN1_RX	
+22	PA12	FDCAN1_TX	
+23	PA13	SYS_JTMS-SWDIO	T_SWDIO
+24	PA14	SYS_JTCK-SWCLK	T_SWCLK
+26	PB3*	SYS_JTDO-SWO	T_SWO
+31	PB8-BOOT0	GPIO_Output	LD2 [green]
+PERIPHERALS	MODES	FUNCTIONS	PINS
+FDCAN1	Activated	FDCAN1_RX	PA11
+FDCAN1	Activated	FDCAN1_TX	PA12
+RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	PF0-OSC_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	PF1-OSC_OUT
+SYS	Serial Wire	SYS_JTCK-SWCLK	PA14
+SYS	Serial Wire	SYS_JTMS-SWDIO	PA13
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+USART2	Asynchronous	USART2_RX	PA3
+USART2	Asynchronous	USART2_TX	PA2
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PF0-OSC_IN	RCC_OSC_IN	
+3	PF1-OSC_OUT	RCC_OSC_OUT	
+7	PA2	USART2_TX	USART2_TX [ST-LINKV3E_VCP_RX]
+8	PA3	USART2_RX	USART2_RX [ST-LINKV3E_VCP_TX]
+21	PA11	FDCAN1_RX	
+22	PA12	FDCAN1_TX	
+23	PA13	SYS_JTMS-SWDIO	T_SWDIO
+24	PA14	SYS_JTCK-SWCLK	T_SWCLK
+26	PB3*	SYS_JTDO-SWO	T_SWO
+31	PB8-BOOT0	GPIO_Output	LD2 [green]
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : STM32G431KB_TEST
+Project Folder : D:\STM32CubeMX_ws\STM32G431KB_TEST
+Toolchain / IDE : EWARM V8.32
+Firmware Package Name and Version : STM32Cube FW_G4 V1.4.0
+
+
+Code Generation Settings : 
+STM32Cube MCU packages and embedded software packs : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : Yes
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
