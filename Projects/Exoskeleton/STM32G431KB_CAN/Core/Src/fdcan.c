@@ -25,9 +25,9 @@ CAN_HandleTypeDef hcan = {
 	&hfdcan1, 
 	{0,}, 
 	{0,}, 
-	FDCAN_TX_BUFFER0, 
-	FDCAN_RX_FIFO0, 
-	FDCAN_IT_RX_FIFO0_NEW_MESSAGE,
+	FDCAN_TX_BUFFER0,				// FDCAN_TX_BUFFER0, 1, 2
+	FDCAN_RX_FIFO0,					// FDCAN_RX_FIFO0, 1
+	FDCAN_IT_RX_FIFO0_NEW_MESSAGE,	// FDCANIT_RX_FIFO0_MESSAGE_LOST/FULL/NEW_MESSAGE(New message written to Rx FIFO 0)
 };
 /* USER CODE END 0 */
 
@@ -68,10 +68,10 @@ void MX_FDCAN1_Init(void)
   }
   /* USER CODE BEGIN FDCAN1_Init 2 */
   FDCAN_FilterTypeDef sFilterConfig; // handle for filter config
-  
-  sFilterConfig.IdType = FDCAN_STANDARD_ID;			// identifier type, FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
-  sFilterConfig.FilterIndex = 0;					// filter which will be initialized, 0 ~ SRAMCAN_FLS_NBR-1
-  sFilterConfig.FilterType = FDCAN_FILTER_RANGE;	// FDCAN_FILTER_RANGE: FilterID1 to FilterID2, DUAL: Dual ID filter, MASK: FilterID1=filter, FilterID2 = mask
+  /* 나중에 exteded ID가 들어오는 경우 예외처리 하기 또는 유입 막기 */
+  sFilterConfig.IdType = FDCAN_STANDARD_ID;				// identifier type, FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
+  sFilterConfig.FilterIndex = 0;						// filter which will be initialized, 0 ~ SRAMCAN_FLS_NBR-1
+  sFilterConfig.FilterType = FDCAN_FILTER_RANGE;		// FDCAN_FILTER_RANGE: FilterID1 to FilterID2, DUAL: Dual ID filter, MASK: FilterID1=filter, FilterID2 = mask
   sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0; // 
   sFilterConfig.FilterID1 = 0x000; // from
   sFilterConfig.FilterID2 = 0x7ff; // to

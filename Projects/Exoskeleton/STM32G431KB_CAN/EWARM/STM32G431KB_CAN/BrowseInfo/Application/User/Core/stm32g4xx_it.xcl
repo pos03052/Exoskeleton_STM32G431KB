@@ -1,25 +1,25 @@
-"C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Core\Src\stm32g4xx_it.c"
+"C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Core\Src\stm32g4xx_it.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -funsigned-char
 -MD
 -MF
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\User\Core\stm32g4xx_it.pbi.dep
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\User\Core\stm32g4xx_it.pbi.dep
 -o
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\User\Core\stm32g4xx_it.pbi
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\User\Core\stm32g4xx_it.pbi
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Core\Src
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Core\Src
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM/../Core/Inc\
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/../Core/Inc
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc\
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy\
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM/../Drivers/CMSIS/Device/ST/STM32G4xx/Include\
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/../Drivers/CMSIS/Device/ST/STM32G4xx/Include
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM/../Drivers/CMSIS/Include\
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/../Drivers/CMSIS/Include
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CMSIS\Core\Include\
 -I
@@ -31,15 +31,15 @@ C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\inc
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\inc\c
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Core\Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Core\Inc
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Drivers\STM32G4xx_HAL_Driver\Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Drivers\STM32G4xx_HAL_Driver\Inc
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Drivers\CMSIS\Device\ST\STM32G4xx\Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Drivers\CMSIS\Device\ST\STM32G4xx\Include
 -I
-C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\Drivers\CMSIS\Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\Drivers\CMSIS\Include
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CMSIS\Core\Include
 -I

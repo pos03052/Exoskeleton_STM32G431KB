@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.general.xcl" --backend -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.general.xcl" --backend -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\0. eletronics\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\settings\STM32G431KB_CAN.STM32G431KB_CAN.driver.xcl" 
 }

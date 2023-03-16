@@ -16,18 +16,18 @@
         <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32G431KB.ddf</MemConfigValue>
     </PlDriver>
     <StLinkDriver>
-        <stlinkserialNo>003B00155553500C20393256</stlinkserialNo>
+        <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
         <stlinkfoundProbes />
-        <stlinkResetStyle>0</stlinkResetStyle>
-        <stlinkResetStrategy>2</stlinkResetStrategy>
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <CStepIntDis>_ 0</CStepIntDis>
+        <stlinkResetStyle>0</stlinkResetStyle>
+        <stlinkResetStrategy>2</stlinkResetStrategy>
     </StLinkDriver>
     <ArmDriver>
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>3463389326</Checksum>
+        <Checksum>1924874147</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -62,6 +62,12 @@
         <ITMportsLogFile>0</ITMportsLogFile>
         <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
     </SWOTraceHWSettings>
+    <struct_types>
+        <Fmt0>FDCAN_RxHeaderTypeDef-DataLength	4	0</Fmt0>
+        <Fmt1>FDCAN_RxHeaderTypeDef-Identifier	4	0</Fmt1>
+        <Fmt2>FDCAN_TxHeaderTypeDef-DataLength	4	0</Fmt2>
+        <Fmt3>FDCAN_TxHeaderTypeDef-Identifier	4	0</Fmt3>
+    </struct_types>
     <Trace2>
         <Enabled>0</Enabled>
         <ShowSource>0</ShowSource>

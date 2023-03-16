@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "serial.h"
 #include "utility.h"
+#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -177,8 +178,6 @@ void setup(void)
   {
 	Error_Handler();
   }
-  
-//  hcan.txmsg.header.Identifier = 1;
   hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;				// FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
   hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;			// FDCAN_DATA_FRAME, FDCAN_REMOTE_FRAME(FDCAN High Priority MEssage Storage)
   hcan.txmsg.header.DataLength = FDCAN_DLC_BYTES_8;			// FDCAN_DLC_BYTES_0~64: FDCAN Data Length Code
@@ -187,26 +186,38 @@ void setup(void)
   hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;			// Tx frame classic or FD
   hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;// store or not store Tx events
   hcan.txmsg.header.MessageMarker = 0;						// message marker copied into Tx Event FIFO element 0 ~ 0xFF
-  
-  hcan.txmsg.data[0] = 1;
-  
+  //  hcan.txmsg.header.Identifier;
+  //	  hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;				// or FDCAN_EXTENDED_ID
+  //	  hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;			// or FDCAN_REMOTE_FRAME
+  //	  hcan.txmsg.header.DataLength;								// 8 bytes
+  //	  hcan.txmsg.header.ErrorStateIndicator = FDCAN_ESI_ACTIVE; // or FDCAN_ESI_PASSIVE,역할?
+  //	  hcan.txmsg.header.BitRateSwitch = FDCAN_BRS_OFF;			// FDCAN에서만 BRS 가능 https://www.datajob.com/en/definition/101/bit-rate-switch-(brs)
+  //	  hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;			/* NO CAN-FD */
+  //	  hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;// or FDCAN_STORE_TX_EVENTS, 역할?
+  //	  hcan.txmsg.header.MessageMarker = 0;						// Specifies the message marker to be copied into Tx Event FIFO element\
+  //	  // for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
   
   __enable_irq();		// iar enable interrupt
 }
+
+bool send_flag = false;
 void loop_sync(void)
 {
   static int cnt = 0;
-  if (++cnt >= 1000)
+  if (++cnt >= 500)
   {
 	cnt = 0;
-	serial_print(&vcp, "hello");
-	
-	if (HAL_FDCAN_GetTxFifoFreeLevel(hcan.module) > 0)
-	{
-	  
-	  if (HAL_FDCAN_AddMessageToTxFifoQ(hcan.module, &hcan.txmsg.header, hcan.txmsg.data) != HAL_OK)
-	  {
-		serial_print(&vcp, "CAN tx fault");
+	sprintf(vcp.tx_buffer, "%d\n", hcan.txmsg.header.Identifier);
+	//	serial_print(&vcp, (char*)hcan.txmsg.header.Identifier);
+	serial_write(&vcp, strlen(vcp.tx_buffer));
+	//	serial_print(&vcp, (char*)hcan.txmsg.data[1]);
+	if (HAL_FDCAN_GetTxFifoFreeLevel(hcan.module) > 0)	{
+	  if(send_flag){
+		if (HAL_FDCAN_AddMessageToTxFifoQ(hcan.module, &hcan.txmsg.header, hcan.txmsg.data) != HAL_OK)
+		{
+		  serial_print(&vcp, "CAN tx fault");
+		}
+		send_flag = false;
 	  }
 	}
   }
@@ -221,6 +232,14 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
   {
 	if (HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK)
 	{
+	  // hcan.rxloc = FDCAN_RX_FIFO0(0x00000040U)
+	  
+	  // hcan.rxmsg.header.IdType				
+	  // hcan.rxmsg.header.RxFrame				
+	  // hcan.rxmsg.header.ErrorStateIndicator
+	  // hcan.rxmsg.header.DataLength
+	  // hcan.rxmsg.header.data
+	 
 	  Error_Handler();
 	}
   }
