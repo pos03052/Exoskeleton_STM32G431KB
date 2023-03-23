@@ -1,25 +1,25 @@
-"D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.c"
+"C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -funsigned-char
 -MD
 -MF
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\STM32G431KB_TEST\BrowseInfo\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.pbi.dep
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\STM32G431KB_TEST\BrowseInfo\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.pbi.dep
 -o
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\STM32G431KB_TEST\BrowseInfo\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.pbi
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\STM32G431KB_TEST\BrowseInfo\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.pbi
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Src
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Src
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM/../Core/Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM/../Core/Inc
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM/../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM/../Drivers/CMSIS/Device/ST/STM32G4xx/Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM/../Drivers/CMSIS/Device/ST/STM32G4xx/Include
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM/../Drivers/CMSIS/Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM/../Drivers/CMSIS/Include
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CMSIS\Core\Include\
 -I
@@ -31,15 +31,15 @@ C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\inc
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\inc\c
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Core\Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Core\Inc
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Inc
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Inc
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\STM32G4xx_HAL_Driver\Inc\Legacy
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\CMSIS\Device\ST\STM32G4xx\Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\CMSIS\Device\ST\STM32G4xx\Include
 -I
-D:\STM32CubeMX_ws\STM32G431KB_TEST\Drivers\CMSIS\Include
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\Drivers\CMSIS\Include
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CMSIS\Core\Include
 -I

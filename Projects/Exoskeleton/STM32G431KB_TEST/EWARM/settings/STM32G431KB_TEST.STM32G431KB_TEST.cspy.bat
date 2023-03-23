@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.general.xcl" --backend -f "D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.general.xcl" --backend -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.general.xcl" "--debug_file=%~1" --backend -f "D:\STM32CubeMX_ws\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.0\common\bin\cspybat" -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_TEST\EWARM\settings\STM32G431KB_TEST.STM32G431KB_TEST.driver.xcl" 
 
 @echo off 
 :end

@@ -27,7 +27,7 @@
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>1924874147</Checksum>
+        <Checksum>4150711760</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -68,6 +68,9 @@
         <Fmt2>FDCAN_TxHeaderTypeDef-DataLength	4	0</Fmt2>
         <Fmt3>FDCAN_TxHeaderTypeDef-Identifier	4	0</Fmt3>
     </struct_types>
+    <array_types>
+        <Fmt0>uint8_t[8]	4	0</Fmt0>
+    </array_types>
     <Trace2>
         <Enabled>0</Enabled>
         <ShowSource>0</ShowSource>
@@ -139,7 +142,8 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Count>0</Count>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.81.2" 0 0 1 "" 0 "" 0</Bp0>
+        <Count>1</Count>
     </Breakpoints2>
     <Aliases>
         <Count>0</Count>

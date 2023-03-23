@@ -1,0 +1,42 @@
+C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\CANopenNode_lib\CANopen.pbi: \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\CANopen.c \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\CANopen.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_driver.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\string.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\ycheck.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\yvals.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Defaults.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Config_Full.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Product.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\ysizet.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Product_string.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_config.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_ODinterface.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_driver.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_NMT_Heartbeat.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_ODinterface.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_Emergency.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_HBconsumer.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_NMT_Heartbeat.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_Emergency.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SDOserver.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SDOclient.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SDOserver.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_fifo.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SYNC.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_PDO.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SYNC.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_TIME.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\303\CO_LEDs.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\304\CO_GFC.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\304\CO_SRDO.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\305\CO_LSSslave.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\305\CO_LSS.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\305\CO_LSSmaster.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\309\CO_gateway_ascii.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\301\CO_SDOclient.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\305\CO_LSSmaster.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\303\CO_LEDs.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode\extra\CO_trace.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\stdlib.h \
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Product_stdlib.h

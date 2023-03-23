@@ -148,7 +148,7 @@
                 <expressions>
                     <item>vcp</item>
                     <item>hcan</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

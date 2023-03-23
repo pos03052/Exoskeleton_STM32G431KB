@@ -68,6 +68,7 @@ void Error_Handler(void);
 #define USART2_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_8
 #define LD2_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
@@ -75,4 +76,5 @@ void Error_Handler(void);
 #ifdef __cplusplus
 }
 #endif
+
 #endif /* __MAIN_H */

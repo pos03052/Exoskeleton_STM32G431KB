@@ -1098,66 +1098,66 @@
   <group>
     <name>Drivers</name>
     <group>
-      <name>CMSIS</name>
-      <file>
-        <name>$PROJ_DIR$\..\Core\Src\system_stm32g4xx.c</name>
-      </file>
-    </group>
-    <group>
       <name>STM32G4xx_HAL_Driver</name>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_fdcan.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_rcc_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_flash_ramfunc.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ramfunc.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_gpio.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_gpio.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_exti.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_exti.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_dma_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_pwr_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_cortex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_uart_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c</name>
+      </file>
+    </group>
+    <group>
+      <name>CMSIS</name>
+      <file>
+        <name>$PROJ_DIR$/../Core/Src/system_stm32g4xx.c</name>
       </file>
     </group>
   </group>

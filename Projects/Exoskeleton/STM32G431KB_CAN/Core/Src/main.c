@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dma.h"
 #include "fdcan.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -28,6 +29,7 @@
 #include "serial.h"
 #include "utility.h"
 #include "stdbool.h"
+//#include "CO_app_STM32.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +63,12 @@ void loop_async(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/* Timer interrupt function executes every 1 ms */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
+  //    if (htim == canopenNodeSTM32->timerHandle) {
+  //        canopen_app_interrupt();
+  //    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -92,6 +100,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_TIM17_Init();
   MX_FDCAN1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -99,7 +108,7 @@ int main(void)
   /* USER CODE END 2 */
   
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */  
+  /* USER CODE BEGIN WHILE */
   setup();
   while (1)
   {
@@ -154,6 +163,10 @@ void SystemClock_Config(void)
   {
 	Error_Handler();
   }
+  
+  /** Enables the Clock Security System
+  */
+  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */
@@ -164,7 +177,8 @@ void setup(void)
   /* USART for Virtual com port */
   vcp.init(&vcp);
   
-  if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK) //UART_RX_BUFF_SIZE = 256, TX = 128
+  
+  if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK)		//UART_RX_BUFF_SIZE = 256, TX = 128
   {
 	Error_Handler();
   }
@@ -207,7 +221,7 @@ void loop_sync(void)
   if (++cnt >= 500)
   {
 	cnt = 0;
-	sprintf(vcp.tx_buffer, "%d\n", hcan.txmsg.header.Identifier);
+	sprintf(vcp.tx_buffer, "%d\n", hcan.txmsg.data[0]);
 	//	serial_print(&vcp, (char*)hcan.txmsg.header.Identifier);
 	serial_write(&vcp, strlen(vcp.tx_buffer));
 	//	serial_print(&vcp, (char*)hcan.txmsg.data[1]);
@@ -239,14 +253,14 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	  // hcan.rxmsg.header.ErrorStateIndicator
 	  // hcan.rxmsg.header.DataLength
 	  // hcan.rxmsg.header.data
-	 
+	  
 	  Error_Handler();
 	}
   }
 }
 void HAL_SYSTICK_Callback(void)
 {
-	loop_sync();
+  loop_sync();
 }
 /* USER CODE END 4 */
 
