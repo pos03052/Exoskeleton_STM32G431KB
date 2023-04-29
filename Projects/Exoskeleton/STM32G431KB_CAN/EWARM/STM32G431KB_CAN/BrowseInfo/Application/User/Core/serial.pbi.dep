@@ -18,6 +18,8 @@ C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\ST
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim.h \
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_pwr_ex.h \
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_pwr.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_i2c_ex.h \
+  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_i2c.h \
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash_ramfunc.h \
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash_ex.h \
   C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_flash.h \

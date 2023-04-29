@@ -9,7 +9,7 @@ extern "C" {
 
 #define PARSING_STR_BUFF_SIZE	64
 #define PARSING_TOK_BUFF_SIZE	16
-#define PARSING_DEFAULTS		{0, 0, 0, {0,}, ",\n\r", {0,}}
+#define PARSING_DEFAULTS		{0, 0, 0, {0,}, ",\r", {0,}}
 
 typedef struct {
 	uint8_t flag;

@@ -35,26 +35,26 @@ extern "C" {
 extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
-  
-  typedef struct {
-	FDCAN_TxHeaderTypeDef header;
-	uint8_t data[8];
-  } CAN_TxMsgTypeDef;
-  
-  typedef struct {
-	FDCAN_RxHeaderTypeDef header;
-	uint8_t data[8];
-  } CAN_RxMsgTypeDef;
-  
-  typedef struct {
-	FDCAN_HandleTypeDef* module;
-	CAN_TxMsgTypeDef txmsg;
-	CAN_RxMsgTypeDef rxmsg;
-	uint32_t txloc;
-	uint32_t rxloc;
-	uint32_t activeITs;
-  } CAN_HandleTypeDef;
-  extern CAN_HandleTypeDef hcan;
+
+typedef struct {
+  FDCAN_TxHeaderTypeDef header;
+  uint8_t data[8];
+} CAN_TxMsgTypeDef;
+
+typedef struct {
+  FDCAN_RxHeaderTypeDef header;
+  uint8_t data[8];
+} CAN_RxMsgTypeDef;
+
+typedef struct {
+  FDCAN_HandleTypeDef* module;
+  CAN_TxMsgTypeDef txmsg;
+  CAN_RxMsgTypeDef rxmsg;
+  uint32_t txloc;
+  uint32_t rxloc;
+  uint32_t activeITs;
+} CAN_HandleTypeDef;
+extern CAN_HandleTypeDef hcan;
 /* USER CODE END Private defines */
 
 void MX_FDCAN1_Init(void);

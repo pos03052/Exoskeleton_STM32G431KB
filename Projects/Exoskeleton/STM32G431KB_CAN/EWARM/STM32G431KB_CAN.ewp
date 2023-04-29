@@ -1084,6 +1084,9 @@
           <name>$PROJ_DIR$\..\Core\Src\fdcan.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/i2c.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\Core\Src\tim.c</name>
         </file>
         <file>
@@ -1149,6 +1152,12 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_cortex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c_ex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal_tim.c</name>
