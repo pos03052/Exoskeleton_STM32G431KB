@@ -35,13 +35,14 @@ extern "C" {
 extern I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN Private defines */
-
+#define WT901_ADDR (0x50 << 1) // Use 8-bit address
 /* USER CODE END Private defines */
 
 void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void I2C_TX();
+void I2C_RX();
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

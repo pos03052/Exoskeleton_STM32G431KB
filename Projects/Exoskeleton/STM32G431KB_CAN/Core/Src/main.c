@@ -53,8 +53,11 @@
 /* USER CODE BEGIN PV */
 uint8_t PDO_id_cnt	= 0;
 uint8_t node_id;
+int16_t val				= 0;
 Prot_info_t prot_info;
 char *uart_tx_msg;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,6 +66,25 @@ void SystemClock_Config(void);
 void setup(void);
 void loop_sync(void);
 void loop_async(void);
+
+double zero_angle[4]	= {0.0, 0.0, 0.0, 0.0};
+float32_t angle[4]			= {0.0, 0.0, 0.0, 0.0};
+double limit_angle[2]	= {1.7453, 1.3963};	// +/- 120도, 
+
+double l1 = 450;
+double l2 = 250;
+double weight = 20;
+
+bool uart_send_flag 	= false;
+bool PDO_flag 			= false;
+bool QS_flag				= false;
+bool NMT_FLAG			= false;
+bool DS_FLAG				= false;
+bool STATUS_FLAG		= false;
+
+bool SET_ANGLE_ZERO_FLAG = false;
+bool ANGLE_FLAG		= false;
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -193,10 +215,16 @@ void setup(void)
 	Error_Handler();
   }
   
-  if (HAL_FDCAN_ActivateNotification(hcan.module, hcan.activeITs, hcan.rxloc) != HAL_OK)
+  if (HAL_FDCAN_ActivateNotification(hcan.module, hcan.activeITs, 0) != HAL_OK)
   {
 	Error_Handler();
   }
+
+  if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_TX_FIFO_EMPTY|FDCAN_IT_TX_COMPLETE, FDCAN_TX_BUFFER0 | FDCAN_TX_BUFFER1 | FDCAN_TX_BUFFER2) != HAL_OK)
+  {	
+	Error_Handler();	
+  }
+  
   hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;						// FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
   hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;				// FDCAN_DATA_FRAME, FDCAN_REMOTE_FRAME(FDCAN High Priority MEssage Storage)
   hcan.txmsg.header.DataLength = FDCAN_DLC_BYTES_8;					// FDCAN_DLC_BYTES_0~64: FDCAN Data Length Code
@@ -216,29 +244,25 @@ void setup(void)
   //	hcan.txmsg.header.MessageMarker = 0;										// Specifies the message marker to be copied into Tx Event FIFO element\
 																											for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
   __enable_irq();		// iar enable interrupt
-  HAL_Delay(4);
-  for(int i=1;i<3;i++){
-	SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 10);	
-	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
-	motor[i].id = i+1;
-//	while(!__HAL_FDCAN_GET_FLAG(&hfdcan1, FDCAN_FLAG_RX_FIFO0_NEW_MESSAGE)){}
-  }
-  NMT_TRANS(PREOP);	
+  INIT_CAN();  
 }
 
-bool uart_send_flag = false;
-bool can_PDO_flag = false;
-bool QS_flag			= false;
-bool NMT_FLAG		= false;
-bool DS_FLAG		= false;
-bool STATUS_FLAG	= false;
+
 uint32_t freq_cnt	= 0;
 double period		= 2000.0;
-double amp			= 100.0;
-double val_2			= 0;
-int16_t val				= 0;
-NMT_state_t NMT_state	= PREOP;
-DS_state_t status			= DV;
+double amp			= 50.0;
+float32_t gear_ratio[2] = {96.875, 48.82};
+float32_t torque[2] = {0, };
+double rated_torque = 158.036;
+double motor_offset_1 = 1.0;
+double motor_offset_2 = 1.0;
+
+NMT_state_t	NMT_state	= PRE;
+DS_state_t	DS_state		= DV;
+bool I2C_flag = false;
+bool I2C_flag2 = false;
+bool TORQUE_TEST_FLAG = false;
+bool CLEAR_ERROR_FLAG = false;
 
 void loop_sync(void)
 {  
@@ -250,10 +274,24 @@ void loop_sync(void)
 	val = (int16_t)(-amp);
   }else{
 	freq_cnt = 0;
-  }  
-  //  val = (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq_cnt/period)); // 주기 0.5초 
+  } 
+  val = (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq_cnt/period)); // 주기 0.5초 
+  
+//  motor[1].Target_torque = (int16_t)((l2 * arm_sin_f32(angle[1]) * weight) / gear_ratio[1] / rated_torque * 1000.0);
+//  motor[0].Target_torque = (int16_t)(motor[1].Target_torque + l1*arm_sin_f32(angle[0]) * weight / gear_ratio[0] / rated_torque * 1000.0);
+//	motor[1].Target_torque = val;
+  torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
+  torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight;
+  motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset_2);
+  motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset_1);
+  if(fabs(angle[1]) >= limit_angle[1]){
+	motor[1].Target_torque = 0;
+  }
+  if(fabs(angle[0]) >= limit_angle[0]){
+	motor[0].Target_torque = 0;
+  }
   if(++cnt>=3){
-	if(NMT_state == OP && can_PDO_flag){
+	if(NMT_state == OP && PDO_flag){
 	  SYNC_FRAME();
 	  cnt = 0;
 	}
@@ -265,44 +303,102 @@ void loop_async(void)
 	serial_print(&vcp, "AT+CONMAC=70B8F6977692\r");
 	uart_send_flag = false;
   }
-  vcp.run(&vcp);
+//  vcp.run(&vcp);
   
   if(NMT_FLAG){
 	NMT_TRANS(NMT_state);
 	NMT_FLAG = false;
+//	STATUS_FLAG = true;
   }
   if(DS_FLAG){
-	DS_TRANS(1, status);
-	DS_TRANS(2, status);
+	DS_TRANS(1, DS_state);
+	DS_TRANS(2, DS_state);
 	DS_FLAG = false;
+//	STATUS_FLAG = true;
   }
   if(QS_flag){
 	DS_TRANS(1, QS);
 	DS_TRANS(2, QS);
-	QS_flag = false;
-  }
+	PDO_flag	= false;
+	QS_flag		= false;
+  }    
   if(STATUS_FLAG){
 	READ_STATUS(1);
 	READ_STATUS(2);
 	STATUS_FLAG = false;
   }  
-  if(PDO_id_cnt >= 2){
-	SET_PDO(&motor[0]);
-	SET_PDO(&motor[1]);
+  if(PDO_flag & PDO_id_cnt >= 2){	  
+	SET_PDO(1);
+	SET_PDO(2);
 	PDO_id_cnt = 0;
   }
+  if(CLEAR_ERROR_FLAG){
+	Clear_Device_Errors(1);
+	Clear_Device_Errors(2);
+	CLEAR_ERROR_FLAG = false;
+  }
+  if(SET_ANGLE_ZERO_FLAG){
+	GET_Angle(1);
+	GET_Angle(2);	
+	while(motor[0].Object != Position_actual || motor[1].Object != Position_actual);	
+	zero_angle[0] = motor[0].Postion_actual;
+	zero_angle[1] = motor[1].Postion_actual;  
+	SET_ANGLE_ZERO_FLAG = false;
+  }  
+  if(ANGLE_FLAG){
+	GET_Angle(1);
+	GET_Angle(2);	
+	ANGLE_FLAG = false;
+  }
+  if(TORQUE_TEST_FLAG){
+	GET_Angle(1);
+	GET_Angle(2);
+	HAL_Delay(5);	
+	while(motor[0].Object != Position_actual || motor[1].Object != Position_actual);
+	torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
+	torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight;
+	motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset_2);
+	motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset_1);
+	if(fabs(angle[1]) >= limit_angle[1]){
+	  motor[1].Target_torque = 0;
+	}
+	if(fabs(angle[0]) >= limit_angle[0]){
+	  motor[0].Target_torque = 0;
+	}
+	
+	SET_SDO(2, sizeof(int16_t), Target_torque, 0x00, motor[1].Target_torque);
+	SET_SDO(1, sizeof(int16_t), Target_torque, 0x00, motor[0].Target_torque);	
+	HAL_Delay(5);
+	while(motor[0].Object != Target_torque || motor[1].Object != Target_torque);
+  }
+  if(I2C_flag){
+	I2C_TX();
+	I2C_flag = false;
+  }
+  if(I2C_flag2){
+	I2C_RX();
+	I2C_flag2 = false;
+  }
 }
-
+uint8_t temp_ = 0;
+uint16_t old_id = 0;
+void HAL_FDCAN_TxFifoEmptyCallback(FDCAN_HandleTypeDef *hfdcan){
+  temp_++;
+}
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
   if(__HAL_FDCAN_GET_FLAG(hfdcan, FDCAN_FLAG_RX_FIFO0_MESSAGE_LOST)){
-	while(1);
+	__HAL_FDCAN_CLEAR_FLAG(hfdcan, FDCAN_FLAG_RX_FIFO0_MESSAGE_LOST);
   } 
   if ((hfdcan->Instance == hcan.module->Instance) && ((RxFifo0ITs & hcan.activeITs) != 0))
   {
 	if (HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK)
 	{
-	  
+	  if(hcan.rxmsg.header.Identifier == old_id){
+		PDO_id_cnt = 0;
+	  }else{
+		old_id = hcan.rxmsg.header.Identifier;
+	  }
 	  // hcan.rxloc = FDCAN_RX_FIFO0(0x00000040U)	  
 	  // hcan.rxmsg.header.IdType				
 	  // hcan.rxmsg.header.RxFrame				
@@ -319,20 +415,26 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	  switch(prot_info){
 	  case SDO:
 		motor[node_id].parsing_SDO(&motor[node_id], node_id);
+		if(motor[node_id].Object == Position_actual){
+		  angle[node_id] = (motor[node_id].Postion_actual - zero_angle[node_id])  * 0.000767; // 2*Pi / 8192
+		  angle[node_id] = angle[node_id] / gear_ratio[node_id];
+		}
 		break;
 	  case PDO1:
 		PDO_id_cnt ++;
-		motor[node_id].parsing_PDO(&motor[node_id], node_id);		
+		if(motor[node_id].parsing_PDO(&motor[node_id], node_id) != 1){
+		  DS_state = QS;		
+		}else{
+		  angle[node_id] = (motor[node_id].Postion_actual - zero_angle[node_id])  * 0.000767;
+		  angle[node_id] = angle[node_id] / gear_ratio[node_id];
+		}
 		break;
 		// case PDO2:
 	  }
 	}
 	temp_uint = HAL_FDCAN_GetRxFifoFillLevel(&hfdcan1, FDCAN_RX_FIFO0);
-	if(temp_uint >= 3){	
-	  while(1);
-	  //	  if (HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK)
-	  //	{
-	  //	}
+	if(temp_uint >= 2){	
+	  while(HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK);
 	}
   }
 }

@@ -1,33 +1,34 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file    fdcan.c
-  * @brief   This file provides code for the configuration
-  *          of the FDCAN instances.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+******************************************************************************
+* @file    fdcan.c
+* @brief   This file provides code for the configuration
+*          of the FDCAN instances.
+******************************************************************************
+* @attention
+*
+* Copyright (c) 2023 STMicroelectronics.
+* All rights reserved.
+*
+* This software is licensed under terms that can be found in the LICENSE file
+* in the root directory of this software component.
+* If no LICENSE file comes with this software, it is provided AS-IS.
+*
+******************************************************************************
+*/
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "fdcan.h"
+#include "stdbool.h"
 
 /* USER CODE BEGIN 0 */
 CAN_HandleTypeDef hcan = {
-	&hfdcan1, 
-	{0,}, 
-	{0,}, 
-	FDCAN_TX_BUFFER0,				// FDCAN_TX_BUFFER0, 1, 2
-	FDCAN_RX_FIFO0,					// FDCAN_RX_FIFO0, 1
-	FDCAN_IT_RX_FIFO0_NEW_MESSAGE,	// FDCANIT_RX_FIFO0_MESSAGE_LOST/FULL/NEW_MESSAGE(New message written to Rx FIFO 0)
+  &hfdcan1, 
+  {0,}, 
+  {0,}, 
+  FDCAN_TX_BUFFER0,				// FDCAN_TX_BUFFER0, 1, 2
+  FDCAN_RX_FIFO0,					// FDCAN_RX_FIFO0, 1
+  FDCAN_IT_RX_FIFO0_NEW_MESSAGE,	// FDCANIT_RX_FIFO0_MESSAGE_LOST/FULL/NEW_MESSAGE(New message written to Rx FIFO 0)
 };
 Motor_t motor_[4];
 /* USER CODE END 0 */
@@ -39,11 +40,11 @@ void MX_FDCAN1_Init(void)
 {
 
   /* USER CODE BEGIN FDCAN1_Init 0 */
-
+  
   /* USER CODE END FDCAN1_Init 0 */
 
   /* USER CODE BEGIN FDCAN1_Init 1 */
-
+  
   /* USER CODE END FDCAN1_Init 1 */
   hfdcan1.Instance = FDCAN1;
   hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
@@ -85,7 +86,7 @@ void MX_FDCAN1_Init(void)
 
 }
 
-void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef *fdcanHandle)
+void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -93,7 +94,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef *fdcanHandle)
   if(fdcanHandle->Instance==FDCAN1)
   {
   /* USER CODE BEGIN FDCAN1_MspInit 0 */
-
+	
   /* USER CODE END FDCAN1_MspInit 0 */
 
   /** Initializes the peripherals clocks
@@ -126,7 +127,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef *fdcanHandle)
     HAL_NVIC_SetPriority(FDCAN1_IT1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(FDCAN1_IT1_IRQn);
   /* USER CODE BEGIN FDCAN1_MspInit 1 */
-
+	
   /* USER CODE END FDCAN1_MspInit 1 */
   }
 }
@@ -137,7 +138,7 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
   if(fdcanHandle->Instance==FDCAN1)
   {
   /* USER CODE BEGIN FDCAN1_MspDeInit 0 */
-
+	
   /* USER CODE END FDCAN1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_FDCAN_CLK_DISABLE();
@@ -152,12 +153,13 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
     HAL_NVIC_DisableIRQ(FDCAN1_IT0_IRQn);
     HAL_NVIC_DisableIRQ(FDCAN1_IT1_IRQn);
   /* USER CODE BEGIN FDCAN1_MspDeInit 1 */
-
+	
   /* USER CODE END FDCAN1_MspDeInit 1 */
   }
 }
 
 /* USER CODE BEGIN 1 */
+
 void SET_SDO(uint8_t id, uint8_t length, Obj_dict_t addr, uint8_t addr_sub, int32_t data){
   hcan.txmsg.header.Identifier = 0x600 + id;
   switch (length){
@@ -186,12 +188,13 @@ void SET_SDO(uint8_t id, uint8_t length, Obj_dict_t addr, uint8_t addr_sub, int3
   
   SEND_FRAME(&hcan);
 }
-void SET_PDO(const Motor_t* h){ // const: 주소값 안의 내용만 참조 
-  hcan.txmsg.header.Identifier = 0x200 + h->id;
-  hcan.txmsg.data[0] = h->Controlword& 0xff;
-  hcan.txmsg.data[1] = (h->Controlword >> 8) & 0xff;
-  hcan.txmsg.data[2] = h->Target_torque & 0xff;
-  hcan.txmsg.data[3] = (h->Target_torque >> 8) & 0xff;  
+//void SET_PDO(const Motor_t* h){ // const: 주소값 안의 내용만 참조 
+void SET_PDO(uint8_t id){
+  hcan.txmsg.header.Identifier = 0x200 + id;
+  //  hcan.txmsg.data[0] = h->Controlword& 0xff;
+  //  hcan.txmsg.data[1] = (h->Controlword >> 8) & 0xff;
+  hcan.txmsg.data[0] = motor[id-1].Target_torque & 0xff;
+  hcan.txmsg.data[1] = (motor[id-1].Target_torque >> 8) & 0xff;  
   
   SEND_FRAME(&hcan); 
 }
@@ -206,22 +209,36 @@ void NMT_TRANS(NMT_state_t state){
 }
 void DS_TRANS(uint8_t id, DS_state_t state){
   SET_SDO(id, sizeof(uint16_t), CONTROLWORD, 0, state);
+  while(motor[id-1].Object != CONTROLWORD);
 }
 void Parsing_SDO(Motor_t *h, uint8_t id){  
-  h->id			= id + 1;
+  h->id			= id+1 ;
   h->Object	= (Obj_dict_t)(hcan.rxmsg.data[1] | (hcan.rxmsg.data[2] << 8));
   switch(h->Object){
   case STATUSWORD:
 	h->Statusword = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8);
 	break;
-  }
+  case Error_code:
+	static uint8_t error_index = 0;
+	h->Error_code[error_index++] = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8);
+	if(error_index == 5)	error_index = 0;
+	break;
+  case Position_actual:
+	h->Postion_actual = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8) | (hcan.rxmsg.data[6] << 16) | (hcan.rxmsg.data[7] << 24);
+	break;
+  }  
 }
-void Parsing_PDO(Motor_t *h, uint8_t id){
-  h->id = id + 1;
+uint8_t Parsing_PDO(Motor_t *h, uint8_t id){
+  h->id = id+1;
   h->Object = STATUSWORD;
   h->Statusword = hcan.rxmsg.data[0] | (hcan.rxmsg.data[1] << 8);
   h->Torque_actual = hcan.rxmsg.data[2] | (hcan.rxmsg.data[3] << 8);
   h->Postion_actual = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8) | (hcan.rxmsg.data[6] << 16) | (hcan.rxmsg.data[7] << 24);
+  if((h->Statusword >> 3) & 0x01){	//  Fault
+	return 0;
+  }else{
+	return 1;
+  }
 }
 void SYNC_FRAME(void){
   hcan.txmsg.header.Identifier = 0x80;
@@ -231,17 +248,13 @@ void SYNC_FRAME(void){
 void Calc_torq(){
   
 }
-
 void SEND_FRAME(CAN_HandleTypeDef *h){
-  
-  // 	while(!__HAL_FDCAN_GET_FLAG(&hfdcan1, FDCAN_FLAG_TX_FIFO_EMPTY));
+  while(__HAL_FDCAN_GET_FLAG(h->module, FDCAN_FLAG_TX_FIFO_EMPTY));
   //	if (HAL_FDCAN_GetTxFifoFreeLevel(hcan.module) > 0)
   while(HAL_FDCAN_GetTxFifoFreeLevel(h->module) <= 0);
   if (HAL_FDCAN_AddMessageToTxFifoQ(h->module, &h->txmsg.header, h->txmsg.data) != HAL_OK){
 	Error_Handler();
-  }
-  //  if(HAL_FDCAN_GetTxFifoFreeLevel(hcan.module) > 0)	{ 
-  
+  }  
   if(__HAL_FDCAN_GET_FLAG(h->module, FDCAN_FLAG_TX_EVT_FIFO_ELT_LOST)){
 	while(1);
   } 
@@ -252,20 +265,42 @@ void GET_SDO(uint8_t id, Obj_dict_t addr, uint8_t addr_sub){
   hcan.txmsg.data[1] = addr & 0xFF;
   hcan.txmsg.data[2] = (addr >> 8) & 0xFF;  
   hcan.txmsg.data[3] = addr_sub;
-  if(HAL_FDCAN_GetTxFifoFreeLevel(hcan.module) > 0)	{
-	if (HAL_FDCAN_AddMessageToTxFifoQ(hcan.module, &hcan.txmsg.header, hcan.txmsg.data) != HAL_OK){
-	  Error_Handler();
-	}
-  }	    
+  SEND_FRAME(&hcan);    
 }
+Obj_dict_t kk;
 void READ_STATUS(uint8_t id){
   GET_SDO(id, STATUSWORD, 0);
+  while(motor[id-1].Object != STATUSWORD);
+  if((motor[id-1].Statusword >> 3) & 0x01){
+	GET_SDO(id, Error_code, 0);
+	while(motor[id-1].Object != Error_code){
+	  kk = motor[id-1].Object;	  
+	}	
+  }
 }
-
+void GET_Angle(uint8_t id){
+  GET_SDO(id, Position_actual, 0);  
+}
+void Clear_Device_Errors(uint8_t id){
+  SET_SDO(id, sizeof(uint8_t), Error_history, 0, 0);
+  DS_TRANS(id, DV);
+  DS_TRANS(id, FR);
+}
 Motor_t motor[4] = {
-MOTOR_DEFAULT,
-MOTOR_DEFAULT,
-MOTOR_DEFAULT,
-MOTOR_DEFAULT
+  MOTOR_DEFAULT,
+  MOTOR_DEFAULT,
+  MOTOR_DEFAULT,
+  MOTOR_DEFAULT
 };
+void INIT_CAN(){
+  READ_STATUS(1);
+  READ_STATUS(2);
+  for(int i=1;i<3;i++){
+	SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 10);	
+	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
+	motor[i].id = i+1;
+  }
+  NMT_TRANS(PRE);
+  //	while(!__HAL_FDCAN_GET_FLAG(&hfdcan1, FDCAN_FLAG_RX_FIFO0_NEW_MESSAGE)){}
+}
 /* USER CODE END 1 */
