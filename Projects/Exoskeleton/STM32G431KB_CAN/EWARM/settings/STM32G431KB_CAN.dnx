@@ -27,7 +27,7 @@
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>334457654</Checksum>
+        <Checksum>3513476304</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -77,7 +77,7 @@
         <Fmt11>I2C_HandleTypeDef-ErrorCode	4	0</Fmt11>
         <Fmt12>I2C_TypeDef-CR1	1	0</Fmt12>
         <Fmt13>I2C_TypeDef-CR2	1	0</Fmt13>
-        <Fmt14>Motor_t-Error_code	4	0</Fmt14>
+        <Fmt14>I2C_TypeDef-ISR	1	0</Fmt14>
         <Fmt15>Motor_t-Statusword	4	0</Fmt15>
         <Fmt16>Motor_t-Target_torque	3	0</Fmt16>
         <Fmt17>USART_TypeDef-ISR	4	0</Fmt17>
@@ -90,6 +90,7 @@
         <Fmt1>{W}42:cnt2	3	0</Fmt1>
         <Fmt2>{W}42:hcan.rxmsg.data[1] || (hcan.rxmsg.data[2] &lt;&lt; 8)	4	0</Fmt2>
         <Fmt3>{W}42:hcan.rxmsg.data[2] &lt;&lt; 8	4	0</Fmt3>
+        <Fmt4>{W}42:timer	3	0</Fmt4>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -140,6 +141,14 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 1 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
+        <Bp1>_ 1 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
+        <Count>2</Count>
+    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -149,6 +158,10 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -162,16 +175,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 1 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
-        <Bp1>_ 1 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
-        <Count>2</Count>
-    </Breakpoints2>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
 </settings>

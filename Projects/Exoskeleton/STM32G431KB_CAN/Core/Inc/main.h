@@ -62,8 +62,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LD2_Pin GPIO_PIN_8
-#define LD2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

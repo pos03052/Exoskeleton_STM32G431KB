@@ -18,7 +18,6 @@
 */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-
 #ifndef __FDCAN_H__
 #define __FDCAN_H__
 

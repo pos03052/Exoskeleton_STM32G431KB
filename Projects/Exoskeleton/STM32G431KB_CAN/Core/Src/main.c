@@ -21,7 +21,6 @@
 #include "dma.h"
 #include "fdcan.h"
 #include "i2c.h"
-#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -71,8 +70,8 @@ double zero_angle[4]	= {0.0, 0.0, 0.0, 0.0};
 float32_t angle[4]			= {0.0, 0.0, 0.0, 0.0};
 double limit_angle[2]	= {1.7453, 1.3963};	// +/- 120µµ, 
 
-double l1 = 450;
-double l2 = 250;
+double l1 = 462.6;
+double l2 = 226.7649;
 double weight = 20;
 
 bool uart_send_flag 	= false;
@@ -84,6 +83,8 @@ bool STATUS_FLAG		= false;
 
 bool SET_ANGLE_ZERO_FLAG = false;
 bool ANGLE_FLAG		= false;
+GPIO_PinState pin_state;
+
 
 /* USER CODE END PFP */
 
@@ -91,11 +92,7 @@ bool ANGLE_FLAG		= false;
 /* USER CODE BEGIN 0 */
 uint8_t temp_uint = 1;
 /* Timer interrupt function executes every 1 ms */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
-  //    if (htim == canopenNodeSTM32->timerHandle) {
-  //        canopen_app_interrupt();
-  //    }
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -127,7 +124,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_TIM17_Init();
   MX_FDCAN1_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
@@ -204,7 +200,6 @@ void setup(void)
   /* USART for Virtual com port */
   vcp.init(&vcp);
   
-  HAL_TIM_Base_Start_IT(&htim17);
   if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK)		//UART_RX_BUFF_SIZE = 256, TX = 128
   {
 	Error_Handler();
@@ -245,6 +240,7 @@ void setup(void)
 																											for identification of Tx message status. This parameter must be a number between 0 and 0xFF ¿ªÇÒ?
   __enable_irq();		// iar enable interrupt
   INIT_CAN();  
+  pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
 }
 
 
@@ -253,14 +249,16 @@ double period		= 2000.0;
 double amp			= 50.0;
 float32_t gear_ratio[2] = {96.875, 48.82};
 float32_t torque[2] = {0, };
+double motor_offset[2] = {1.0, 1.0};
+double motor_offset_old[2] = {1.0, 1.0};
 double rated_torque = 158.036;
-double motor_offset_1 = 1.0;
-double motor_offset_2 = 1.0;
+uint32_t tick = 0;
+uint8_t timer = 0;
+
 
 NMT_state_t	NMT_state	= PRE;
 DS_state_t	DS_state		= DV;
 bool I2C_flag = false;
-bool I2C_flag2 = false;
 bool TORQUE_TEST_FLAG = false;
 bool CLEAR_ERROR_FLAG = false;
 
@@ -282,15 +280,21 @@ void loop_sync(void)
 //	motor[1].Target_torque = val;
   torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
   torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight;
-  motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset_2);
-  motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset_1);
+  motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset[1]);
+  motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset[0]);
   if(fabs(angle[1]) >= limit_angle[1]){
 	motor[1].Target_torque = 0;
   }
   if(fabs(angle[0]) >= limit_angle[0]){
 	motor[0].Target_torque = 0;
   }
-  if(++cnt>=3){
+  pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
+  if(pin_state == GPIO_PIN_SET){
+	for(int i=0;i<2;i++){
+	  motor[i].Target_torque = 0;
+	}
+  }  
+  if(++cnt>=10){
 	if(NMT_state == OP && PDO_flag){
 	  SYNC_FRAME();
 	  cnt = 0;
@@ -299,6 +303,7 @@ void loop_sync(void)
 }
 void loop_async(void)
 {
+  tick = HAL_GetTick();
   if(uart_send_flag){
 	serial_print(&vcp, "AT+CONMAC=70B8F6977692\r");
 	uart_send_flag = false;
@@ -320,14 +325,15 @@ void loop_async(void)
 	DS_TRANS(1, QS);
 	DS_TRANS(2, QS);
 	PDO_flag	= false;
-	QS_flag		= false;
+	QS_flag	= false;
   }    
   if(STATUS_FLAG){
 	READ_STATUS(1);
 	READ_STATUS(2);
 	STATUS_FLAG = false;
   }  
-  if(PDO_flag & PDO_id_cnt >= 2){	  
+  
+  if(PDO_flag & PDO_id_cnt >= 2){	  	
 	SET_PDO(1);
 	SET_PDO(2);
 	PDO_id_cnt = 0;
@@ -357,28 +363,29 @@ void loop_async(void)
 	while(motor[0].Object != Position_actual || motor[1].Object != Position_actual);
 	torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
 	torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight;
-	motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset_2);
-	motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset_1);
+	motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset[1]);
+	motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset[0]);
 	if(fabs(angle[1]) >= limit_angle[1]){
 	  motor[1].Target_torque = 0;
 	}
 	if(fabs(angle[0]) >= limit_angle[0]){
 	  motor[0].Target_torque = 0;
 	}
-	
+	pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
+	if(pin_state == GPIO_PIN_SET){
+	  for(int i=0;i<2;i++){
+		motor[i].Target_torque = 0;
+	  }
+	}
 	SET_SDO(2, sizeof(int16_t), Target_torque, 0x00, motor[1].Target_torque);
 	SET_SDO(1, sizeof(int16_t), Target_torque, 0x00, motor[0].Target_torque);	
 	HAL_Delay(5);
 	while(motor[0].Object != Target_torque || motor[1].Object != Target_torque);
   }
   if(I2C_flag){
-	I2C_TX();
-	I2C_flag = false;
+	I2C_COMM();
   }
-  if(I2C_flag2){
-	I2C_RX();
-	I2C_flag2 = false;
-  }
+  timer = HAL_GetTick() - tick;
 }
 uint8_t temp_ = 0;
 uint16_t old_id = 0;
