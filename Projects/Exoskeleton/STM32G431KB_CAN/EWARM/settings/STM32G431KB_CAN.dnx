@@ -18,16 +18,16 @@
     <StLinkDriver>
         <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
         <stlinkfoundProbes />
-        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
-        <CStepIntDis>_ 0</CStepIntDis>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>2</stlinkResetStrategy>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
+        <CStepIntDis>_ 0</CStepIntDis>
     </StLinkDriver>
     <ArmDriver>
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>3513476304</Checksum>
+        <Checksum>4008012766</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -75,12 +75,15 @@
         <Fmt9>FDCAN_TxHeaderTypeDef-DataLength	4	0</Fmt9>
         <Fmt10>FDCAN_TxHeaderTypeDef-Identifier	4	0</Fmt10>
         <Fmt11>I2C_HandleTypeDef-ErrorCode	4	0</Fmt11>
-        <Fmt12>I2C_TypeDef-CR1	1	0</Fmt12>
-        <Fmt13>I2C_TypeDef-CR2	1	0</Fmt13>
-        <Fmt14>I2C_TypeDef-ISR	1	0</Fmt14>
-        <Fmt15>Motor_t-Statusword	4	0</Fmt15>
-        <Fmt16>Motor_t-Target_torque	3	0</Fmt16>
-        <Fmt17>USART_TypeDef-ISR	4	0</Fmt17>
+        <Fmt12>I2C_HandleTypeDef-pBuffPtr	1	0</Fmt12>
+        <Fmt13>I2C_TypeDef-CR1	1	0</Fmt13>
+        <Fmt14>I2C_TypeDef-CR2	1	0</Fmt14>
+        <Fmt15>I2C_TypeDef-ISR	1	0</Fmt15>
+        <Fmt16>I2C_TypeDef-OAR1	1	0</Fmt16>
+        <Fmt17>I2C_TypeDef-RXDR	1	0</Fmt17>
+        <Fmt18>Motor_t-Statusword	4	0</Fmt18>
+        <Fmt19>Motor_t-Target_torque	3	0</Fmt19>
+        <Fmt20>USART_TypeDef-ISR	4	0</Fmt20>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[5]	4	0</Fmt0>
@@ -141,14 +144,6 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 1 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
-        <Bp1>_ 1 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
-        <Count>2</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -158,10 +153,6 @@
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -175,4 +166,17 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 1 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
+        <Bp1>_ 1 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
+        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.545.1" 0 0 1 "" 0 "" 0</Bp2>
+        <Count>3</Count>
+    </Breakpoints2>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
 </settings>

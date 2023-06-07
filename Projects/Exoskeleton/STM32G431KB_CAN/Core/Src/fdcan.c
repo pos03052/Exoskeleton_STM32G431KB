@@ -292,9 +292,8 @@ Motor_t motor[4] = {
   MOTOR_DEFAULT
 };
 void INIT_CAN(){
-  READ_STATUS(1);
-  READ_STATUS(2);
-  for(int i=1;i<3;i++){
+  for(int i=1;i<5;i++){
+	READ_STATUS(i);
 	SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 10);	
 	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
 	motor[i].id = i+1;

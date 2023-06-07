@@ -86,6 +86,27 @@ bool ANGLE_FLAG		= false;
 GPIO_PinState pin_state;
 
 
+////////////////////////////////////////
+uint8_t data1[6] = {0, };
+uint8_t data2[6] = {0, };
+
+uint8_t tx_buf1[6] = {(uint16_t)0x3d, };
+uint8_t tx_buf2[6] = {(uint16_t)0x3d, };
+
+uint16_t addr1 = 0x50 << 1;
+uint16_t addr2 = 0x51 << 1;
+bool state;
+uint32_t start_time;
+uint32_t time_interval;
+
+typedef struct sense{
+  float roll;
+  float pitch;
+  float yaw;
+} Sen;
+Sen sen1, sen2;
+////////////////////////////////////////
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -214,7 +235,7 @@ void setup(void)
   {
 	Error_Handler();
   }
-
+  
   if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_TX_FIFO_EMPTY|FDCAN_IT_TX_COMPLETE, FDCAN_TX_BUFFER0 | FDCAN_TX_BUFFER1 | FDCAN_TX_BUFFER2) != HAL_OK)
   {	
 	Error_Handler();	
@@ -237,10 +258,20 @@ void setup(void)
   //	hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;					/* NO CAN-FD */
   //	hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;	// or FDCAN_STORE_TX_EVENTS, 역할?
   //	hcan.txmsg.header.MessageMarker = 0;										// Specifies the message marker to be copied into Tx Event FIFO element\
-																											for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
-  __enable_irq();		// iar enable interrupt
+  for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
+	__enable_irq();		// iar enable interrupt
   INIT_CAN();  
+  
   pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
+  
+  
+  ////////////////////////////////////////
+  state = false;
+  HAL_Delay(10);
+//  HAL_I2C_Mem_Write_IT(&hi2c1, addr1, (uint16_t)0x3d, (uint16_t)1, tx_buf1, (uint16_t)6);
+//  HAL_Delay(10);
+  //  HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)(0x51 << 1), (uint16_t)0x3d, (uint16_t)1, tx_buf1, (uint16_t)6);
+  ////////////////////////////////////////
 }
 
 
@@ -275,9 +306,9 @@ void loop_sync(void)
   } 
   val = (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq_cnt/period)); // 주기 0.5초 
   
-//  motor[1].Target_torque = (int16_t)((l2 * arm_sin_f32(angle[1]) * weight) / gear_ratio[1] / rated_torque * 1000.0);
-//  motor[0].Target_torque = (int16_t)(motor[1].Target_torque + l1*arm_sin_f32(angle[0]) * weight / gear_ratio[0] / rated_torque * 1000.0);
-//	motor[1].Target_torque = val;
+  //  motor[1].Target_torque = (int16_t)((l2 * arm_sin_f32(angle[1]) * weight) / gear_ratio[1] / rated_torque * 1000.0);
+  //  motor[0].Target_torque = (int16_t)(motor[1].Target_torque + l1*arm_sin_f32(angle[0]) * weight / gear_ratio[0] / rated_torque * 1000.0);
+  //	motor[1].Target_torque = val;
   torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
   torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight;
   motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset[1]);
@@ -308,52 +339,58 @@ void loop_async(void)
 	serial_print(&vcp, "AT+CONMAC=70B8F6977692\r");
 	uart_send_flag = false;
   }
-//  vcp.run(&vcp);
+  //  vcp.run(&vcp);
   
   if(NMT_FLAG){
 	NMT_TRANS(NMT_state);
 	NMT_FLAG = false;
-//	STATUS_FLAG = true;
+	//	STATUS_FLAG = true;
   }
   if(DS_FLAG){
-	DS_TRANS(1, DS_state);
-	DS_TRANS(2, DS_state);
+	for(int i=1;i<5;i++){
+	  DS_TRANS(1, DS_state);
+	}
 	DS_FLAG = false;
-//	STATUS_FLAG = true;
+	//	STATUS_FLAG = true;
   }
   if(QS_flag){
-	DS_TRANS(1, QS);
-	DS_TRANS(2, QS);
+	for(int i=1;i<5;i++){
+	  DS_TRANS(i, QS);
+	}
 	PDO_flag	= false;
 	QS_flag	= false;
   }    
   if(STATUS_FLAG){
-	READ_STATUS(1);
-	READ_STATUS(2);
+	for(int i=1;i<5;i++){
+	  READ_STATUS(i);
+	}
 	STATUS_FLAG = false;
   }  
   
-  if(PDO_flag & PDO_id_cnt >= 2){	  	
-	SET_PDO(1);
-	SET_PDO(2);
+  if(PDO_flag & PDO_id_cnt >= 4){
+	for(int i=1;i<5;i++){
+	  SET_PDO(i);
+	}
 	PDO_id_cnt = 0;
   }
   if(CLEAR_ERROR_FLAG){
-	Clear_Device_Errors(1);
-	Clear_Device_Errors(2);
+	for(int i=1;i<5;i++){
+	  Clear_Device_Errors(i);
+	}
 	CLEAR_ERROR_FLAG = false;
   }
   if(SET_ANGLE_ZERO_FLAG){
-	GET_Angle(1);
-	GET_Angle(2);	
-	while(motor[0].Object != Position_actual || motor[1].Object != Position_actual);	
-	zero_angle[0] = motor[0].Postion_actual;
-	zero_angle[1] = motor[1].Postion_actual;  
+	for(int i=1;i<5;i++){
+	  GET_Angle(i);
+	  while(motor[i-1].Object != Position_actual);
+	  zero_angle[i-1] = motor[i-1].Postion_actual;
+	}
 	SET_ANGLE_ZERO_FLAG = false;
   }  
   if(ANGLE_FLAG){
-	GET_Angle(1);
-	GET_Angle(2);	
+	for(int i=1;i<5;i++){
+	  GET_Angle(i);
+	}
 	ANGLE_FLAG = false;
   }
   if(TORQUE_TEST_FLAG){
@@ -382,6 +419,7 @@ void loop_async(void)
 	HAL_Delay(5);
 	while(motor[0].Object != Target_torque || motor[1].Object != Target_torque);
   }
+  
   if(I2C_flag){
 	I2C_COMM();
   }
@@ -452,6 +490,60 @@ void HAL_SYSTICK_Callback(void)
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){ //1khz timer
 //  
 //}
+
+
+////////////////////////////////////
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  if (hi2c == &hi2c1)
+  {
+	if (!state) { 
+	  HAL_I2C_Mem_Read_IT(&hi2c1, addr1, (uint16_t)0x3d, 1, data1, 6);
+	}
+	else{
+	  HAL_I2C_Mem_Read_IT(&hi2c1, addr2, (uint16_t)0x3d, 1, data2, 6);
+	}
+  }
+}
+
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  if (hi2c == &hi2c1)
+  {
+	if (!state) {
+	  sen1.roll = (float)(data1[0] | (data1[1] << 8)) / 32768 * 180;
+	  sen1.pitch = (float)(data1[2] | (data1[3] << 8)) / 32768 * 180;
+	  sen1.yaw = (float)(data1[4] | (data1[5] << 8)) / 32768 * 180;
+	  
+	  
+	  state = true;
+	  HAL_I2C_Mem_Write_IT(&hi2c1, addr2, (uint16_t)0x3d, (uint16_t)1, tx_buf1, (uint16_t)1);
+	}
+	else{
+	  sen2.roll = (float)(data1[0] | (data2[1] << 8)) / 32768 * 180;
+	  sen2.pitch = (float)(data1[2] | (data2[3] << 8)) / 32768 * 180;
+	  sen2.yaw = (float)(data1[4] | (data2[5] << 8)) / 32768 * 180;
+	  
+	  
+	  time_interval = HAL_GetTick() - start_time;
+	  
+	  
+	  start_time = HAL_GetTick();
+	  state = false;
+	  HAL_I2C_Mem_Write_IT(&hi2c1, addr1, (uint16_t)0x3d, (uint16_t)1, tx_buf2, (uint16_t)1);
+	}
+  }
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+{
+   if (hi2c == &hi2c1)
+  {
+	state = false;
+	HAL_I2C_Mem_Write_IT(&hi2c1, addr1, (uint16_t)0x3d, (uint16_t)1, tx_buf2, (uint16_t)1);
+  }
+}
+////////////////////////////////////////
 /* USER CODE END 4 */
 
 /**
