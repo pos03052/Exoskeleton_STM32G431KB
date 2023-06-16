@@ -78,7 +78,7 @@ void run_vcp(SerialHandler *h)
 			h->parsing.toks[++h->parsing.cnt] = strtok(NULL, h->parsing.sep);
 		}
 		
-		parse_vcp(h);
+//		1(h);
 		
 		h->parsing.idx = 0;
 		h->parsing.flag = 0;

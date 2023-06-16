@@ -30,6 +30,7 @@ CAN_HandleTypeDef hcan = {
   FDCAN_IT_RX_FIFO0_NEW_MESSAGE,	// FDCANIT_RX_FIFO0_MESSAGE_LOST/FULL/NEW_MESSAGE(New message written to Rx FIFO 0)
 };
 Motor_t motor_[4];
+double limit_angle[2]	= {1.7453, 1.3963};
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -158,7 +159,6 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
 void SET_SDO(uint8_t id, uint8_t length, Obj_dict_t addr, uint8_t addr_sub, int32_t data){
   hcan.txmsg.header.Identifier = 0x600 + id;
   switch (length){
@@ -193,7 +193,7 @@ void SET_PDO(uint8_t id){
   //  hcan.txmsg.data[0] = h->Controlword& 0xff;
   //  hcan.txmsg.data[1] = (h->Controlword >> 8) & 0xff;
   hcan.txmsg.data[0] = motor[id-1].Target_torque & 0xff;
-  hcan.txmsg.data[1] = (motor[id-1].Target_torque >> 8) & 0xff;  
+  hcan.txmsg.data[1] = (motor[id-1].Target_torque >> 8) & 0xff;
   
   SEND_FRAME(&hcan); 
 }
@@ -210,7 +210,9 @@ void DS_TRANS(uint8_t id, DS_state_t state){
   SET_SDO(id, sizeof(uint16_t), CONTROLWORD, 0, state);
   while(motor[id-1].Object != CONTROLWORD);
 }
-void Parsing_SDO(Motor_t *h, uint8_t id){  
+void Parsing_SDO(Motor_t *h, uint8_t id){    
+  static uint8_t error_index = 0;
+  
   h->id			= id+1 ;
   h->Object	= (Obj_dict_t)(hcan.rxmsg.data[1] | (hcan.rxmsg.data[2] << 8));
   switch(h->Object){
@@ -218,7 +220,6 @@ void Parsing_SDO(Motor_t *h, uint8_t id){
 	h->Statusword = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8);
 	break;
   case Error_code:
-	static uint8_t error_index = 0;
 	h->Error_code[error_index++] = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8);
 	if(error_index == 5)	error_index = 0;
 	break;
@@ -268,8 +269,13 @@ void GET_SDO(uint8_t id, Obj_dict_t addr, uint8_t addr_sub){
 }
 Obj_dict_t kk;
 void READ_STATUS(uint8_t id){
+  uint32_t timeout = 0;
   GET_SDO(id, STATUSWORD, 0);
-  while(motor[id-1].Object != STATUSWORD);
+  while(motor[id-1].Object != STATUSWORD){
+	if(++timeout >= 3000000){
+	  Error_Handler();
+	}
+  }
   if((motor[id-1].Statusword >> 3) & 0x01){
 	GET_SDO(id, Error_code, 0);
 	while(motor[id-1].Object != Error_code){
@@ -284,6 +290,38 @@ void Clear_Device_Errors(uint8_t id){
   SET_SDO(id, sizeof(uint8_t), Error_history, 0, 0);
   DS_TRANS(id, DV);
   DS_TRANS(id, FR);
+}
+void TRQ_Calc(double *angle){
+  static double torque[4] = {0, };
+  pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
+  if(pin_state == GPIO_PIN_SET){
+	for(int i=0;i<4;i++){
+	  motor[i].Target_torque = 0;
+	}
+  }else{
+	torque[1] = l2 * arm_sin_f32(angle[0] + angle[1]) * weight;
+	torque[0] = torque[1] + l1 * arm_sin_f32(angle[0]) * weight + 382.11 * arm_sin_f32(angle[0]) * weight2;
+	motor[1].Target_torque = (int16_t)(torque[1] / gear_ratio[1] / rated_torque * 1000.0 * motor_offset[1]);
+	motor[0].Target_torque = (int16_t)(torque[0] / gear_ratio[0] / rated_torque * 1000.0 * motor_offset[0]);
+	
+	torque[3] = l2 * arm_sin_f32(angle[2] + angle[3]) * weight;
+	torque[2] = torque[3] + l1 * arm_sin_f32(angle[2]) * weight + 382.11 * arm_sin_f32(angle[2]) * weight2;
+	motor[3].Target_torque = (int16_t)(torque[3] / gear_ratio[3] / rated_torque * 1000.0 * motor_offset[3]);
+	motor[2].Target_torque = (int16_t)(torque[2] / gear_ratio[2] / rated_torque * 1000.0 * motor_offset[2]);
+	
+	if(fabs(angle[0]) >= limit_angle[0]){
+	  motor[0].Target_torque = 0;
+	}
+	if(fabs(angle[1]) >= limit_angle[1]){
+	  motor[1].Target_torque = 0;
+	}
+	if(fabs(angle[2]) >= limit_angle[0]){
+	  motor[2].Target_torque = 0;
+	}
+	if(fabs(angle[3]) >= limit_angle[1]){
+	  motor[3].Target_torque = 0;
+	}
+  }  
 }
 Motor_t motor[4] = {
   MOTOR_DEFAULT,

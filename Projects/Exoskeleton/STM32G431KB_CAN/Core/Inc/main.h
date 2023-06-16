@@ -55,7 +55,7 @@ extern "C" {
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+void Error_Handler();
 
 /* USER CODE BEGIN EFP */
 
@@ -64,7 +64,9 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-
+extern double l1, l2, weight, weight2, rated_torque;
+extern double motor_offset[4], gear_ratio[4];
+extern GPIO_PinState pin_state;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

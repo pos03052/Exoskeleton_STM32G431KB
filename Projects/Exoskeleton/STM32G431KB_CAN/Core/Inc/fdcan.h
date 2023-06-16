@@ -35,10 +35,9 @@ extern "C" {
 extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
-#define MOTOR_DEFAULT	{  0, 0, 0, 0, 0, 0, 0, {0, }, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
+#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0, 0, {0, }, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
 typedef enum{
   OP			=	0x01,
-  //	PREOP	=	0x80,
   PRE			=	0x80,
   STOP			=	0x02,
   RESET_COMM	=	0x82,
@@ -59,6 +58,7 @@ typedef enum{
 }DS_state_t;
 
 typedef enum{
+  def				= 0x0000,
   MOP 				= 0x6060,
   CONTROLWORD		= 0x6040,
   STATUSWORD		= 0x6041,
@@ -66,7 +66,10 @@ typedef enum{
   Error_code		= 0x603F,
   Position_actual	= 0x6064,
   Target_torque		= 0x6071,
-  Error_history		= 0x1003
+  Error_history		= 0x1003,
+  POWER_SUPPLY		= 0x2200,
+  RATED_TRQ			= 0x6076,
+  MOTOR_DATA		= 0x3001
 }Obj_dict_t;
 
 typedef enum{
@@ -135,6 +138,7 @@ void SEND_FRAME(CAN_HandleTypeDef *h);
 void GET_Angle(uint8_t id);
 void INIT_CAN();
 void Clear_Device_Errors(uint8_t id);
+void TRQ_Calc(double * angle);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
