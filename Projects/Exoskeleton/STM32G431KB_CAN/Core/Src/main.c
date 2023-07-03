@@ -69,31 +69,42 @@ void loop_async(void);
 int16_t func_sin(uint32_t freq);
 
 // dynamic params
-double zero_angle[4]	= {0.0, 0.0, 0.0, 0.0};
-double angle[4]			= {0.0, 0.0, 0.0, 0.0};
 double l1 = 437.6;
-double l2 = 245;
+//double l2 = 245;
+//double l2 = 228;
+double l2 = 278;
+//double cg_upperarm	= 341.48;
+double cg_upperarm	= 333.655;	// aluminium shaft holder
+//double cg_forearm	= 182.856;
+//double cg_forearm	= 81.57;
+double cg_forearm	= 178.35;	// 2kg disk jig
 double weight = 20;
-double weight2 = 3.89;
+//double weight_upperarm	= 477.93 * 9.80665  / 1000;	// N
+double weight_upperarm	= 508.83 * 9.80665  / 1000;	// aluminium shaft holder
+//double weight_forearm	= 182.857 * 9.80665 / 1000; // N
+//double weight_forearm	= 43.348 * 9.80665 / 1000; // N
+double weight_forearm	= 98.88 * 9.80665 / 1000; // 2kg disk jig
 
-double rated_torque 	= 159.434;
-double gear_ratio[4] = {96.875, 48.82, 96.875, 48.82};
+double rated_torque 	= 167.001;
+double gear_ratio[4] = {-96.875, 96.875, 48.82, -48.82};
 
 double period				= 2000.0;
 double amp					= 50.0;
-double motor_offset[4]		= {1.0, 1.0, 1.0, -1.0};
+//double gear_efficiency[4] 		= {1.1, 1.1, 1.05, 1.05};
+double gear_efficiency[4] 		= {1.0, 1.0, 1.0, 1.0};
 
 bool UART_FLAG		 		= false;
 bool QS_flag				= false;
 bool NMT_FLAG				= false;
 bool DS_FLAG				= false;
-bool STATUS_FLAG			= false;
+bool STATUS_FLAG			= true;
 bool SET_ANGLE_ZERO_FLAG 	= false;
 bool ANGLE_FLAG				= false;
 bool CLEAR_ERROR_FLAG		= false;
 bool GET_SDO_FLAG			= false;
 bool SET_SDO_FLAG			= false;
-bool I2C_FLAG = false;
+bool I2C_FLAG				= false;
+bool ERROR_FLAG				= false;
 
 GPIO_PinState pin_state;
 uint32_t freq_cnt			= 0;
@@ -112,6 +123,8 @@ DS_state_t	DS_state		= DV;
 uint8_t txfifoemptycheck 	= 0;
 uint8_t id_sum			 	= 0;
 uint8_t id_cnt				= 0;
+
+float error_res[2]		= {0, };
 ////////////////////////////////////////
 //uint8_t data1[6] = {0, };
 ////uint8_t data2[6] = {0, };
@@ -143,31 +156,31 @@ uint8_t id_cnt				= 0;
 /* USER CODE END 0 */
 
 /**
-* @brief  The application entry point.
-* @retval int
-*/
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
   
   /* USER CODE END 1 */
-  
+
   /* MCU Configuration--------------------------------------------------------*/
-  
+
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  
+
   /* USER CODE BEGIN Init */
   
   /* USER CODE END Init */
-  
+
   /* Configure the system clock */
   SystemClock_Config();
-  
+
   /* USER CODE BEGIN SysInit */
   
   /* USER CODE END SysInit */
-  
+
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
@@ -176,33 +189,33 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
-  
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   setup();
   while (1)
   {
 	loop_async();
-	/* USER CODE END WHILE */
-	
-	/* USER CODE BEGIN 3 */
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
 
 /**
-* @brief System Clock Configuration
-* @retval None
-*/
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  
+
   /** Configure the main internal regulator output voltage
   */
   HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
-  
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -217,23 +230,23 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-	Error_Handler();
+    Error_Handler();
   }
-  
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-	|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  
+
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
-	Error_Handler();
+    Error_Handler();
   }
-  
+
   /** Enables the Clock Security System
   */
   HAL_RCC_EnableCSS();
@@ -282,8 +295,10 @@ void setup(void)
   //	hcan.txmsg.header.MessageMarker = 0;										// Specifies the message marker to be copied into Tx Event FIFO element\
   for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
 	__enable_irq();		// iar enable interrupt
-  INIT_CAN();  
-  
+  INIT_CAN();
+  for(int i=0;i<4;i++){
+	if(motor[i].Statusword != 0x40)	error_res[0] = 6;
+  }  
   pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
   
   
@@ -298,13 +313,13 @@ void setup(void)
 void parse_vcp(SerialHandler *h)
 {	
 }
+int32_t tp[2] = {0, };
 void loop_sync(void)
 {  
   static int cnt = 0;		//	PDO timer
-//  val = func_sin(freq_cnt ++);  
-  TRQ_Calc(angle);
+//  val = func_sin(freq_cnt ++);
   if(++cnt>=5){
-	if(NMT_state == OP){
+	if(((motor[3].Statusword >> 9) && 0x01) & (NMT_state == OP)){
 	  SYNC_FRAME();
 	  cnt = 0;
 	}
@@ -313,41 +328,48 @@ void loop_sync(void)
 void loop_async(void)
 {
   tick = HAL_GetTick();
+  
   if(UART_FLAG){
 	serial_print(&vcp, "AT+CONMAC=70B8F6977692\r");
 	UART_FLAG = false;
   }
-  vcp.run(&vcp);
-  
-  if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	}
-  if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;}
+//  vcp.run(&vcp);  
+  if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	STATUS_FLAG = true;}
+  if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	STATUS_FLAG = true;}
   if(QS_flag){	for(int i=1;i<5;i++){DS_TRANS(i, QS);}			QS_flag	= false;}    
-  if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}		STATUS_FLAG = false;}
   if(ANGLE_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);}	ANGLE_FLAG = false;}
-  if(CLEAR_ERROR_FLAG){	for(int i=1;i<5;i++){Clear_Device_Errors(i);}CLEAR_ERROR_FLAG = false;}
-  if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	while(motor[i-1].Object != Position_actual);	zero_angle[i-1] = motor[i-1].Postion_actual;}	SET_ANGLE_ZERO_FLAG = false;}
+  if(CLEAR_ERROR_FLAG){	for(int i=1;i<5;i++){Clear_Device_Errors(i);}	CLEAR_ERROR_FLAG = false;	STATUS_FLAG = true;}
+  if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	motor[i-1].Position_zero = motor[i-1].Postion_actual;}	SET_ANGLE_ZERO_FLAG = false;}
   if(GET_SDO_FLAG){	GET_SDO(id_temp, object, object_sub);	GET_SDO_FLAG = false;}
   if(SET_SDO_FLAG){	SET_SDO(id_temp, length_temp, object, object_sub, data_temp);	SET_SDO_FLAG = false;}
   
-  if(id_cnt == 4){
-	if(id_sum == 11){
-	  for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
-	}else{
-	  Error_Handler();
+  if(NMT_state == OP){
+	if(id_cnt == 4){
+	  if(id_sum == 6){
+		TRQ_Calc();
+		POS_Calc();
+		for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
+	  }else{
+		error_res[0] = 1;
+		id_cnt = 0;
+		id_sum = 0;
+	  }
 	}
   }
   if(I2C_FLAG){	I2C_COMM();}  
+  
+  if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}	STATUS_FLAG = false;	}
   timer = HAL_GetTick() - tick;
 }
 int16_t func_sin(uint32_t freq)
 {  
-  if(freq <= period/2){
-	val = (int16_t)(amp);
-  }else if(freq <= period){
-	val = (int16_t)(-amp);
-  }else{
-	freq = 0;
-  }   
+//  if(freq <= period/2){
+//	val = (int16_t)(amp);
+//  }else if(freq <= period){
+//	val = (int16_t)(-amp);
+//  }else{
+//	freq = 0;
+//  }
   return (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq/period)); // 주기 0.5초 
 }
 
@@ -371,6 +393,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	  // hcan.rxmsg.header.ErrorStateIndicator
 	  // hcan.rxmsg.header.DataLength
 	  // hcan.rxmsg.header.data	  
+	  error_res[0] = 2;
 	  Error_Handler();
 	}else{
 	  node_id = (hcan.rxmsg.header.Identifier & 0x7F) - 1;
@@ -380,20 +403,14 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 	  }
 	  switch(prot_info){
 	  case SDO:
-		motor[node_id].parsing_SDO(&motor[node_id], node_id);
-		if(motor[node_id].Object == Position_actual){
-		  angle[node_id] = (motor[node_id].Postion_actual - zero_angle[node_id])  * 0.000767; // 2*Pi / 8192
-		  angle[node_id] = angle[node_id] / gear_ratio[node_id];
-		}
+		motor[node_id].parsing_SDO(&motor[node_id], node_id);		  
 		break;
 	  case PDO1:
 		id_cnt ++;
-		id_sum = id_sum + node_id * 2;
+		id_sum = id_sum + node_id;
 		if(motor[node_id].parsing_PDO(&motor[node_id], node_id) != 1){
-		  DS_state = QS;		
-		}else{
-		  angle[node_id] = (motor[node_id].Postion_actual - zero_angle[node_id])  * 0.000767;
-		  angle[node_id] = angle[node_id] / gear_ratio[node_id];
+		  QS_flag = true;
+		  NMT_state = PRE;
 		}
 		break;
 		// case PDO2:
@@ -415,15 +432,15 @@ void HAL_SYSTICK_Callback(void)	// 1mhz timer
 ////////////////////////////////////
 void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-//  if (hi2c == &hi2c1)
-//  {
-//	if (!state) { 
-//	  HAL_I2C_Mem_Read_IT(&hi2c1, addr1, (uint16_t)0x3d, 1, data1, 6);
-//	}
-//	else{
-//	  HAL_I2C_Mem_Read_IT(&hi2c1, addr2, (uint16_t)0x3d, 1, data2, 6);
-//	}
-//  }
+  //  if (hi2c == &hi2c1)
+  //  {
+  //	if (!state) { 
+  //	  HAL_I2C_Mem_Read_IT(&hi2c1, addr1, (uint16_t)0x3d, 1, data1, 6);
+  //	}
+  //	else{
+  //	  HAL_I2C_Mem_Read_IT(&hi2c1, addr2, (uint16_t)0x3d, 1, data2, 6);
+  //	}
+  //  }
 }
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
@@ -455,23 +472,29 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 }
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 {
-//  if (hi2c == &hi2c1)
-//  {
-//	state = false;
-//	HAL_I2C_Mem_Write_IT(&hi2c1, addr1, (uint16_t)0x3d, (uint16_t)1, tx_buf2, (uint16_t)1);
-//  }
+  //  if (hi2c == &hi2c1)
+  //  {
+  //	state = false;
+  //	HAL_I2C_Mem_Write_IT(&hi2c1, addr1, (uint16_t)0x3d, (uint16_t)1, tx_buf2, (uint16_t)1);
+  //  }
 }
 ////////////////////////////////////////
 /* USER CODE END 4 */
 
 /**
-* @brief  This function is executed in case of error occurrence.
-* @retval None
-*/
-void Error_Handler()
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  ERROR_FLAG = true;
+  NMT_state = PRE;
+  DS_state = SD;
+  for(int i=1;i<5;i++){
+	DS_TRANS(i, DS_state);
+  }
   __disable_irq();
   while (1)
   {
@@ -481,12 +504,12 @@ void Error_Handler()
 
 #ifdef  USE_FULL_ASSERT
 /**
-* @brief  Reports the name of the source file and the source line number
-*         where the assert_param error has occurred.
-* @param  file: pointer to the source file name
-* @param  line: assert_param error line source number
-* @retval None
-*/
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

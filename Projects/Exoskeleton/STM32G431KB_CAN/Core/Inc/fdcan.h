@@ -35,7 +35,7 @@ extern "C" {
 extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
-#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0, 0, {0, }, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
+#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, }, 0.0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
 typedef enum{
   OP			=	0x01,
   PRE			=	0x80,
@@ -69,7 +69,12 @@ typedef enum{
   Error_history		= 0x1003,
   POWER_SUPPLY		= 0x2200,
   RATED_TRQ			= 0x6076,
-  MOTOR_DATA		= 0x3001
+  MOTOR_DATA		= 0x3001,
+  MAX_MOTOR_SPEED	= 0x6080,
+  TRQ_CONST			= 0x3001,
+  Target_position	= 0x607A,
+  RXPDO1			= 0x1600,
+  PDO_OBJ
 }Obj_dict_t;
 
 typedef enum{
@@ -106,14 +111,18 @@ extern CAN_HandleTypeDef hcan;
 extern FDCAN_HandleTypeDef hfdcan1;
 
 typedef struct{
-  uint8_t id;
-  Obj_dict_t Object;
-  uint16_t Statusword;
-  int16_t Torque_actual;
-  int32_t Postion_actual;
-  uint16_t Controlword;
-  int16_t Target_torque;
-  uint16_t Error_code[5];
+  uint8_t		id;
+  Obj_dict_t	Object;
+  uint16_t		Statusword;
+  int16_t		Torque_actual;
+  int32_t		Postion_actual;
+  double		angle;
+  uint16_t		Controlword;
+  int16_t		Target_torque;
+  int32_t		Target_position;
+  uint8_t		error_index;
+  uint16_t		Error_code[5];
+  int32_t		Position_zero;
   void (*parsing_SDO)();
   uint8_t (*parsing_PDO)();
 } Motor_t;
@@ -138,7 +147,8 @@ void SEND_FRAME(CAN_HandleTypeDef *h);
 void GET_Angle(uint8_t id);
 void INIT_CAN();
 void Clear_Device_Errors(uint8_t id);
-void TRQ_Calc(double * angle);
+void TRQ_Calc();
+void POS_Calc();
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

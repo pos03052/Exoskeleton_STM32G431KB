@@ -169,67 +169,68 @@ float temp_c;
 
 void I2C_COMM(){
   static double coef = 32768 / 180;
-//  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x51 << 1), angle_addr, 1, tx_buf, 1, max_timeout);
-//  //  while(__HAL_I2C_GET_FLAG(&hi2c1, I2C_FLAG_BUSY) == SET){
-//  ////	__HAL_I2C_CLEAR_FLAG(&hi2c1, I2C_FLAG_STOPF);
-//  //	__HAL_I2C_CLEAR_FLAG(&hi2c1, I2C_FLAG_BUSY);
-//  //	I2C_RESET_CR2(&hi2c1);
-//  //	temp_c = temp_c;
-//  //  }
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-//  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-//  HAL_Delay(1);
-//  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x51 << 1), angle_addr, 1, rx_buf, 6, max_timeout);
-//  //  HAL_Delay(1);
+  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x51 << 1), angle_addr, 1, tx_buf, 1, max_timeout);
+  //  while(__HAL_I2C_GET_FLAG(&hi2c1, I2C_FLAG_BUSY) == SET){
+  ////	__HAL_I2C_CLEAR_FLAG(&hi2c1, I2C_FLAG_STOPF);
+  //	__HAL_I2C_CLEAR_FLAG(&hi2c1, I2C_FLAG_BUSY);
+  //	I2C_RESET_CR2(&hi2c1);
+  //	temp_c = temp_c;
+  //  }
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+  HAL_Delay(1);
+  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x51 << 1), angle_addr, 1, &rx_buf[0], 6, max_timeout);
   
-  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x50 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
+  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x52 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
   HAL_Delay(1);  
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);  
-  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x50 << 1), angle_addr, 1, &rx_buf[6], 6, max_timeout);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);    
+  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x52 << 1), angle_addr, 1, &rx_buf[6], 6, max_timeout);
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
   while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
   while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
   
-//  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x53 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
-//  HAL_Delay(1);  
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-//  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-//  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x53 << 1), angle_addr, 1, &rx_buf[12], 6, max_timeout);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-//  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-//  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x52 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
-//  HAL_Delay(1);  
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-//  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-//  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x52 << 1), angle_addr, 1, &rx_buf[18], 6, max_timeout);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
-//  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
-//  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x53 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
+  HAL_Delay(1);  
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x53 << 1), angle_addr, 1, &rx_buf[12], 6, max_timeout);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
   
-//  angle_i2c[0] = ((int16_t)(rx_buf[0] | rx_buf[1] << 8)) / coef;
-//  angle_i2c[1] = ((int16_t)(rx_buf[2] | rx_buf[3] << 8)) / coef;
-//  angle_i2c[2] = ((int16_t)(rx_buf[4] | rx_buf[5] << 8)) / coef;
+  HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x54 << 1), angle_addr, 1, tx_buf, 1, max_timeout);  
+  HAL_Delay(1);  
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+  HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x54 << 1), angle_addr, 1, &rx_buf[18], 6, max_timeout);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_RX);
+  while(HAL_I2C_GetState(&hi2c1) == HAL_I2C_STATE_BUSY_TX);
+  while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY); 
+  
+  
+  angle_i2c[0] = ((int16_t)(rx_buf[0] | rx_buf[1] << 8)) / coef;
+  angle_i2c[1] = ((int16_t)(rx_buf[2] | rx_buf[3] << 8)) / coef;
+  angle_i2c[2] = ((int16_t)(rx_buf[4] | rx_buf[5] << 8)) / coef;
   angle_i2c[3] = ((int16_t)(rx_buf[6] | rx_buf[7] << 8)) / coef;
   angle_i2c[4] = ((int16_t)(rx_buf[8] | rx_buf[9] << 8)) / coef;
   angle_i2c[5] = ((int16_t)(rx_buf[10] | rx_buf[11] << 8)) / coef;
-//  angle_i2c[6] = ((int16_t)(rx_buf[12] | rx_buf[13] << 8)) / coef;
-//  angle_i2c[7] = ((int16_t)(rx_buf[14] | rx_buf[15] << 8)) / coef;
-//  angle_i2c[8] = ((int16_t)(rx_buf[16] | rx_buf[17] << 8)) / coef;
-//  angle_i2c[9] = ((int16_t)(rx_buf[18] | rx_buf[19] << 8)) / coef;
-//  angle_i2c[10] = ((int16_t)(rx_buf[20] | rx_buf[21] << 8)) / coef;
-//  angle_i2c[11] = ((int16_t)(rx_buf[22] | rx_buf[23] << 8)) / coef;  
+  angle_i2c[6] = ((int16_t)(rx_buf[12] | rx_buf[13] << 8)) / coef;
+  angle_i2c[7] = ((int16_t)(rx_buf[14] | rx_buf[15] << 8)) / coef;
+  angle_i2c[8] = ((int16_t)(rx_buf[16] | rx_buf[17] << 8)) / coef;
+  angle_i2c[9] = ((int16_t)(rx_buf[18] | rx_buf[19] << 8)) / coef;
+  angle_i2c[10] = ((int16_t)(rx_buf[20] | rx_buf[21] << 8)) / coef;
+  angle_i2c[11] = ((int16_t)(rx_buf[22] | rx_buf[23] << 8)) / coef;  
 }
 /* USER CODE END 1 */
