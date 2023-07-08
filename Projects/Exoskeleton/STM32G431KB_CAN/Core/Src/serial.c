@@ -73,12 +73,10 @@ void run_vcp(SerialHandler *h)
     
 	if (h->parsing.flag) {
 		h->parsing.cnt = 0;
-		h->parsing.toks[h->parsing.cnt] = strtok(h->parsing.str, h->parsing.sep);
+		h->parsing.toks[h->parsing.cnt] = strtok(h->parsing.str, h->parsing.sep);	// vcp.parsing.sep = ",\r"
 		while (h->parsing.toks[h->parsing.cnt] != NULL) {
 			h->parsing.toks[++h->parsing.cnt] = strtok(NULL, h->parsing.sep);
 		}
-		
-//		1(h);
 		
 		h->parsing.idx = 0;
 		h->parsing.flag = 0;

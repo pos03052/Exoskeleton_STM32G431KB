@@ -35,11 +35,12 @@ double FA_limit_angle[2]	= {1.9628, 0};			//	112.46도, 0도
 double UA_limit_angle[2]	= {2.5187, -1.321};	//144.31도, -75.69도
 uint32_t max_timeout_cnt = 1000000;
 bool RECV_FLAG = false;
-char arms = 'L';
+bool TRQ_ON_FLAG = false;
+char arms = 'B';
 double torque[4] = {0, };
 double deg2rad_5 = 0.0873; // 상, 하방 limit  5도
-double trq_offset[4] = {1.0, 1.0, 1.0, 1.0};
-uint8_t trq_prof = 3;
+uint8_t trq_prof[2] = {2, 3};
+uint16_t trq_cnt_max = 100;
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -47,11 +48,11 @@ FDCAN_HandleTypeDef hfdcan1;
 /* FDCAN1 init function */
 void MX_FDCAN1_Init(void)
 {
-
+  
   /* USER CODE BEGIN FDCAN1_Init 0 */
   
   /* USER CODE END FDCAN1_Init 0 */
-
+  
   /* USER CODE BEGIN FDCAN1_Init 1 */
   
   /* USER CODE END FDCAN1_Init 1 */
@@ -75,7 +76,7 @@ void MX_FDCAN1_Init(void)
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
   {
-    Error_Handler();
+	Error_Handler();
   }
   /* USER CODE BEGIN FDCAN1_Init 2 */
   FDCAN_FilterTypeDef sFilterConfig; // handle for filter config
@@ -92,78 +93,78 @@ void MX_FDCAN1_Init(void)
 	Error_Handler();
   }	  
   /* USER CODE END FDCAN1_Init 2 */
-
+  
 }
 
 void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
 {
-
+  
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
   if(fdcanHandle->Instance==FDCAN1)
   {
-  /* USER CODE BEGIN FDCAN1_MspInit 0 */
+	/* USER CODE BEGIN FDCAN1_MspInit 0 */
 	
-  /* USER CODE END FDCAN1_MspInit 0 */
-
-  /** Initializes the peripherals clocks
-  */
-    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
-    PeriphClkInit.FdcanClockSelection = RCC_FDCANCLKSOURCE_PCLK1;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-    {
-      Error_Handler();
-    }
-
-    /* FDCAN1 clock enable */
-    __HAL_RCC_FDCAN_CLK_ENABLE();
-
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    /**FDCAN1 GPIO Configuration
-    PA11     ------> FDCAN1_RX
-    PA12     ------> FDCAN1_TX
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_FDCAN1;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    /* FDCAN1 interrupt Init */
-    HAL_NVIC_SetPriority(FDCAN1_IT0_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(FDCAN1_IT0_IRQn);
-    HAL_NVIC_SetPriority(FDCAN1_IT1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(FDCAN1_IT1_IRQn);
-  /* USER CODE BEGIN FDCAN1_MspInit 1 */
+	/* USER CODE END FDCAN1_MspInit 0 */
 	
-  /* USER CODE END FDCAN1_MspInit 1 */
+	/** Initializes the peripherals clocks
+	*/
+	PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
+	PeriphClkInit.FdcanClockSelection = RCC_FDCANCLKSOURCE_PCLK1;
+	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+	{
+	  Error_Handler();
+	}
+	
+	/* FDCAN1 clock enable */
+	__HAL_RCC_FDCAN_CLK_ENABLE();
+	
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	/**FDCAN1 GPIO Configuration
+	PA11     ------> FDCAN1_RX
+	PA12     ------> FDCAN1_TX
+	*/
+	GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF9_FDCAN1;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	
+	/* FDCAN1 interrupt Init */
+	HAL_NVIC_SetPriority(FDCAN1_IT0_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ(FDCAN1_IT0_IRQn);
+	HAL_NVIC_SetPriority(FDCAN1_IT1_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ(FDCAN1_IT1_IRQn);
+	/* USER CODE BEGIN FDCAN1_MspInit 1 */
+	
+	/* USER CODE END FDCAN1_MspInit 1 */
   }
 }
 
 void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
 {
-
+  
   if(fdcanHandle->Instance==FDCAN1)
   {
-  /* USER CODE BEGIN FDCAN1_MspDeInit 0 */
+	/* USER CODE BEGIN FDCAN1_MspDeInit 0 */
 	
-  /* USER CODE END FDCAN1_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_FDCAN_CLK_DISABLE();
-
-    /**FDCAN1 GPIO Configuration
-    PA11     ------> FDCAN1_RX
-    PA12     ------> FDCAN1_TX
-    */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
-
-    /* FDCAN1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(FDCAN1_IT0_IRQn);
-    HAL_NVIC_DisableIRQ(FDCAN1_IT1_IRQn);
-  /* USER CODE BEGIN FDCAN1_MspDeInit 1 */
+	/* USER CODE END FDCAN1_MspDeInit 0 */
+	/* Peripheral clock disable */
+	__HAL_RCC_FDCAN_CLK_DISABLE();
 	
-  /* USER CODE END FDCAN1_MspDeInit 1 */
+	/**FDCAN1 GPIO Configuration
+	PA11     ------> FDCAN1_RX
+	PA12     ------> FDCAN1_TX
+	*/
+	HAL_GPIO_DeInit(GPIOA, GPIO_PIN_11|GPIO_PIN_12);
+	
+	/* FDCAN1 interrupt Deinit */
+	HAL_NVIC_DisableIRQ(FDCAN1_IT0_IRQn);
+	HAL_NVIC_DisableIRQ(FDCAN1_IT1_IRQn);
+	/* USER CODE BEGIN FDCAN1_MspDeInit 1 */
+	
+	/* USER CODE END FDCAN1_MspDeInit 1 */
   }
 }
 
@@ -205,7 +206,7 @@ void SET_PDO(uint8_t id)
   //  hcan.txmsg.data[0] = h->Controlword& 0xff;
   //  hcan.txmsg.data[1] = (h->Controlword >> 8) & 0xff;
   if(id != 5){
-//  if(id == 1 || id == 3){
+	//  if(id == 1 || id == 3){
 	hcan.txmsg.data[0] = motor[id-1].Target_torque & 0xff;
 	hcan.txmsg.data[1] = (motor[id-1].Target_torque >> 8) & 0xff;  
   }else{
@@ -254,6 +255,11 @@ void Parsing_SDO(Motor_t *h, uint8_t id)
 	h->Postion_actual = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8) | (hcan.rxmsg.data[6] << 16) | (hcan.rxmsg.data[7] << 24);
 	h->angle = (h->Postion_actual - h->Position_zero) * 0.000767; // 2*Pi / 8192
 	h->angle = h->angle / gear_ratio[id];
+	break;
+  default:
+	if(hcan.rxmsg.data[0] == 0x4F)	h->value = hcan.rxmsg.data[4];
+	else if(hcan.rxmsg.data[0] == 0x4B) h->value = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8);
+	else if(hcan.rxmsg.data[0] == 0x43) h->value = hcan.rxmsg.data[4] | (hcan.rxmsg.data[5] << 8) | (hcan.rxmsg.data[6] << 16) | (hcan.rxmsg.data[7] << 24);
 	break;
   }  
 }
@@ -361,38 +367,71 @@ void TRQ_Calc()
   const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_5, FA_limit_angle[1] + deg2rad_5};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
   const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_5, UA_limit_angle[1] + deg2rad_5};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
   static double theta2[2] = {0, };
+  static uint16_t trq_cnt_old;
+  static uint16_t trq_cnt_new;
   pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
-  if(pin_state == GPIO_PIN_SET){
-	for(int i=0;i<4;i++){
+  if(pin_state == GPIO_PIN_SET)
+  {
+	for(int i=0;i<4;i++)
+	{
 	  motor[i].Target_torque = 0;
 	}
-  }else{	
+	TRQ_ON_FLAG = false;
+  }else
+  {
+	if(!TRQ_ON_FLAG)
+	{
+	  trq_cnt_old = HAL_GetTick();
+	  TRQ_ON_FLAG = true;
+	}	
 	theta2[0] = motor[0].angle + motor[2].angle;
 	theta2[1] = motor[1].angle + motor[3].angle;
-	switch(arms){
-	  //	case 'R' :	// actuating Right arm, node id 1, 3(motor[0], motor[2])
-	  //	  torque[1] = 0;
-	  //	  torque[3] = 0;
-	  //	  
-	  //	  if(motor[2].angle >= FA_limit_angle[0]) torque[2] = 0;
-	  //	  else if(motor[2].angle >= FA_limit_trq_angle[0]){
-	  //		torque[2] = l2 * arm_sin_f32(motor[0].angle + FA_limit_trq_angle[0]) * weight + cg_forearm * arm_sin_f32(motor[0].angle +  FA_limit_trq_angle[0] - 0.0198) * weight_forearm;	// 상박 stopper -5도 범위부터
-	  //	  }
-	  //	  else	torque[2] = l2 * arm_sin_f32(motor[0].angle + motor[2].angle) * weight + cg_forearm * arm_sin_f32(motor[0].angle + motor[2].angle - 0.0198) * weight_forearm;
-	  //	  
-	  //	  if(motor[0].angle >= UA_limit_angle[0] || motor[0].angle <= UA_limit_angle[1]) torque[0] = 0;
-	  //	  else if(motor[0].angle >= UA_limit_trq_angle[0])		torque[0] = torque[2] + l1 * arm_sin_f32(UA_limit_trq_angle[0]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[0]) * weight_upperarm;
-	  //	  else if(motor[0].angle <= UA_limit_trq_angle[1])	torque[0] = torque[2] + l1 * arm_sin_f32(UA_limit_trq_angle[1]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[1]) * weight_upperarm;
-	  //	  else	torque[0] = torque[2] + l1 * arm_sin_f32(motor[0].angle) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(motor[0].angle) * weight_upperarm;
-	  //	  break;
+	switch(arms)
+	{
+	case 'R' :	// actuating Right arm, node id 1, 3(motor[0], motor[2])
+	  torque[1] = 0;
+	  torque[3] = 0;	  
+	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
+	  else
+	  {
+		switch(trq_prof[1])
+		{
+		case 1:
+		  torque[2] = (104.187* theta2[0] * theta2[0] - 182.01 * theta2[0] - 421.674) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
+		  break;
+		case 2:
+		  torque[2] = (82.835 * theta2[0] * theta2[0] - 130.61 * theta2[0] - 437.5) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
+		  break;
+		case 3:
+		  torque[2] = (70 * theta2[0] * theta2[0] - 120.1 * theta2[0] - 375.8546) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+		  break;
+		}	
+	  }
+	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
+	  else
+	  {
+		switch(trq_prof[0])
+		{
+		case 1:
+		  torque[0] = torque[2] + (-69.60879 * motor[0].angle * motor[0].angle + 6.85919* motor[0].angle + 604.21204) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		  break;
+		default:  
+		  torque[0] = torque[2] + (-72.2326 * motor[0].angle * motor[0].angle + 36.97* motor[0].angle + 530.22) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		  break;
+		}
+	  }
+	  torque[2] = torque[2] * trq_offset[2];
+	  torque[0] = torque[0] * trq_offset[0];	
+	  break;
+	  
 	case 'L' :
 	  torque[0] = 0;
 	  torque[2] = 0;	    
 	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
-	  //	  else if(motor[3].angle >= FA_limit_trq_angle[0])	torque[3] = l2 * arm_sin_f32(motor[1].angle + FA_limit_trq_angle[0]) * weight + cg_forearm * arm_sin_f32(motor[1].angle +  FA_limit_trq_angle[0] - 0.0198) * weight_forearm;	// 상박 stopper -5도 범위부터
-	  //	  else	torque[3] = l2 * arm_sin_f32(motor[1].angle + motor[3].angle) * weight + cg_forearm * arm_sin_f32(motor[1].angle + motor[3].angle - 0.0198) * weight_forearm;
-	  else{
-		switch(trq_prof){
+	  else
+	  {
+		switch(trq_prof[1])
+		{
 		case 1:
 		  torque[3] = (104.187* theta2[1] * theta2[1] - 182.01 * theta2[1] - 421.674) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
 		  break;
@@ -404,15 +443,11 @@ void TRQ_Calc()
 		  break;
 		}	
 	  }
-	  torque[3] = torque[3] * trq_offset[3];
 	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
-		  //	  else if(motor[1].angle >= UA_limit_trq_angle[0])		torque[1] = torque[3] + l1 * arm_sin_f32(UA_limit_trq_angle[0]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[0]) * weight_upperarm;
-		  //	  else if(motor[1].angle <= UA_limit_trq_angle[1])	torque[1] = torque[3] + l1 * arm_sin_f32(UA_limit_trq_angle[1]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[1]) * weight_upperarm;
-		  //	  else
-		  //		torque[1] = torque[3] + arm_sin_f32(motor[1].angle) * (715.6 * weight + 376.01 * 606.71 * 9.80665 / 1000);
-		  //		torque[1] = torque[3] + l1 * arm_sin_f32(motor[1].angle) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(motor[1].angle) * weight_upperarm;
-	  else{
-		switch(trq_prof){
+	  else
+	  {
+		switch(trq_prof[0])
+		{
 		case 1:
 		  torque[1] = torque[3] + (-69.60879 * motor[1].angle * motor[1].angle + 6.85919* motor[1].angle + 604.21204) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
 		  break;
@@ -420,10 +455,50 @@ void TRQ_Calc()
 		  torque[1] = torque[3] + (-72.2326 * motor[1].angle * motor[1].angle + 36.97* motor[1].angle + 530.22) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
 		  break;
 		}
-	  }
+	  }	  
+	  torque[3] = torque[3] * trq_offset[3];
 	  torque[1] = torque[1] * trq_offset[1];	  
 	  break;
-	  //	case 'B' :
+	  
+	case 'B' :	  	  	  
+	  switch(trq_prof[1])
+	  {
+	  case 1:
+		torque[2] = (104.187* theta2[0] * theta2[0] - 182.01 * theta2[0] - 421.674) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
+		torque[3] = (104.187* theta2[1] * theta2[1] - 182.01 * theta2[1] - 421.674) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
+		break;
+	  case 2:
+		torque[2] = (82.835 * theta2[0] * theta2[0] - 130.61 * theta2[0] - 437.5) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
+		torque[3] = (82.835 * theta2[1] * theta2[1] - 130.61 * theta2[1] - 437.5) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
+		break;
+	  case 3:
+		torque[2] = (70 * theta2[0] * theta2[0] - 120.1 * theta2[0] - 375.8546) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+		torque[3] = (70 * theta2[1] * theta2[1] - 120.1 * theta2[1] - 375.8546) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+		break;		
+	  }
+	  
+	  switch(trq_prof[0])
+	  {
+	  case 1:
+		torque[0] = torque[2] + (-69.60879 * motor[0].angle * motor[0].angle + 6.85919* motor[0].angle + 604.21204) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		torque[1] = torque[3] + (-69.60879 * motor[1].angle * motor[1].angle + 6.85919* motor[1].angle + 604.21204) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		break;
+	  case 2:
+		torque[0] = torque[2] + (-72.2326 * motor[0].angle * motor[0].angle + 36.97* motor[0].angle + 530.22) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		torque[1] = torque[3] + (-72.2326 * motor[1].angle * motor[1].angle + 36.97* motor[1].angle + 530.22) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+		break;
+	  }
+	  
+	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
+	  else	torque[2] = torque[2] * trq_offset[2];
+	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
+	  else	torque[0] = torque[0] * trq_offset[0];	
+	  
+	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
+	  else	torque[3] = torque[3] * trq_offset[3];
+	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
+	  else	torque[1] = torque[1] * trq_offset[1];	  	  
+	  break;
 	  //	  if(motor[2].angle >= FA_limit_angle[0]) torque[2] = 0;
 	  //	  else if(motor[2].angle >= FA_limit_trq_angle[0])	torque[2] = l2 * arm_sin_f32(motor[0].angle + FA_limit_trq_angle[0]) * weight + cg_forearm * arm_sin_f32(motor[0].angle +  FA_limit_trq_angle[0] - 0.0198) * weight_forearm;	// 상박 stopper -5도 범위부터
 	  //	  else	torque[2] = l2 * arm_sin_f32(motor[0].angle + motor[2].angle) * weight + cg_forearm * arm_sin_f32(motor[0].angle + motor[2].angle - 0.0198) * weight_forearm;
@@ -441,17 +516,24 @@ void TRQ_Calc()
 	  //	  else if(motor[1].angle >= UA_limit_trq_angle[0])		torque[1] = torque[3] + l1 * arm_sin_f32(UA_limit_trq_angle[0]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[0]) * weight_upperarm;
 	  //	  else if(motor[1].angle <= UA_limit_trq_angle[1])	torque[1] = torque[3] + l1 * arm_sin_f32(UA_limit_trq_angle[1]) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(UA_limit_trq_angle[1]) * weight_upperarm;
 	  //	  else	torque[1] = torque[3] + l1 * arm_sin_f32(motor[1].angle) * (weight + weight_forearm) + cg_upperarm * arm_sin_f32(motor[1].angle) * weight_upperarm;	  
-	  //	  break;
-	  //	default :
-	  //	  torque[0] = 0;	torque[1] = 0;	torque[2] = 0;	torque[3] = 0;
+	default :
+	  torque[0] = 0;	torque[1] = 0;	torque[2] = 0;	torque[3] = 0;
 	}
-	for(int i=0;i<4;i++){
+	if(TRQ_ON_FLAG)
+	{
+	  trq_cnt_new = HAL_GetTick() - trq_cnt_old;
+	  if(trq_cnt_new < trq_cnt_max)
+	  {
+		for(int i=0;i<4;i++)
+		{
+		  torque[i] = torque[i] * trq_cnt_new / trq_cnt_max;
+		}
+	  }
+	}
+	for(int i=0;i<4;i++)
+	{
 	  motor[i].Target_torque = (int16_t)(torque[i] / gear_ratio[i] / rated_torque * 1000.0  * gear_efficiency[i]);
-	}	
-	//	motor[1].Target_torque = (int16_t)((motor[1].angle * motor[1].angle - 1.0915 * motor[1].angle - 6.1080) * (-124.9533) * motor[1].angle); // average
-	//	motor[3].Target_torque = (int16_t)((theta2[1] * theta2[1] - 0.25368 * theta2[1] - 8.0502) * (77.65538) * theta2[1]); // average
-	//	motor[3].Target_torque = (int16_t)((theta2[1] * theta2[1] - 0.3124 * theta2[1] - 7.88334) * (77.16448) * theta2[1]); // up 0.4 down 0.6
-	//	motor[1].Target_torque = (int16_t)((motor[1].angle * motor[1].angle - 1.2558 * motor[1].angle - 5.5691) * (-125.35159) * motor[1].angle); // up 0.3 down 0.7	
+	}
   }
 }
 int sign_ = 30;
@@ -467,7 +549,7 @@ void POS_Calc()
   pin_state = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
   if(pin_state == GPIO_PIN_SET){
 	if(pin_state != pin_state_old){
-//	  tp[0] = motor[1].Postion_actual;
+	  //	  tp[0] = motor[1].Postion_actual;
 	  tp[1] = motor[3].Postion_actual;
 	  sign_flag = !sign_flag;
 	  pin_state_old = pin_state;
@@ -476,11 +558,11 @@ void POS_Calc()
 	pin_state_old = pin_state;
 	if(sign_flag){
 	  sign_ = abs(sign_);	  
-//	  tp[0] = tp[0] + sign_;
+	  //	  tp[0] = tp[0] + sign_;
 	  tp[1] = tp[1] + sign_;
 	}else{
 	  sign_ = (-1) * abs(sign_);
-//	  tp[0] = tp[0] + sign_;
+	  //	  tp[0] = tp[0] + sign_;
 	  tp[1] = tp[1] + sign_;
 	}
   }
@@ -516,6 +598,10 @@ void POS_Calc()
   motor[1].Target_position = tp[0];
   motor[3].Target_position = tp[1];
 }
+void TRQ_ANG_Calc()
+{
+  
+}
 Motor_t motor[4] = {
   MOTOR_DEFAULT,
   MOTOR_DEFAULT,
@@ -527,13 +613,13 @@ void INIT_CAN()
   for(int i=1;i<5;i++){
 	READ_STATUS(i);
 	if(i != 5){
-//	if(i == 1 || i == 3){
-	  SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 10);							// CST
+	  //	if(i == 1 || i == 3){
+	  SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 10);								// CST
 	  SET_SDO(i, sizeof(uint8_t), RXPDO1, 0x00, 0);
 	  SET_SDO(i, sizeof(uint32_t), RXPDO1, 0x01, 0x60710010);		// RXPDO1 target torque
 	  SET_SDO(i, sizeof(uint8_t), RXPDO1, 0x00, 1);
 	}else{
-	  SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 8);							// CSP
+	  SET_SDO(i, sizeof(uint8_t), MOP, 0x00, 8);								// CSP
 	  SET_SDO(i, sizeof(uint8_t), RXPDO1, 0x00, 0);
 	  SET_SDO(i, sizeof(uint32_t), RXPDO1, 0x01, 0x607A0020);		// RXPOD1 target position
 	  SET_SDO(i, sizeof(uint8_t), RXPDO1, 0x00, 1);
@@ -541,7 +627,7 @@ void INIT_CAN()
 	
 	
 	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
-	SET_SDO(i, sizeof(uint32_t), MAX_MOTOR_SPEED, 0x00, 3000);
+	SET_SDO(i, sizeof(uint32_t), MAX_MOTOR_SPEED, 0x00, 4000);		// max motor speed 4000 RPM
 	SET_SDO(i, sizeof(uint32_t), TRQ_CONST, 0x05, 42172);				// rated torque 167 / nominal current 3960 * 1000
 	
 	

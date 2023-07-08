@@ -42,6 +42,7 @@ void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void I2C_COMM();
+extern double rad_i2c[12];
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

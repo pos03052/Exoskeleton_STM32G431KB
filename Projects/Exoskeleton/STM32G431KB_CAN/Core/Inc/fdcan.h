@@ -35,7 +35,7 @@ extern "C" {
 extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
-#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, }, 0.0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
+#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
 typedef enum{
   OP			=	0x01,
   PRE			=	0x80,
@@ -74,6 +74,7 @@ typedef enum{
   TRQ_CONST			= 0x3001,
   Target_position	= 0x607A,
   RXPDO1			= 0x1600,
+  Temperature		= 0x3201,
   PDO_OBJ
 }Obj_dict_t;
 
@@ -123,6 +124,7 @@ typedef struct{
   uint8_t		error_index;
   uint16_t		Error_code[5];
   int32_t		Position_zero;
+  int32_t		value;
   void (*parsing_SDO)();
   uint8_t (*parsing_PDO)();
 } Motor_t;
@@ -149,6 +151,7 @@ void INIT_CAN();
 void Clear_Device_Errors(uint8_t id);
 void TRQ_Calc();
 void POS_Calc();
+void TRQ_ANG_Calc();
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -65,7 +65,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 extern double l1, l2, cg_upperarm, cg_forearm, weight, weight_upperarm, weight_forearm, rated_torque;
-extern double motor_offset[4], gear_ratio[4], gear_efficiency[4];
+extern double motor_offset[4], gear_ratio[4], gear_efficiency[4], trq_offset[4];
 extern GPIO_PinState pin_state;
 extern float error_res[2];
 extern int32_t tp[2];
