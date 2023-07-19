@@ -64,7 +64,8 @@ void run_vcp(SerialHandler *h)
 {
 	while (serial_available(h)) {
 		h->parsing.str[h->parsing.idx] = serial_read(h);
-		if ((h->parsing.str[h->parsing.idx] == '\r') || (h->parsing.idx >= PARSING_STR_BUFF_SIZE)) {
+//		if ((h->parsing.str[h->parsing.idx] == '\r') || (h->parsing.idx >= PARSING_STR_BUFF_SIZE)) {
+		if ((h->parsing.str[h->parsing.idx] == '\n') || (h->parsing.idx >= PARSING_STR_BUFF_SIZE)) {
 			h->parsing.flag = 1;
 			break;
 		}
@@ -77,6 +78,8 @@ void run_vcp(SerialHandler *h)
 		while (h->parsing.toks[h->parsing.cnt] != NULL) {
 			h->parsing.toks[++h->parsing.cnt] = strtok(NULL, h->parsing.sep);
 		}
+		
+		parse_vcp(h);
 		
 		h->parsing.idx = 0;
 		h->parsing.flag = 0;

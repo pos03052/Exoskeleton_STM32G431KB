@@ -35,7 +35,7 @@ extern "C" {
 #include "stdlib.h"
 #include "ctype.h"
 #include "string.h"
-	
+#include "stdbool.h"
 #include "arm_math.h"
 /* USER CODE END Includes */
 
@@ -69,7 +69,8 @@ extern double motor_offset[4], gear_ratio[4], gear_efficiency[4], trq_offset[4];
 extern GPIO_PinState pin_state;
 extern float error_res[2];
 extern int32_t tp[2];
-
+extern uint8_t status;
+extern bool STATUS_FLAG, stretch_btn;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

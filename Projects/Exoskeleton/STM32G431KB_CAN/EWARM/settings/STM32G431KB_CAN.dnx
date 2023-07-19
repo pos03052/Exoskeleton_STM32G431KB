@@ -27,7 +27,7 @@
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>2008729397</Checksum>
+        <Checksum>4206298434</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -111,15 +111,16 @@
     </array_types>
     <watch_formats>
         <Fmt0>{W}42:(hcan.rxmsg.data[2] &lt;&lt; 8) || 1	4	0</Fmt0>
-        <Fmt1>{W}42:(motor[1].Statusword &gt;&gt; 3)	1	0</Fmt1>
-        <Fmt2>{W}42:angle_addr	4	0</Fmt2>
-        <Fmt3>{W}42:cnt2	3	0</Fmt3>
-        <Fmt4>{W}42:hcan.rxmsg.data[1] || (hcan.rxmsg.data[2] &lt;&lt; 8)	4	0</Fmt4>
-        <Fmt5>{W}42:hcan.rxmsg.data[2] &lt;&lt; 8	4	0</Fmt5>
-        <Fmt6>{W}42:id_sum	3	0</Fmt6>
-        <Fmt7>{W}42:motor[1].Statusword &gt;&gt; 3	4	0</Fmt7>
-        <Fmt8>{W}42:object	4	0</Fmt8>
-        <Fmt9>{W}42:timer	3	0</Fmt9>
+        <Fmt1>{W}42:(motor[0].Statusword &gt;&gt; 2)	4	0</Fmt1>
+        <Fmt2>{W}42:(motor[1].Statusword &gt;&gt; 3)	1	0</Fmt2>
+        <Fmt3>{W}42:angle_addr	4	0</Fmt3>
+        <Fmt4>{W}42:cnt2	3	0</Fmt4>
+        <Fmt5>{W}42:hcan.rxmsg.data[1] || (hcan.rxmsg.data[2] &lt;&lt; 8)	4	0</Fmt5>
+        <Fmt6>{W}42:hcan.rxmsg.data[2] &lt;&lt; 8	4	0</Fmt6>
+        <Fmt7>{W}42:id_sum	3	0</Fmt7>
+        <Fmt8>{W}42:motor[1].Statusword &gt;&gt; 3	4	0</Fmt8>
+        <Fmt9>{W}42:object	4	0</Fmt9>
+        <Fmt10>{W}42:timer	3	0</Fmt10>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -143,12 +144,14 @@
         <Symbol_0>0 4 0</Symbol_0>
         <Title_1>motor[1].angle</Title_1>
         <Symbol_1>0 4 0</Symbol_1>
-        <Title_2>weight</Title_2>
-        <Symbol_2>0 4 0</Symbol_2>
-        <Title_3>NMT_FLAG</Title_3>
-        <Symbol_3>0 1 1</Symbol_3>
-        <Title_4>amp</Title_4>
-        <Symbol_4>0 4 1</Symbol_4>
+        <Title_2>pin_state2</Title_2>
+        <Symbol_2>0 1 1</Symbol_2>
+        <Title_3>weight</Title_3>
+        <Symbol_3>0 4 0</Symbol_3>
+        <Title_4>NMT_FLAG</Title_4>
+        <Symbol_4>0 1 1</Symbol_4>
+        <Title_5>amp</Title_5>
+        <Symbol_5>0 4 1</Symbol_5>
         <SumEnabled>0</SumEnabled>
         <ShowTimeSum>1</ShowTimeSum>
     </DataLog>
@@ -187,7 +190,8 @@
         <Bp4>_ 1 "EMUL_DATA_LOG" "motor[3].angle" 0 0</Bp4>
         <Bp5>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp5>
         <Bp6>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp6>
-        <Count>7</Count>
+        <Bp7>_ 0 "EMUL_DATA_LOG" "pin_state2" 0 0</Bp7>
+        <Count>8</Count>
     </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>

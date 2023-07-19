@@ -36,6 +36,9 @@ extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
 #define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
+#define rad30 0.5236
+#define rad60 1.0472
+#define rad90 1.5708
 typedef enum{
   OP			=	0x01,
   PRE			=	0x80,
@@ -149,9 +152,10 @@ void SEND_FRAME(CAN_HandleTypeDef *h);
 void GET_Angle(uint8_t id);
 void INIT_CAN();
 void Clear_Device_Errors(uint8_t id);
-void TRQ_Calc();
-void POS_Calc();
-void TRQ_ANG_Calc();
+void TRQ_Calc(void);
+void POS_Calc(void);
+void TRQ_ANG_Calc(void);
+int Check_status(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
