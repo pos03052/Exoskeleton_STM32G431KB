@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t PDO_id_cnt	= 0;
+uint8_t PDO_id_cnt		= 0;
 uint8_t node_id;
 int16_t val				= 0;
 Prot_info_t prot_info;
@@ -70,29 +70,36 @@ int16_t func_sin(uint32_t freq);
 void I2C_DMA_COMM();
 
 // dynamic params
-double l1 = 0.4375;
-double l2 = 0.245;
-//double l2 = 228;
-//double l2 = 278;
+double l1 				= 0.4525;
+//double l2 			= 0.245;
+//double l2 			= 228;
+//double l2 			= 278;
 //double cg_upperarm	= 341.48;
-double cg_upperarm	= 0.32509;	// aluminium shaft holder
-double cg_forearm	= 0.17982;
-//double cg_forearm	= 178.35;	// 2kg disk jig
-double weight = 2 * 9.80665;	// 2kgf
-//double weight_upperarm	= 477.93 * 9.80665  / 1000;	// N
-double weight_upperarm	= 501.56 * 9.80665  / 1000;	// aluminium shaft holder
+//double cg_upperarm		= 0.32509;	// aluminium shaft holder
+//double cg_forearm		= 0.17982;
+//double cg_forearm		= 178.35;	// 2kg disk jig
+double weight 			= 1.9956 * 9.80665;	// 2kgf
+//double weight_upperarm= 477.93 * 9.80665  / 1000;	// N
+//double weight_upperarm	= 501.56 * 9.80665  / 1000;	// aluminium shaft holder
 //double weight_forearm	= 182.857 * 9.80665 / 1000; // N
 //double weight_forearm	= 43.348 * 9.80665 / 1000; // N
-double weight_forearm	= 124.3 * 9.80665 / 1000; // 2kg disk jig
+//double weight_forearm	= 124.3 * 9.80665 / 1000; // 2kg disk jig
+
+// link2-2 v2 + link1 v3
+double cg_upperarm		= 0.31480;					
+double weight_upperarm	= 613.2 * 9.80665  / 1000;	
+double l2 				= 0.2815;					
+double weight_forearm	= 117.41 * 9.80665 / 1000;	
+double cg_forearm		= 0.14009;					
 
 double rated_torque 	= 167.001;
-double gear_ratio[4] = {-96.875, 96.875, 48.82, -48.82};
+double gear_ratio[4] 	= {-96.875, 96.875, 48.82, -48.82};
 
-double period				= 2000.0;
-double amp					= 50.0;
-//double gear_efficiency[4] 		= {1.1, 1.1, 1.05, 1.05};
-double gear_efficiency[4] 		= {1.0, 1.0, 1.0, 1.0};
-double trq_offset[4] = {1.0, 1.0, 1.0, 1.0};
+double period			= 2000.0;
+double amp				= 50.0;
+//double gear_efficiency[4]	= {1.1, 1.1, 1.05, 1.05};
+double gear_efficiency[4] 	= {1.0, 1.0, 1.0, 1.0};
+double trq_offset[4]	= {1.0, 1.0, 1.0, 1.0};
 
 bool UART_FLAG		 		= false;
 bool QS_flag				= false;
@@ -107,6 +114,8 @@ bool SET_SDO_FLAG			= false;
 bool I2C_FLAG				= false;
 bool I2C_TRQ_FLAG			= false;
 bool ERROR_FLAG				= false;
+uint8_t m1_flag 			= false;
+uint8_t m1_flag_old 		= false;
 
 GPIO_PinState pin_state;
 GPIO_PinState NMT_pin;
@@ -305,7 +314,7 @@ void setup(void)
   for(int i=0;i<4;i++){
 	if(motor[i].Statusword != 0x40)	error_res[0] = 6;
   }
-  motor[0].Error_code[(motor[0].error_index+4)%5] = 0x01;
+  motor[0].Error_code[(motor[0].error_index+5)%5] = 0x01;
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
 }
 /**
@@ -361,17 +370,30 @@ uint32_t CAN_cnt = 0;		//	PDO timer
 uint32_t UART_cnt = 0;		//	UART timer
 void loop_sync(void)
 {  
+  static uint8_t status = 0;
   UART_cnt++;
   CAN_cnt++;
   //  val = func_sin(freq_cnt ++);
-  if(Check_status() >= 3)	// PDO state
+  status = Check_status();
+  if(status == 0)
+  {
+	NMT_state	= PRE;
+	DS_state	= DV;	
+  }
+//  else if(status == 1)
+//  {
+//	if(CAN_cnt > 100)	STATUS_FLAG = true;
+//  }
+  else if(status != 2)
   {
 	if(CAN_cnt>=6)
-	{
+	{	
+	  id_cnt = 0;
+	  id_sum = 0;
 	  SYNC_FRAME();
 	  CAN_cnt = 0;
 	}
-	else if(id_cnt == 4)
+	if(id_cnt == 4)
 	{
 	  if(id_sum == 6)
 	  {
@@ -382,25 +404,26 @@ void loop_sync(void)
 		  trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
 		  trq_offset[1] = arm_cos_f32(rad_i2c[3]-PI/2);	trq_offset[3] = arm_cos_f32(rad_i2c[3]-PI/2);
 		}
-		TRQ_Calc();
-//		POS_Calc();
+		//		TRQ_Calc();
+		//		POS_Calc();
+		//	  TRQ_Calc_2();
+		POS_Calc_2();
 		for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
-	  }
-	  else
+	  }else
 	  {
 		error_res[0] = 1;
 		id_cnt = 0;
 		id_sum = 0;
 	  }
 	}
-  }  
+  }
 }
 void loop_async(void)
 {
   tick = HAL_GetTick();  
   vcp.run(&vcp);
 //  UART_FLAG = CAN_cnt % 1000 ? false : true; // 1~5초 사이 보내지게
-  if(UART_cnt >= 20)
+  if(UART_cnt >= 50)
   {
 	UART_FLAG = true;
 	UART_cnt = 0;
@@ -428,7 +451,7 @@ void loop_async(void)
   if(QS_flag){	for(int i=1;i<5;i++){DS_TRANS(i, QS);}			QS_flag	= false;}    
   if(ANGLE_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);}	ANGLE_FLAG = false;}
   if(CLEAR_ERROR_FLAG){		for(int i=1;i<5;i++){Clear_Device_Errors(i);}	CLEAR_ERROR_FLAG = false;	STATUS_FLAG = true;}
-  if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	motor[i-1].Position_zero = motor[i-1].Postion_actual;}	SET_ANGLE_ZERO_FLAG = false;}
+  if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	motor[i-1].Position_zero = motor[i-1].Position_actual;}	tp[0] = motor[1].Position_zero; tp[1] = motor[3].Position_zero - 100; SET_ANGLE_ZERO_FLAG = false;}
   if(GET_SDO_FLAG){	GET_SDO(id_temp, object, object_sub);	GET_SDO_FLAG = false;}
   if(SET_SDO_FLAG){	SET_SDO(id_temp, length_temp, object, object_sub, data_temp);	SET_SDO_FLAG = false;}  
   if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}	STATUS_FLAG = false;}
@@ -498,10 +521,8 @@ void HAL_SYSTICK_Callback(void)	// 1mhz timer
   loop_sync();
 }
 bool SET_ZERO_BTN = false;
-uint16_t pin = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  pin = GPIO_Pin;
   if(GPIO_Pin == GPIO_PIN_9 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_RESET)
   {
 	status = Check_status();

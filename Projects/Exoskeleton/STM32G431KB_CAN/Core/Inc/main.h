@@ -69,7 +69,7 @@ extern double motor_offset[4], gear_ratio[4], gear_efficiency[4], trq_offset[4];
 extern GPIO_PinState pin_state;
 extern float error_res[2];
 extern int32_t tp[2];
-extern uint8_t status;
+extern uint8_t status, m1_flag, m1_flag_old;
 extern bool STATUS_FLAG, stretch_btn;
 /* USER CODE END Private defines */
 
