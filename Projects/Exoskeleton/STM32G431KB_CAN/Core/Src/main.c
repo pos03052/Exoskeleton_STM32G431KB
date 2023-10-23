@@ -30,7 +30,7 @@
 #include "utility.h"
 #include "stdbool.h"
 #include "arm_math.h"
-//#include "CO_app_STM32.h"
+//#include "CO_app_STM32.h"	// CANOpen STM32, route = C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode_STM32
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,9 +51,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t PDO_id_cnt		= 0;
+uint8_t PDO_id_cnt			= 0;
 uint8_t node_id;
-int16_t val				= 0;
+int16_t sine_val			= 0;
 Prot_info_t prot_info;
 char *uart_tx_msg;
 
@@ -70,7 +70,8 @@ int16_t func_sin(uint32_t freq);
 void I2C_DMA_COMM();
 
 // dynamic params
-double l1 				= 0.4525;
+double l1 				= 0.4225;
+double l2 				= 0.305;		
 //double l2 			= 0.245;
 //double l2 			= 228;
 //double l2 			= 278;
@@ -88,8 +89,8 @@ double weight 			= 1.9956 * 9.80665;	// 2kgf
 // link2-2 v2 + link1 v3
 double cg_upperarm		= 0.31480;					
 double weight_upperarm	= 613.2 * 9.80665  / 1000;	
-double l2 				= 0.2815;					
-double weight_forearm	= 117.41 * 9.80665 / 1000;	
+
+double weight_forearm	= 275.75 * 9.80665 / 1000;	
 double cg_forearm		= 0.14009;					
 
 double rated_torque 	= 167.001;
@@ -100,6 +101,7 @@ double amp				= 50.0;
 //double gear_efficiency[4]	= {1.1, 1.1, 1.05, 1.05};
 double gear_efficiency[4] 	= {1.0, 1.0, 1.0, 1.0};
 double trq_offset[4]	= {1.0, 1.0, 1.0, 1.0};
+double tp_degree[2] = {0, 0};
 
 bool UART_FLAG		 		= false;
 bool QS_flag				= false;
@@ -111,9 +113,9 @@ bool ANGLE_FLAG				= false;
 bool CLEAR_ERROR_FLAG		= false;
 bool GET_SDO_FLAG			= false;
 bool SET_SDO_FLAG			= false;
-bool I2C_FLAG				= false;
 bool I2C_TRQ_FLAG			= false;
 bool ERROR_FLAG				= false;
+uint8_t I2C_FLAG			= false;
 uint8_t m1_flag 			= false;
 uint8_t m1_flag_old 		= false;
 
@@ -171,31 +173,31 @@ float error_res[2]		= {0, };
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+* @brief  The application entry point.
+* @retval int
+*/
 int main(void)
 {
   /* USER CODE BEGIN 1 */
   
   /* USER CODE END 1 */
-
+  
   /* MCU Configuration--------------------------------------------------------*/
-
+  
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
+  
   /* USER CODE BEGIN Init */
   
   /* USER CODE END Init */
-
+  
   /* Configure the system clock */
   SystemClock_Config();
-
+  
   /* USER CODE BEGIN SysInit */
   
   /* USER CODE END SysInit */
-
+  
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
@@ -204,33 +206,33 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
-
+  
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   setup();
   while (1)
   {
 	loop_async();
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+	/* USER CODE END WHILE */
+	
+	/* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+* @brief System Clock Configuration
+* @retval None
+*/
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
+  
   /** Configure the main internal regulator output voltage
   */
   HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
-
+  
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
@@ -245,23 +247,23 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    Error_Handler();
+	Error_Handler();
   }
-
+  
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+	|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
+  
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
-    Error_Handler();
+	Error_Handler();
   }
-
+  
   /** Enables the Clock Security System
   */
   HAL_RCC_EnableCSS();
@@ -318,34 +320,34 @@ void setup(void)
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
 }
 /**
-	참고: serial.h	serial.c	uart.h	fdcan.h
-	'vcp.rx_buffer' parsing function
-	rx buff size 256
-	(parsing되어 저장될 곳)
-	rad_i2c[0]: right arm roll
-	rad_i2c[1]: right arm pitch
-	rad_i2c[3]: left arm roll
-	rad_i2c[4]: left arm pitch
-	trq on: stretch_btn true
+참고: serial.h	serial.c	uart.h	fdcan.h
+'vcp.rx_buffer' parsing function
+rx buff size 256
+(parsing되어 저장될 곳)
+rad_i2c[0]: right arm roll
+rad_i2c[1]: right arm pitch
+rad_i2c[3]: left arm roll
+rad_i2c[4]: left arm pitch
+trq on: stretch_btn true
 
-	'vcp.tx_buffer' data 
-	tx buff size 128
-	(보낼 data)
-	NMT_state
-		NMT_state_t
-		  OP 0x01
-		  PRE 0x80
-			...
-	DS_state
-		DS_state_t
-		DV	0x00
-		SD	0x06
-		EN 	0x0F
-		...
-	motor[0].Statusword ~ motor[3].Statusword (uint16_t)
-	sprintf 또는 memcpy 사용
+'vcp.tx_buffer' data 
+tx buff size 128
+(보낼 data)
+NMT_state
+NMT_state_t
+OP 0x01
+PRE 0x80
+...
+DS_state
+DS_state_t
+DV	0x00
+SD	0x06
+EN 	0x0F
+...
+motor[0].Statusword ~ motor[3].Statusword (uint16_t)
+sprintf 또는 memcpy 사용
 
-	START BIT(0x02) END BIT (0x03 or 전체 데이터 길이)
+START BIT(0x02) END BIT (0x03 or 전체 데이터 길이)
 **/
 bool stretch_btn = false;
 float angles[4]={0};
@@ -370,20 +372,20 @@ uint32_t CAN_cnt = 0;		//	PDO timer
 uint32_t UART_cnt = 0;		//	UART timer
 void loop_sync(void)
 {  
-  static uint8_t status = 0;
+  static double angles_old[2] = {0, 0};
   UART_cnt++;
   CAN_cnt++;
-  //  val = func_sin(freq_cnt ++);
+  //  sine_val = func_sin(freq_cnt ++);
   status = Check_status();
   if(status == 0)
   {
 	NMT_state	= PRE;
 	DS_state	= DV;	
   }
-//  else if(status == 1)
-//  {
-//	if(CAN_cnt > 100)	STATUS_FLAG = true;
-//  }
+  //  else if(status == 1)
+  //  {
+  //	if(CAN_cnt > 100)	STATUS_FLAG = true;
+  //  }
   else if(status != 2)
   {
 	if(CAN_cnt>=6)
@@ -399,15 +401,26 @@ void loop_sync(void)
 	  {
 		if(I2C_TRQ_FLAG)
 		{
-		  motor[0].angle = motor[0].angle - rad_i2c[1];
-		  motor[1].angle = motor[1].angle + rad_i2c[4];
-		  trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
-		  trq_offset[1] = arm_cos_f32(rad_i2c[3]-PI/2);	trq_offset[3] = arm_cos_f32(rad_i2c[3]-PI/2);
+		  if(angles[2] != 0 || angles[3] != 0)
+		  {
+			motor[0].angle = motor[0].angle - rad_i2c[1];
+			motor[1].angle = motor[1].angle + rad_i2c[4];
+			trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
+			trq_offset[1] = arm_cos_f32(rad_i2c[3]-PI/2);	trq_offset[3] = arm_cos_f32(rad_i2c[3]-PI/2);
+			angles_old[0] = rad_i2c[3];
+			angles_old[1] = rad_i2c[4];
+		  }else
+		  {
+			motor[0].angle = motor[0].angle - rad_i2c[1];
+			motor[1].angle = motor[1].angle + angles_old[1];
+			trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
+			trq_offset[1] = arm_cos_f32(angles_old[0]-PI/2);trq_offset[3] = arm_cos_f32(angles_old[0]-PI/2);
+		  }
 		}
-		//		TRQ_Calc();
+		TRQ_Calc();
 		//		POS_Calc();
 		//	  TRQ_Calc_2();
-		POS_Calc_2();
+		//		POS_Calc_2();
 		for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
 	  }else
 	  {
@@ -422,7 +435,7 @@ void loop_async(void)
 {
   tick = HAL_GetTick();  
   vcp.run(&vcp);
-//  UART_FLAG = CAN_cnt % 1000 ? false : true; // 1~5초 사이 보내지게
+  //  UART_FLAG = CAN_cnt % 1000 ? false : true; // 1~5초 사이 보내지게
   if(UART_cnt >= 50)
   {
 	UART_FLAG = true;
@@ -439,10 +452,10 @@ void loop_async(void)
 	sprintf((char *)vcp.tx_buffer, "\n%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r",
 			NMT_state, DS_state, 
 			motor[0].Statusword, motor[1].Statusword, motor[2].Statusword, motor[3].Statusword,
-			motor[0].Error_code[(motor[0].error_index+4)%5],
-			motor[1].Error_code[(motor[1].error_index+4)%5],
-			motor[2].Error_code[(motor[2].error_index+4)%5],
-			motor[3].Error_code[(motor[3].error_index+4)%5]); 
+			motor[0].Error_code[(motor[0].error_index)%5],
+			motor[1].Error_code[(motor[1].error_index)%5],
+			motor[2].Error_code[(motor[2].error_index)%5],
+			motor[3].Error_code[(motor[3].error_index)%5]); 
 	//UART_FLAG = false;
 	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
   }
@@ -461,9 +474,9 @@ void loop_async(void)
 int16_t func_sin(uint32_t freq)
 {  
   if(freq <= period/2){
-	val = (int16_t)(amp);
+	sine_val = (int16_t)(amp);
   }else if(freq <= period){
-	val = (int16_t)(-amp);
+	sine_val = (int16_t)(-amp);
   }else{
 	freq = 0;
   }
@@ -527,7 +540,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   {
 	status = Check_status();
 	if(status == 2)	NMT_state = OP;		//  Pre Operational	-> Operational
-	else			NMT_state = PRE;	//	Operational		-> Pre Operational 
+	else			NMT_state = PRE;	//	Operational		-> Pre Operational
+	
+	/** (to be fixed) PRE -> OP OK, OP -> PRE Transition Not working **/
 	NMT_FLAG = true;
   }else if(GPIO_Pin == GPIO_PIN_10 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10) == GPIO_PIN_RESET)
   {
@@ -535,14 +550,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 	  SET_ANGLE_ZERO_FLAG = true;
 	  SET_ZERO_BTN = true;
-	  motor[0].Error_code[(motor[0].error_index+4)%5] = 0x00;
+	  motor[0].Error_code[(motor[0].error_index)%5] = 0x00;
 	}
 	else
 	{
 	  status = Check_status();
-	  if(status == 3)		DS_state = SD;	// if DV
-	  else if(status == 4)	DS_state = EN;	// if SD
-	  else if(status == 5)	DS_state = DV;	// if EN
+	  if(status == 3)		DS_state = SD;	// if PDO + DV
+	  else if(status == 4)	DS_state = EN;	// if PDO + SD
+	  else if(status == 5)	DS_state = DV;	// if PDO + EN
 	  else					DS_state = DV;
 	  DS_FLAG = true;
 	}
@@ -681,9 +696,9 @@ void I2C_DMA_COMM()
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+* @brief  This function is executed in case of error occurrence.
+* @retval None
+*/
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -703,12 +718,12 @@ void Error_Handler(void)
 
 #ifdef  USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+* @brief  Reports the name of the source file and the source line number
+*         where the assert_param error has occurred.
+* @param  file: pointer to the source file name
+* @param  line: assert_param error line source number
+* @retval None
+*/
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

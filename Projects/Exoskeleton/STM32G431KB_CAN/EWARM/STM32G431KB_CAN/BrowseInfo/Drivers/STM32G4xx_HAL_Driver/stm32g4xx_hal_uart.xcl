@@ -344,6 +344,7 @@ C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CMSIS\DSP\Include
 -D__EDG_INT128_EXTENSIONS_ALLOWED=0
 -DUSE_HAL_DRIVER=1
 -DSTM32G431xx=1
+-DSTM32_THREAD_SAFE_STRATEGY=2
 -DARM_MATH_CM4=1
 -D_DLIB_CONFIG_FILE_HEADER_NAME="C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\inc\c\DLib_Config_Full.h"
 -D_DLIB_CONFIG_FILE_STRING="C:\\Program Files\\IAR Systems\\Embedded Workbench 9.0\\arm\\inc\\c\\DLib_Config_Full.h"

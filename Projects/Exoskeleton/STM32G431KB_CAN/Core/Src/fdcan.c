@@ -33,7 +33,7 @@ CAN_HandleTypeDef hcan = {
 };
 double FA_limit_angle[2]	= {1.9628, 0};			//	112.46도, 0도
 double UA_limit_angle[2]	= {2.5187, -1.321};	//144.31도, -75.69도
-uint8_t CST_mode[4] = {1, 0, 1, 0};
+uint8_t CST_mode[4] = {1, 1, 1, 1};
 uint32_t max_timeout_cnt = 100000;
 bool RECV_FLAG = false;
 bool TRQ_ON_FLAG = false;
@@ -42,8 +42,8 @@ bool TRQ_OFF_FLAG = false;
 char arms = 'B';
 double torque[4] = {0, };
 double deg2rad_5 = 0.0873; // 상, 하방 limit  5도
-uint8_t trq_prof[2] = {4, 4};
-uint16_t cnt_max = 2000;
+uint8_t trq_prof[2] = {1, 1};
+uint16_t cnt_max = 3000;
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -403,151 +403,113 @@ void TRQ_Calc()
 	}
 	theta2[0] = motor[0].angle + motor[2].angle;		// Right forearm angle
 	theta2[1] = motor[1].angle + motor[3].angle;		// Left forearm angle
+	
+	/* trq profile selection */
+	switch(trq_prof[1])
+	{
+	case 1:
+	  /** V4 SHEET 7  **/
+	  torque[2] = (0.36673 * theta2[0] * theta2[0] + 0.285765 * theta2[0] - 5.19364) * 1000 * (-theta2[0]);
+	  torque[3] = (0.36673 * theta2[1] * theta2[1] + 0.285765 * theta2[1] - 5.19364) * 1000 * (-theta2[1]);
+	  break;
+	case 2:
+	  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[0] * theta2[0] - 26 * theta2[0] - 87.0745) * theta2[0]  * (-8.153);
+	  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[1] * theta2[1] - 26 * theta2[1] - 87.0745) * theta2[1]  * (-8.153);
+	  //		  torque[2] = (82.835 * theta2[0] * theta2[0] - 130.61 * theta2[0] - 437.5) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
+	  //		  torque[3] = (82.835 * theta2[1] * theta2[1] - 130.61 * theta2[1] - 437.5) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
+	  break;
+	case 3:
+	  /** up 0.3 down 0.7 통합 문서1 Sheet 9 **/
+	  //		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[0] * theta2[0] - 23.9016 * theta2[0] - 74.8051) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+	  //		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[1] * theta2[1] - 23.9016 * theta2[1] - 74.8051) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+	  //		  torque[2] = (70 * theta2[0] * theta2[0] - 120.1 * theta2[0] - 375.8546) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;  ver.1 
+	  
+	  /** up 0.5 down 0.5 v2 Sheet 2 upper arm angle 90°**/
+	  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (1.902 * theta2[0] * theta2[0] + 39.3152 * theta2[0] - 146.0728) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+	  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (1.902 * theta2[1] * theta2[1] + 39.3152 * theta2[1] - 146.0728) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
+	  //		  torque[2] = (10.7849 * theta2[0] * theta2[0] + 230.8379* theta2[0] - 857.6604) * theta2[0]  * (-8.153); //  ver.2 08.08 @ 90degree		
+	  break;		
+	case 4:
+	  /**  up0.4 down 0.6 v3 sheet 3 **/
+	  torque[2] = (0.972412 * theta2[0] * theta2[0] -1.476404 * theta2[0] - 4.444624) * 1000 * (-theta2[0]);
+	  torque[3] = (0.972412 * theta2[1] * theta2[1] -1.476404 * theta2[1] - 4.444624) * 1000 * (-theta2[1]);
+	  break;
+	  
+	case 5:
+	  /**  V4 SHHET 3 UP V1 DOWN 0.1 **/
+	  //		torque[2] = (0.74157 * theta2[0] * theta2[0] -1.071351 * theta2[0] - 4.3864) * 1000 * (-theta2[0]);
+	  torque[2] = (0.75233 * theta2[0] * theta2[0] -1.1051 * theta2[0] - 4.30216) * 1000 * (-theta2[0]);
+	  //		torque[3] = (0.74157 * theta2[1] * theta2[1] -1.071351 * theta2[1] - 4.3864) * 1000 * (-theta2[1]);
+	  torque[3] = (0.75233 * theta2[1] * theta2[1] -1.1051 * theta2[1] - 4.30216) * 1000 * (-theta2[1]);
+	  break;
+	  
+	case 6:
+	  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * arm_sin_f32(theta2[0]) * 1000;
+	  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * arm_sin_f32(theta2[1]) * 1000;
+	  break;
+	}
+	
+	switch(trq_prof[0])
+	{
+	case 1:
+	  /** V4 SHHET 7 **/
+	  torque[0] = torque[2] + (-1.19887 * motor[0].angle * motor[0].angle -0.23544 * motor[0].angle + 10.86467) * 1000 * motor[0].angle;
+	  torque[1] = torque[3] + (-1.19887 * motor[1].angle * motor[1].angle -0.23544 * motor[1].angle + 10.86467) * 1000 * motor[1].angle;
+	  break;
+	case 2:
+	  /** ver 1 **/
+	  torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[0].angle * motor[0]. angle + 3.6319 * motor[0].angle + 52.0854) * motor[0].angle * 16.17822;
+	  torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[1].angle * motor[1]. angle + 3.6319 * motor[1].angle + 52.0854) * motor[1].angle * 16.17822;
+	  //			torque[0] = torque[2] + (-72.2326 * motor[0].angle * motor[0].angle + 36.97* motor[0].angle + 530.22) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+	  //			torque[1] = torque[3] + (-72.2326 * motor[1].angle * motor[1].angle + 36.97* motor[1].angle + 530.22) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+	  break;
+	case 3:
+	  /** v2 sheet 5 up 0.5 down 0.5**/
+	  //			torque[0] = torque[2] + (-94.18751475 * motor[0].angle * motor[0].angle + 64.89141175 * motor[0].angle + 587.1707543) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
+	  torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-8.7628* motor[0].angle * motor[0]. angle + 6.0372 * motor[0].angle + 54.628) * motor[0].angle * 16.17822;
+	  torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-8.7628* motor[1].angle * motor[1]. angle + 6.0372 * motor[1].angle + 54.628) * motor[1].angle * 16.17822;		
+	  break;
+	case 4:
+	  /** v3 sheet 1 up 0.5 down 0.5 **/
+	  torque[0] = torque[2] + (-1.19672 * motor[0].angle * motor[0].angle + 0.080715 * motor[0].angle + 9.855825) * 1000 * motor[0].angle;
+	  torque[1] = torque[3] + (-1.19672 * motor[1].angle * motor[1].angle + 0.080715 * motor[1].angle + 9.855825) * 1000 * motor[1].angle;
+	  break;
+	case 5:
+	  /** v4 sheet 4 up v3 & down v2 **/
+	  torque[0] = torque[2] + (-0.577883 * motor[0].angle * motor[0].angle - 0.72674		* motor[0].angle + 9.7339) * 1000 * motor[0].angle;
+	  torque[1] = torque[3] + (-0.577883 * motor[1].angle * motor[1].angle - 0.72674 		* motor[1].angle + 9.7339) * 1000 * motor[1].angle;
+	  break;
+	  
+	case 6:
+	  torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * arm_sin_f32(motor[0].angle) * 1000;
+	  torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * arm_sin_f32(motor[1].angle) * 1000;
+	  break;
+	}
+	
 	switch(arms)
 	{
-	case 'R' :	// actuating Right arm, node id 1, 3(motor[0], motor[2])
+	/* actuating Right arm, node id 1, 3(motor[0], motor[2]) */
+	case 'R' :
 	  torque[1] = 0;
 	  torque[3] = 0;	  
 	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
-	  else
-	  {
-		switch(trq_prof[1])
-		{
-		case 1:
-		  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (20.736* theta2[0] * theta2[0] - 36.225* theta2[0] - 83.9244) * theta2[0]  * (-8.153);
-		  //		  torque[2] = (104.187* theta2[0] * theta2[0] - 182.01 * theta2[0] - 421.674) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
-		  break;
-		case 2:
-		  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[0] * theta2[0] - 26 * theta2[0] - 87.0745) * theta2[0]  * (-8.153);
-		  //		  torque[2] = (82.835 * theta2[0] * theta2[0] - 130.61 * theta2[0] - 437.5) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
-		  break;
-		case 3:
-		  torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[0] * theta2[0] - 23.9016 * theta2[0] - 74.8051) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		  //		  torque[2] = (70 * theta2[0] * theta2[0] - 120.1 * theta2[0] - 375.8546) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		  break;
-		}	
-	  }
 	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
-	  else
-	  {
-		switch(trq_prof[0])
-		{
-		case 1:
-		  torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-6.8379 * motor[0].angle * motor[1]. angle + 0.6738 * motor[0].angle + 59.3539) * motor[0].angle * 16.17822;
-		  //		  torque[0] = torque[2] + (-69.60879 * motor[0].angle * motor[0].angle + 6.85919* motor[0].angle + 604.21204) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		  break;
-		default:  
-		  torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[0].angle * motor[0]. angle + 3.6319 * motor[0].angle + 52.0854) * motor[0].angle * 16.17822;
-		  //		  torque[0] = torque[2] + (-72.2326 * motor[0].angle * motor[0].angle + 36.97* motor[0].angle + 530.22) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		  break;
-		}
-	  }
+	  
 	  torque[2] = torque[2] * trq_offset[2];
 	  torque[0] = torque[0] * trq_offset[0];	
 	  break;
 	  
+	/* actuating Left arm, node id 2, 4(motor[1], motor[3]) */
 	case 'L' :
 	  torque[0] = 0;
 	  torque[2] = 0;	    
-	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
-	  else
-	  {
-		switch(trq_prof[1])
-		{
-		case 1:
-		  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (20.736* theta2[1] * theta2[1] - 36.225* theta2[1] - 83.9244) * theta2[1]  * (-8.153);
-		  //		  torque[3] = (104.187* theta2[1] * theta2[1] - 182.01 * theta2[1] - 421.674) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
-		  break;
-		case 2:
-		  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[1] * theta2[1] - 26 * theta2[1] - 87.0745) * theta2[1]  * (-8.153);
-		  //		  torque[3] = (82.835 * theta2[1] * theta2[1] - 130.61 * theta2[1] - 437.5) * theta2[1]  * (-8.153);	//up 0.5 down 0.5		  
-		  break;
-		case 3:
-		  torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[1] * theta2[1] - 23.9016 * theta2[1] - 74.8051) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		  //		  torque[3] = (70 * theta2[1] * theta2[1] - 120.1 * theta2[1] - 375.8546) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		  break;
-		}	
-	  }
-	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
-	  else
-	  {
-		switch(trq_prof[0])
-		{
-		case 1:
-		  torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-6.8379 * motor[0].angle * motor[1]. angle + 0.6738 * motor[1].angle + 59.3539) * motor[1].angle * 16.17822;
-		  //		  torque[1] = torque[3] + (-69.60879 * motor[1].angle * motor[1].angle + 6.85919* motor[1].angle + 604.21204) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		  break;
-		case 2:
-		  torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[1].angle * motor[1]. angle + 3.6319 * motor[1].angle + 52.0854) * motor[1].angle * 16.17822;
-		  //		  torque[1] = torque[3] + (-72.2326 * motor[1].angle * motor[1].angle + 36.97* motor[1].angle + 530.22) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		  break;
-		}
-	  }	  
+	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;	  
+	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;	  
 	  torque[3] = torque[3] * trq_offset[3];
 	  torque[1] = torque[1] * trq_offset[1];	  
 	  break;
-	  
+	  /* actuating both arms */
 	case 'B' :
-	  switch(trq_prof[1])
-	  {
-	  case 1:
-		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (20.736* theta2[0] * theta2[0] - 36.225* theta2[0] - 83.9244) * theta2[0]  * (-8.153);
-		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (20.736* theta2[1] * theta2[1] - 36.225* theta2[1] - 83.9244) * theta2[1]  * (-8.153);
-		//			torque[2] = (104.187* theta2[0] * theta2[0] - 182.01 * theta2[0] - 421.674) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
-		//			torque[3] = (104.187* theta2[1] * theta2[1] - 182.01 * theta2[1] - 421.674) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
-		break;
-	  case 2:
-		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[0] * theta2[0] - 26 * theta2[0] - 87.0745) * theta2[0]  * (-8.153);
-		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (16.4864* theta2[1] * theta2[1] - 26 * theta2[1] - 87.0745) * theta2[1]  * (-8.153);
-		//		  torque[2] = (82.835 * theta2[0] * theta2[0] - 130.61 * theta2[0] - 437.5) * theta2[0]  * (-8.153);	//up 0.5 down 0.5
-		//		  torque[3] = (82.835 * theta2[1] * theta2[1] - 130.61 * theta2[1] - 437.5) * theta2[1]  * (-8.153);	//up 0.5 down 0.5
-		break;
-	  case 3:
-		/** up 0.3 down 0.7 통합 문서1 Sheet 9 **/
-		//		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[0] * theta2[0] - 23.9016 * theta2[0] - 74.8051) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		//		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (13.9318 * theta2[1] * theta2[1] - 23.9016 * theta2[1] - 74.8051) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		//		  torque[2] = (70 * theta2[0] * theta2[0] - 120.1 * theta2[0] - 375.8546) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;  ver.1 
-		
-		/** up 0.5 down 0.5 v2 Sheet 2 upper arm angle 90°**/
-		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * (1.902 * theta2[0] * theta2[0] + 39.3152 * theta2[0] - 146.0728) * theta2[0]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * (1.902 * theta2[1] * theta2[1] + 39.3152 * theta2[1] - 146.0728) * theta2[1]  * (-8.153); // up 0.5 down 0.5, -8.153 = gear_ratio[3] * rated_torque / 1000.0;
-		//		  torque[2] = (10.7849 * theta2[0] * theta2[0] + 230.8379* theta2[0] - 857.6604) * theta2[0]  * (-8.153); //  ver.2 08.08 @ 90degree		
-		break;		
-		
-	  case 4:
-		torque[2] = (cg_forearm * weight_forearm + l2 * weight) * arm_sin_f32(theta2[0]) * 1000;
-		torque[3] = (cg_forearm * weight_forearm + l2 * weight) * arm_sin_f32(theta2[1]) * 1000;
-		break;		
-	  }
-	  
-	  switch(trq_prof[0])
-	  {
-	  case 1:
-		torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-6.8379 * motor[0].angle * motor[1]. angle + 0.6738 * motor[0].angle + 59.3539) * motor[0].angle * 16.17822;
-		torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-6.8379 * motor[0].angle * motor[1]. angle + 0.6738 * motor[1].angle + 59.3539) * motor[1].angle * 16.17822;
-		//			torque[0] = torque[2] + (-69.60879 * motor[0].angle * motor[0].angle + 6.85919* motor[0].angle + 604.21204) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		//			torque[1] = torque[3] + (-69.60879 * motor[1].angle * motor[1].angle + 6.85919* motor[1].angle + 604.21204) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		break;
-	  case 2:
-		/** ver 1 **/
-		torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[0].angle * motor[0]. angle + 3.6319 * motor[0].angle + 52.0854) * motor[0].angle * 16.17822;
-		torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-7.0957* motor[1].angle * motor[1]. angle + 3.6319 * motor[1].angle + 52.0854) * motor[1].angle * 16.17822;
-		//			torque[0] = torque[2] + (-72.2326 * motor[0].angle * motor[0].angle + 36.97* motor[0].angle + 530.22) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		//			torque[1] = torque[3] + (-72.2326 * motor[1].angle * motor[1].angle + 36.97* motor[1].angle + 530.22) *  motor[1].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		break;
-	  case 3:
-		/** v2 sheet 5 up 0.5 down 0.5**/
-		//			torque[0] = torque[2] + (-94.18751475 * motor[0].angle * motor[0].angle + 64.89141175 * motor[0].angle + 587.1707543) *  motor[0].angle * 16.17822; // up 0.4 down 0.6 16.17822 = gear_ratio[0] * rated_torque / 1000.0;
-		torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * (-8.7628* motor[0].angle * motor[0]. angle + 6.0372 * motor[0].angle + 54.628) * motor[0].angle * 16.17822;
-		torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * (-8.7628* motor[1].angle * motor[1]. angle + 6.0372 * motor[1].angle + 54.628) * motor[1].angle * 16.17822;		
-		break;
-		
-	  case 4:
-		torque[0] = torque[2] + (cg_upperarm * weight_upperarm + l1 * weight) * arm_sin_f32(motor[0].angle) * 1000;
-		torque[1] = torque[3] + (cg_upperarm * weight_upperarm + l1 * weight) * arm_sin_f32(motor[1].angle) * 1000;
-		break;
-	  }
-	  
 	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
 	  else	torque[2] = torque[2] * trq_offset[2];
 	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
@@ -562,6 +524,7 @@ void TRQ_Calc()
 	default :
 	  torque[0] = 0;	torque[1] = 0;	torque[2] = 0;	torque[3] = 0;
 	}
+	
 	if(TRQ_ON_FLAG)
 	{
 	  trq_cnt_new = HAL_GetTick() - trq_cnt_old;
@@ -582,10 +545,12 @@ void TRQ_Calc()
 	  for(int i=0;i<4;i++)
 	  {
 		torque[i] = torque[i] * (cnt_max/2 - trq_cnt_new)/(cnt_max/2);
-		if(torque[i] < 0.001)	torque[i] = 0;;
+		if(torque[i] < 0.001)	torque[i] = 0;
 	  }
 	}
   }	
+  
+  /* gear efficiency */
   for(int i=0;i<4;i++)
   {
 	motor[i].Target_torque = (int16_t)(torque[i] / gear_ratio[i] / rated_torque * 1000.0  * gear_efficiency[i]);
@@ -623,7 +588,7 @@ void TRQ_Calc_2(void)
 	
 	torque[3] = (l2 * weight + cg_forearm * weight_forearm) * arm_sin_f32(motor[1].angle + motor[3].angle);
 	torque[1] = torque[3] + (l1 * weight + cg_upperarm + weight_upperarm) * arm_sin_f32(motor[1].angle);
-
+	
 	if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
 	else	torque[3] = torque[3] * trq_offset[3];
 	if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
@@ -659,8 +624,8 @@ void TRQ_Calc_2(void)
   }
 }
 
-int inc1 = 40;
-int inc2 = 40;
+int inc1 = 50;
+int inc2 = 50;
 bool sign1_flag = true;
 bool sign3_flag = true;
 GPIO_PinState pin_state_old = GPIO_PIN_SET;
@@ -695,8 +660,8 @@ void POS_Calc()
 	  tp[1] = tp[1] + inc1;
 	}
   }
-  if(tp[1] >= motor[3].Position_zero)		tp[1] = motor[3].Position_zero - abs(inc1);
-
+  if(tp[1] >= motor[3].Position_zero)		tp[1] = motor[3].Position_zero;
+  
   
   /**		tp[0] shoulder angle torque check		**/
   
@@ -731,7 +696,6 @@ void POS_Calc()
 void POS_Calc_2(void)
 {
   static uint16_t cnt, cnt_new;
-  static double tp_degree[2] = {0, 0};
   static int32_t tp_goal[2] = {0, 0};
   static int32_t tp_old[2] = {0, 0};
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
@@ -789,12 +753,12 @@ void INIT_CAN()
 	  SET_SDO(i, sizeof(uint32_t), FlW_ERR_WIN, 0x00, 2500);
 	}	
 	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
-	SET_SDO(i, sizeof(uint32_t), MAX_MOTOR_SPEED, 0x00, 4000);		// max motor speed 4000 RPM
+	SET_SDO(i, sizeof(uint32_t), MAX_MOTOR_SPEED, 0x00, 5600);		// max motor speed 4000 RPM
 	SET_SDO(i, sizeof(uint32_t), TRQ_CONST, 0x05, 42172);				// rated torque 167 / nominal current 3960 * 1000
 	
 	DS_TRANS(i, DV);
   }
-  HAL_Delay(10);
+  HAL_Delay(50);
   NMT_TRANS(PRE);
   //	while(!__HAL_FDCAN_GET_FLAG(&hfdcan1, FDCAN_FLAG_RX_FIFO0_NEW_MESSAGE)){}
 }
@@ -806,7 +770,7 @@ int Check_status(void)
   }else if(motor[0].Statusword != motor[1].Statusword || motor[0].Statusword != motor[2].Statusword || motor[0].Statusword != motor[3].Statusword || motor[1].Statusword != motor[2].Statusword \
 	|| motor[1].Statusword != motor[3].Statusword || motor[2].Statusword != motor[3].Statusword)
   {
-//	STATUS_FLAG = true;	
+	//	STATUS_FLAG = true;	
 	return 1;		// different state
   }
   else if((motor[0].Statusword >> 9) == 0x00)	return 2;		// SDO state

@@ -111,7 +111,7 @@
         </option>
         <option>
           <name>GRuntimeLibThreads</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CoreVariant</name>
@@ -216,6 +216,7 @@
           <name>CCDefines</name>
           <state>USE_HAL_DRIVER</state>
           <state>STM32G431xx</state>
+          <state>STM32_THREAD_SAFE_STRATEGY=2</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1059,6 +1060,9 @@
       <name>EWARM</name>
       <file>
         <name>$PROJ_DIR$\startup_stm32g431xx.s</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/dlib_lock_glue.c</name>
       </file>
     </group>
     <group>

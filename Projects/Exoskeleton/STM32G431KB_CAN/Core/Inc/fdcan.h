@@ -24,17 +24,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
-  /* Includes ------------------------------------------------------------------*/
+
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
+/* USER CODE BEGIN Includes */
   
-  /* USER CODE BEGIN Includes */
-  
-  /* USER CODE END Includes */
-  
-  extern FDCAN_HandleTypeDef hfdcan1;
-  
-  /* USER CODE BEGIN Private defines */
+/* USER CODE END Includes */
+
+extern FDCAN_HandleTypeDef hfdcan1;
+
+/* USER CODE BEGIN Private defines */
 #define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
 #define rad30	0.5236
 #define rad60	1.0472
@@ -121,15 +121,15 @@ extern "C" {
   typedef struct{
 	uint8_t		id;
 	Obj_dict_t	Object;
-	uint16_t		Statusword;
+	uint16_t	Statusword;
 	int16_t		Torque_actual;
 	int32_t		Position_actual;
 	double		angle;
-	uint16_t		Controlword;
+	uint16_t	Controlword;
 	int16_t		Target_torque;
 	int32_t		Target_position;
 	uint8_t		error_index;
-	uint16_t		Error_code[5];
+	uint16_t	Error_code[5];
 	int32_t		Position_zero;
 	int32_t		value;
 	void (*parsing_SDO)();
@@ -137,11 +137,11 @@ extern "C" {
   } Motor_t;
   extern Motor_t motor[4];
   
-  /* USER CODE END Private defines */
-  
-  void MX_FDCAN1_Init(void);
-  
-  /* USER CODE BEGIN Prototypes */
+/* USER CODE END Private defines */
+
+void MX_FDCAN1_Init(void);
+
+/* USER CODE BEGIN Prototypes */
   
   //  void NMT_TRANS(uint8_t id, NMT_state_t state);
   void NMT_TRANS(NMT_state_t state);
@@ -161,8 +161,8 @@ extern "C" {
   int Check_status(void);
   void TRQ_Calc_2(void);
   void POS_Calc_2(void);
-  /* USER CODE END Prototypes */
-  
+/* USER CODE END Prototypes */
+
 #ifdef __cplusplus
 }
 #endif
