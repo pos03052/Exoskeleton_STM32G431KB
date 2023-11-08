@@ -36,16 +36,18 @@ extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
 #define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
-#define rad30	0.5236
-#define rad60	1.0472
-#define rad90	1.5708
-#define rad120	2.0944
-#define rad135	2.3562
+#define rad30			0.5236
+#define rad60			1.0472
+#define rad90			1.5708
+#define rad120			2.0944
+#define rad135			2.3562
+#define trq_offset_u	5
+#define trq_offset_f	2.5
   
   typedef enum{
 	OP			=	0x01,
 	PRE			=	0x80,
-	STOP			=	0x02,
+	STOP		=	0x02,
 	RESET_COMM	=	0x82,
 	RESET_NODE	=	0x81
   }NMT_state_t;
@@ -65,19 +67,19 @@ extern FDCAN_HandleTypeDef hfdcan1;
   
   typedef enum{
 	def				= 0x0000,
-	MOP 				= 0x6060,
+	MOP 			= 0x6060,
 	CONTROLWORD		= 0x6040,
 	STATUSWORD		= 0x6041,
-	CAN_bit_rate 		= 0x2001,
+	CAN_bit_rate 	= 0x2001,
 	Error_code		= 0x603F,
 	Position_actual	= 0x6064,
-	Target_torque		= 0x6071,
-	Error_history		= 0x1003,
-	POWER_SUPPLY		= 0x2200,
-	RATED_TRQ			= 0x6076,
+	Target_torque	= 0x6071,
+	Error_history	= 0x1003,
+	POWER_SUPPLY	= 0x2200,
+	RATED_TRQ		= 0x6076,
 	MOTOR_DATA		= 0x3001,
 	MAX_MOTOR_SPEED	= 0x6080,
-	TRQ_CONST			= 0x3001,
+	TRQ_CONST		= 0x3001,
 	Target_position	= 0x607A,
 	RXPDO1			= 0x1600,
 	Temperature		= 0x3201,
@@ -161,6 +163,8 @@ void MX_FDCAN1_Init(void);
   int Check_status(void);
   void TRQ_Calc_2(void);
   void POS_Calc_2(void);
+  void TRQ_F(double *angle1, double *angle2, uint8_t *trq_prof);
+  void TRQ_Calc_3(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

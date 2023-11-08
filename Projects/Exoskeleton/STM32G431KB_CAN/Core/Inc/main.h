@@ -64,13 +64,22 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
-extern double l1, l2, cg_upperarm, cg_forearm, weight, weight_upperarm, weight_forearm, rated_torque;
+#define EPOS4_CTRL_PERIOD 6
+extern double l1, l2, cg_upperarm, cg_forearm, assist_force, weight_upperarm, weight_forearm, rated_torque;
 extern double motor_offset[4], gear_ratio[4], gear_efficiency[4], trq_offset[4], tp_degree[2];
 extern GPIO_PinState pin_state;
 extern float error_res[2];
 extern int32_t tp[2];
 extern uint8_t status, m1_flag, m1_flag_old;
 extern bool STATUS_FLAG, stretch_btn;
+typedef struct{
+  double length;
+  double weight;
+  double cog;  
+}link_t;
+extern link_t link[2];
+
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

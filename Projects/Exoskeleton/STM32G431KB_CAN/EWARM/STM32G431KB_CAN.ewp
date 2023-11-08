@@ -217,6 +217,11 @@
           <state>USE_HAL_DRIVER</state>
           <state>STM32G431xx</state>
           <state>STM32_THREAD_SAFE_STRATEGY=2</state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
