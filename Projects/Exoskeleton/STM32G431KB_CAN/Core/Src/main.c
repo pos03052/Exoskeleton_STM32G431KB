@@ -80,7 +80,7 @@ double tp_degree[2] = {0, 0};
 
 bool UART_FLAG		 		= false;
 bool QS_flag				= false;
-bool NMT_FLAG				= false;
+bool NMT_FLAG				= true;
 bool DS_FLAG				= false;
 bool STATUS_FLAG			= false;
 bool SET_ANGLE_ZERO_FLAG 	= false;
@@ -400,11 +400,11 @@ void loop_sync(void)
 			trq_offset[1] = arm_cos_f32(angles_old[0]-PI/2);trq_offset[3] = arm_cos_f32(angles_old[0]-PI/2);
 		  }
 		}
-		//		TRQ_Calc();
+		TRQ_Calc();
 		//		POS_Calc();
 		//	  TRQ_Calc_2();
 		//		POS_Calc_2();
-		TRQ_Calc_3();
+		//		TRQ_Calc_3();
 		for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
 	  }else
 	  {
@@ -441,7 +441,7 @@ void loop_async(void)
 			motor[2].Error_code[(motor[2].error_index+4)%5],
 			motor[3].Error_code[(motor[3].error_index+4)%5]); 
 	//UART_FLAG = false;
-	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
+//	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
   }
   if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	STATUS_FLAG = true;}
   if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	STATUS_FLAG = true;}
@@ -503,6 +503,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 		if(motor[node_id].parsing_PDO(&motor[node_id], node_id) != 1){
 		  QS_flag = true;
 		  NMT_state = PRE;
+		  NMT_FLAG = true;
 		}
 		break;
 		// case PDO2:

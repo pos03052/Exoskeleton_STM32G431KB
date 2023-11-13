@@ -34,7 +34,7 @@ CAN_HandleTypeDef hcan = {
 
 double FA_limit_angle[2]	= {1.9628, 0};			//	112.46도, 0도
 double UA_limit_angle[2]	= {2.5187, -1.321};	//144.31도, -75.69도
-uint8_t CST_mode[4] = {1, 1, 1, 0};
+uint8_t CST_mode[4] = {1, 1, 1, 1};
 uint32_t max_timeout_cnt = 100000;
 bool RECV_FLAG = false;
 bool TRQ_ON_FLAG = false;
@@ -44,6 +44,7 @@ char arms = 'B';
 double f1[2], f2[2] = {0, };
 double torque[4] = {0, };
 double deg2rad_5 = 0.0873; // 상, 하방 limit  5도
+double gear_static_friction_trq[2] = {0.55, 0.35};
 uint8_t torque_profile[2] = {1, 1};
 uint16_t cnt_max = 2000;
 /* USER CODE END 0 */
@@ -380,7 +381,8 @@ void Clear_Device_Errors(uint8_t id)
   //  SET_SDO(id, sizeof(uint8_t), Error_history, 0, 0);
   DS_TRANS(id, FR);
   READ_STATUS(id);
-  while(!RECV_FLAG || (motor[id-1].Object != STATUSWORD));
+//  while(!RECV_FLAG || (motor[id-1].Object != STATUSWORD));
+  while(!RECV_FLAG);
 }
 void TRQ_F(double *angle1, double *angle2, uint8_t *trq_prof){
   /* trq profile selection */
@@ -477,6 +479,7 @@ void TRQ_Calc()
   const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_5, UA_limit_angle[1] + deg2rad_5};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
   static double theta1[2] = {0, };
   static double theta2[2] = {0, };
+  static double target_force = 2 * 9.80665;
   static uint16_t trq_cnt_old;
   static uint16_t trq_cnt_new;
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
@@ -484,23 +487,19 @@ void TRQ_Calc()
   {
 	if(TRQ_ON_FLAG)
 	{
-	  TRQ_ON_FLAG = false;
-	}
-	if(!TRQ_OFF_FLAG)
-	{
 	  trq_cnt_old = HAL_GetTick();
+	  TRQ_ON_FLAG = false;
 	  TRQ_OFF_FLAG = true;
 	}
   }
   else	// if torque trigger is ON
   {
 	if(!TRQ_ON_FLAG)
-	{
+	{	  
 	  trq_cnt_old = HAL_GetTick();
 	  TRQ_ON_FLAG = true;
 	  TRQ_OFF_FLAG = false;
 	}
-	
 	theta1[0] = motor[0].angle;
 	theta1[1] = motor[1].angle;
 	theta2[0] = motor[0].angle + motor[2].angle;		// Right forearm angle
@@ -509,32 +508,45 @@ void TRQ_Calc()
 	TRQ_F(theta1, theta2, torque_profile);
 	
 	if(TRQ_ON_FLAG)
-	  assist_force = 19.6133;
 	{
 	  trq_cnt_new = HAL_GetTick() - trq_cnt_old;
-	  if(trq_cnt_new < cnt_max)
-	  {
-		assist_force = assist_force * trq_cnt_new / cnt_max;
-	  }
+	  if(trq_cnt_new < cnt_max)	assist_force = target_force * (double)trq_cnt_new / (double)cnt_max;
+	  else	assist_force = 19.6133;
 	}
   }
+  
   if(TRQ_OFF_FLAG)
   {
 	trq_cnt_new = HAL_GetTick() - trq_cnt_old;
 	if(trq_cnt_new < cnt_max/2)
 	{
-	  for(int i=0;i<4;i++)
+	  assist_force = assist_force * (cnt_max/2 - trq_cnt_new)/(cnt_max/2);
+	  if(assist_force < 0.1)
 	  {
-		assist_force = assist_force * (cnt_max/2 - trq_cnt_new)/(cnt_max/2);
-		if(assist_force < 0.1)	assist_force = 0;
+		assist_force = 0;
+		TRQ_OFF_FLAG = false;
 	  }
 	}
   }
-	
-	torque[2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[0];
-	torque[3] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[1];
-	torque[0] = torque[2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[0];
-	torque[1] = torque[3] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[1];	
+  
+	for(int i=0;i<2;i++)
+	{
+	  torque[i+2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[i];
+	  torque[i] = torque[i+2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[i];
+	  if(TRQ_ON_FLAG)
+	  {
+		if(torque[i+2] <= gear_static_friction_trq[1])	torque[i+2] = gear_static_friction_trq[1];
+		if(torque[i] <= gear_static_friction_trq[0])	torque[i] = gear_static_friction_trq[0];
+	  }else if(!TRQ_OFF_FLAG)
+	  {
+		torque[i] = 0;
+		torque[i+2] = 0;
+	  }
+	}
+//	torque[2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[0];
+//	torque[3] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[1];
+//	torque[0] = torque[2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[0];
+//	torque[1] = torque[3] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[1];	
 	
 	switch(arms)
 	{
@@ -860,6 +872,7 @@ void INIT_CAN()
 //	SET_SDO(i, sizeof(uint8_t), CAN_bit_rate, 0x00, 0);	
 //	SET_SDO(i, sizeof(uint32_t), MAX_MOTOR_SPEED, 0x00, 5600);		// max motor speed 4000 RPM
 	SET_SDO(i, sizeof(uint32_t), TRQ_CONST, 0x05, 42172);				// rated torque 167 / nominal current 3960 * 1000
+	assist_force = 0;
 	
 //	HAL_Delay(100);
 	DS_TRANS(i, DV);

@@ -12,22 +12,22 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <PlDriver>
-        <FirstRun>0</FirstRun>
         <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32G431KB.ddf</MemConfigValue>
+        <FirstRun>0</FirstRun>
     </PlDriver>
     <StLinkDriver>
-        <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
-        <stlinkfoundProbes />
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <CStepIntDis>_ 0</CStepIntDis>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>2</stlinkResetStrategy>
+        <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
+        <stlinkfoundProbes>001C00393331510F34333834:003B00155553500C20393256:</stlinkfoundProbes>
     </StLinkDriver>
     <ArmDriver>
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>3374841749</Checksum>
+        <Checksum>3859148284</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -179,15 +179,32 @@
         <ShowTimeSum>1</ShowTimeSum>
         <SumSortOrder>0</SumSortOrder>
     </EventLog>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Bp0>_ 0 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
+        <Bp1>_ 0 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
+        <Bp2>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp2>
+        <Bp3>_ 1 "EMUL_DATA_LOG" "motor[1].angle" 0 0</Bp3>
+        <Bp4>_ 1 "EMUL_DATA_LOG" "motor[3].angle" 0 0</Bp4>
+        <Bp5>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp5>
+        <Bp6>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp6>
+        <Bp7>_ 0 "EMUL_DATA_LOG" "pin_state2" 0 0</Bp7>
+        <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.351.4" 0 0 1 "" 0 "" 0</Bp8>
+        <Bp9>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.244.3" 0 0 1 "" 0 "" 0</Bp9>
+        <Bp10>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.372.4" 0 0 1 "" 0 "" 0</Bp10>
+        <Count>11</Count>
+    </Breakpoints2>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
         <Category>_ 0</Category>
     </LogFile>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -201,23 +218,8 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
-        <Bp1>_ 0 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
-        <Bp2>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp2>
-        <Bp3>_ 1 "EMUL_DATA_LOG" "motor[1].angle" 0 0</Bp3>
-        <Bp4>_ 1 "EMUL_DATA_LOG" "motor[3].angle" 0 0</Bp4>
-        <Bp5>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp5>
-        <Bp6>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp6>
-        <Bp7>_ 0 "EMUL_DATA_LOG" "pin_state2" 0 0</Bp7>
-        <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.561.2" 0 0 1 "" 0 "" 0</Bp8>
-        <Count>9</Count>
-    </Breakpoints2>
-    <Aliases>
-        <Count>0</Count>
-        <SuppressDialog>0</SuppressDialog>
-    </Aliases>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
 </settings>
