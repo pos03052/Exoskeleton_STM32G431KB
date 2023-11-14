@@ -491,8 +491,8 @@ void TRQ_Calc()
   static double target_force = 2 * 9.80665;
   static uint16_t trq_cnt_old;
   static uint16_t trq_cnt_new;
-  pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
-  if(pin_state == GPIO_PIN_SET)		//stretch_btn flag 추가하기
+  
+  if(stretch_btn_r == 0)		//stretch_btn flag 추가하기
   {
 	if(TRQ_ON_FLAG)
 	{
@@ -556,27 +556,8 @@ void TRQ_Calc()
   //	torque[3] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[1];
   //	torque[0] = torque[2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[0];
   //	torque[1] = torque[3] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[1];	
-  
-  if(Sensor_FLAG){
-	if(stretch_btn_r){	/* actuating Right arm, node id 1, 3(motor[0], motor[2]) */
-	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
-	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
-	  torque[2] = torque[2] * trq_offset[2];
-	  torque[0] = torque[0] * trq_offset[0];
-	}else{
-	  torque[0] = 0;
-	  torque[2] = 0;
-	}
-	if(stretch_btn_l){	/* actuating Left arm, node id 2, 4(motor[1], motor[3]) */	  
-	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;	  
-	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;	  
-	  torque[3] = torque[3] * trq_offset[3];
-	  torque[1] = torque[1] * trq_offset[1];	  
-	}else{
-	  torque[1] = 0;
-	  torque[3] = 0;
-	}
-  }else{  /* actuating both arms */
+  pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
+  if(pin_state == GPIO_PIN_RESET){  /* actuating both arms */
 	if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
 	else	torque[2] = torque[2] * trq_offset[2];
 	if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
@@ -586,6 +567,13 @@ void TRQ_Calc()
 	else	torque[3] = torque[3] * trq_offset[3];
 	if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
 	else	torque[1] = torque[1] * trq_offset[1];	  	  
+  }
+  else
+  {
+	for(int i=0;i<4;i++)
+	{
+	  torque[i] = 0;
+	}
   }
 	
 //	if(TRQ_ON_FLAG)

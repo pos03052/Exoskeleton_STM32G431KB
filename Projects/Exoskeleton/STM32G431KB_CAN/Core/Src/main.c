@@ -73,8 +73,8 @@ double gear_ratio[4] 	= {-96.875, 96.875, 48.82, -48.82};
 
 double period			= 2000.0;
 double amp				= 50.0;
-double gear_efficiency[4] 	= {1.0, 1.0, 1.0, 1.0};
-double trq_offset[4]	= {0.9, 0.9, 0.9, 0.9};
+double gear_efficiency[4] 	= {0.9, 0.9, 0.9, 0.9};
+double trq_offset[4]	= {1.0, 1.0, 1.0, 1.0};
 double tp_degree[2] = {0, 0};
 
 bool UART_FLAG		 		= false;
@@ -391,8 +391,8 @@ void loop_sync(void)
 		{
 		  if(angles[2] != 0 || angles[3] != 0)
 		  {
-			motor[0].angle = motor[0].angle - rad_i2c[1];
-			motor[1].angle = motor[1].angle + rad_i2c[4];
+			motor[0].angle = motor[0].angle + rad_i2c[1];
+			motor[1].angle = motor[1].angle - rad_i2c[4];
 			trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
 			trq_offset[1] = arm_cos_f32(rad_i2c[3]-PI/2);	trq_offset[3] = arm_cos_f32(rad_i2c[3]-PI/2);
 			angles_old[0] = rad_i2c[3];
