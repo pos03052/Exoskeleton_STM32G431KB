@@ -41,6 +41,7 @@ void serial_print(SerialHandler *h, const char* _str);
 void serial_write(SerialHandler *h, uint16_t _size);
 int16_t serial_read(SerialHandler *h);
 uint32_t serial_available(SerialHandler *h);
+void serial_flush(SerialHandler *h, uint32_t timeout);
 
 void init_vcp(SerialHandler *h);
 void run_vcp(SerialHandler *h);

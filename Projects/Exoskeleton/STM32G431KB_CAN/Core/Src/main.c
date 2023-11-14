@@ -20,7 +20,6 @@
 #include "main.h"
 #include "dma.h"
 #include "fdcan.h"
-#include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -66,7 +65,7 @@ void setup(void);
 void loop_sync(void);
 void loop_async(void);
 int16_t func_sin(uint32_t freq);
-void I2C_DMA_COMM();
+//void I2C_DMA_COMM();
 
 double assist_force		= 1.9985 * 9.80665;	// 2kgf
 double rated_torque 	= 167.001;
@@ -75,7 +74,7 @@ double gear_ratio[4] 	= {-96.875, 96.875, 48.82, -48.82};
 double period			= 2000.0;
 double amp				= 50.0;
 double gear_efficiency[4] 	= {1.0, 1.0, 1.0, 1.0};
-double trq_offset[4]	= {1.0, 1.0, 1.0, 1.0};
+double trq_offset[4]	= {0.9, 0.9, 0.9, 0.9};
 double tp_degree[2] = {0, 0};
 
 bool UART_FLAG		 		= false;
@@ -115,6 +114,7 @@ uint8_t id_sum			 	= 0;
 uint8_t id_cnt				= 0;
 uint8_t status				= 0;
 
+uint8_t EPOS4_CTRL_PERIOD	= 10;
 float error_res[2]		= {0, };
 
 //////////////////////////////////////// I2C sensor variables
@@ -145,8 +145,8 @@ float error_res[2]		= {0, };
 /* USER CODE BEGIN 0 */
 link_t link[2] = {
   // length, weight, center of gravity
-  {0.4075, 0.55392 * 9.80665, 0.25748},	// link 0: upper arm
-  {0.285, 0.17628 * 9.80665, 0.13228}		// link 1: forearm
+  {0.4225, 0.55392 * 9.80665, 0.26887},	// link 0: upper arm
+  {0.315, 0.17462 * 9.80665, 0.16001}		// link 1: forearm
 };
 
 /* Timer interrupt function executes every 1 ms */
@@ -183,7 +183,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_FDCAN1_Init();
-  MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
@@ -191,8 +190,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   setup();
+  serial_print(&vcp, "s;");
   while (1)
   {
+	
 	loop_async();
     /* USER CODE END WHILE */
 
@@ -257,6 +258,8 @@ void setup(void)
   
   /* USART for Virtual com port */
   vcp.init(&vcp);
+  
+  __HAL_UART_ENABLE_IT(vcp.huart, UART_IT_ERR);
   
   if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK)		//UART_RX_BUFF_SIZE = 256, TX = 128
   {
@@ -332,23 +335,25 @@ sprintf 또는 memcpy 사용
 START BIT(0x02) END BIT (0x03 or 전체 데이터 길이)
 **/
 
-bool stretch_btn = false;
-float angles[4]={0};
+bool stretch_btn_l	= false;
+bool stretch_btn_r	= false;
+double angles[4]	= {0, };
+double rad_i2c[12]	= {0, };
 void parse_vcp(SerialHandler *h)
 {	
   /* h->tx_buffer parsing */
   // CAN1_x,CAN1_y,CAN2_x,CAN2_y,trigger\r
   static double deg2rad = 0.017453;
-  angles[0] = strtof(h->parsing.toks[0], NULL);
-  angles[1] = strtof(h->parsing.toks[1], NULL);
-  angles[2] = strtof(h->parsing.toks[2], NULL);
-  angles[3] = strtof(h->parsing.toks[3], NULL);
-  
+  for(int i=0;i<4;i++){
+	angles[i] = strtof(h->parsing.toks[i], NULL);
+	angles[i] /= 100.0;
+  }  
   rad_i2c[0] = angles[0] * deg2rad;
   rad_i2c[1] = angles[1] * deg2rad;
   rad_i2c[3] = angles[2] * deg2rad;
   rad_i2c[4] = angles[3] * deg2rad;
-  stretch_btn = atoi(h->parsing.toks[4]);
+  stretch_btn_l = atoi(h->parsing.toks[4]);
+  stretch_btn_r = atoi(h->parsing.toks[5]);
 }
 int32_t tp[2] = {0, };
 uint32_t CAN_cnt = 0;		//	PDO timer
@@ -444,7 +449,7 @@ void loop_async(void)
 //	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
   }
   if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	STATUS_FLAG = true;}
-  if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	STATUS_FLAG = true;}
+  if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	}//STATUS_FLAG = true;}
   if(QS_flag){	for(int i=1;i<5;i++){DS_TRANS(i, QS);}			QS_flag	= false;}    
   if(ANGLE_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);}	ANGLE_FLAG = false;}
   if(CLEAR_ERROR_FLAG){		for(int i=1;i<5;i++){Clear_Device_Errors(i);}	CLEAR_ERROR_FLAG = false;	STATUS_FLAG = true;}
@@ -452,7 +457,7 @@ void loop_async(void)
   if(GET_SDO_FLAG){	GET_SDO(id_temp, object, object_sub);	GET_SDO_FLAG = false;}
   if(SET_SDO_FLAG){	SET_SDO(id_temp, length_temp, object, object_sub, data_temp);	SET_SDO_FLAG = false;}  
   if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}	STATUS_FLAG = false;}
-  if(I2C_FLAG){	I2C_DMA_COMM();}
+//  if(I2C_FLAG){	I2C_DMA_COMM();}
   timer = HAL_GetTick() - tick;
 }
 int16_t func_sin(uint32_t freq)
@@ -552,79 +557,78 @@ uint8_t tx_buff[1] = {1};
 uint8_t rx_buff[12] = {0, };
 uint16_t mem_addr = 0x3d;
 double angle_i2c[12] = {0, };
-double rad_i2c[12] = {0, };
-void I2C_DMA_COMM()
-{
-  static double coef1 = 5.493164 / 1000;
-  static double coef2 = 0.0958738 / 1000;
-  do
-  {
-	if (HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)(0x51 << 1), (uint16_t)mem_addr, 1, tx_buff, 1) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}
-	
-  }
-  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
-  HAL_Delay(3);
-  do
-  {
-	if (HAL_I2C_Mem_Read_DMA(&hi2c1, (uint16_t)(0x51 << 1), (uint16_t)mem_addr, 1, &rx_buff[0], 6) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}	
-  }
-  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
-  
-  HAL_Delay(3);
-  
-  do
-  {
-	if (HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)(0x53 << 1), (uint16_t)mem_addr, 1, tx_buff, 1) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}	
-  }
-  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
-  HAL_Delay(3);
-  do
-  {
-	if (HAL_I2C_Mem_Read_DMA(&hi2c1, (uint16_t)(0x53 << 1), (uint16_t)mem_addr, 1, &rx_buff[6], 6) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}	
-  }
-  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF); 
-  HAL_Delay(3);
-  
-  angle_i2c[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef1;
-  angle_i2c[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef1;
-  angle_i2c[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef1;
-  angle_i2c[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef1;
-  angle_i2c[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef1;
-  angle_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef1;
-  
-  
-  rad_i2c[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef2;
-  rad_i2c[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef2;
-  rad_i2c[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef2;
-  rad_i2c[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef2;
-  rad_i2c[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef2;
-  rad_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef2;  
-  
-}
+/*void I2C_DMA_COMM()
+//{
+//  static double coef1 = 5.493164 / 1000;
+//  static double coef2 = 0.0958738 / 1000;
+//  do
+//  {
+//	if (HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)(0x51 << 1), (uint16_t)mem_addr, 1, tx_buff, 1) != HAL_OK)
+//	{
+//	  Error_Handler();
+//	}
+//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	{
+//	}
+//	
+//  }
+//  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
+//  HAL_Delay(3);
+//  do
+//  {
+//	if (HAL_I2C_Mem_Read_DMA(&hi2c1, (uint16_t)(0x51 << 1), (uint16_t)mem_addr, 1, &rx_buff[0], 6) != HAL_OK)
+//	{
+//	  Error_Handler();
+//	}
+//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	{
+//	}	
+//  }
+//  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
+//  
+//  HAL_Delay(3);
+//  
+//  do
+//  {
+//	if (HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)(0x53 << 1), (uint16_t)mem_addr, 1, tx_buff, 1) != HAL_OK)
+//	{
+//	  Error_Handler();
+//	}
+//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	{
+//	}	
+//  }
+//  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF);
+//  HAL_Delay(3);
+//  do
+//  {
+//	if (HAL_I2C_Mem_Read_DMA(&hi2c1, (uint16_t)(0x53 << 1), (uint16_t)mem_addr, 1, &rx_buff[6], 6) != HAL_OK)
+//	{
+//	  Error_Handler();
+//	}
+//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	{
+//	}	
+//  }
+//  while (HAL_I2C_GetError(&hi2c1) == HAL_I2C_ERROR_AF); 
+//  HAL_Delay(3);
+//  
+//  angle_i2c[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef1;
+//  angle_i2c[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef1;
+//  angle_i2c[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef1;
+//  angle_i2c[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef1;
+//  angle_i2c[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef1;
+//  angle_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef1;
+//  
+//  
+//  rad_i2c[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef2;
+//  rad_i2c[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef2;
+//  rad_i2c[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef2;
+//  rad_i2c[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef2;
+//  rad_i2c[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef2;
+//  rad_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef2;  
+//  
+//}
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){ //1khz timer
 //  
 //}
@@ -678,6 +682,13 @@ void I2C_DMA_COMM()
 //  }
 //}
 //////////////////////////////////////
+*/
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
+  serial_flush(&vcp, 1);
+  __HAL_UART_CLEAR_FLAG(vcp.huart, UART_CLEAR_OREF|UART_CLEAR_IDLEF|UART_CLEAR_NEF);
+  UART_cnt ++;
+  HAL_UART_DMAResume(vcp.huart);
+}
 /* USER CODE END 4 */
 
 /**

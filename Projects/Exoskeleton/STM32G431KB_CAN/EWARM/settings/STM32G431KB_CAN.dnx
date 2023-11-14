@@ -12,22 +12,22 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <PlDriver>
-        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32G431KB.ddf</MemConfigValue>
         <FirstRun>0</FirstRun>
+        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.0\arm\CONFIG\debugger\ST\STM32G431KB.ddf</MemConfigValue>
     </PlDriver>
     <StLinkDriver>
+        <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
+        <stlinkfoundProbes />
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <CStepIntDis>_ 0</CStepIntDis>
         <stlinkResetStyle>0</stlinkResetStyle>
         <stlinkResetStrategy>2</stlinkResetStrategy>
-        <stlinkserialNo>001C00393331510F34333834</stlinkserialNo>
-        <stlinkfoundProbes>001C00393331510F34333834:003B00155553500C20393256:</stlinkfoundProbes>
     </StLinkDriver>
     <ArmDriver>
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>3859148284</Checksum>
+        <Checksum>2188007535</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -95,16 +95,9 @@
         <Fmt8>FDCAN_RxHeaderTypeDef-Identifier	4	0</Fmt8>
         <Fmt9>FDCAN_TxHeaderTypeDef-DataLength	4	0</Fmt9>
         <Fmt10>FDCAN_TxHeaderTypeDef-Identifier	4	0</Fmt10>
-        <Fmt11>I2C_HandleTypeDef-ErrorCode	4	0</Fmt11>
-        <Fmt12>I2C_HandleTypeDef-pBuffPtr	1	0</Fmt12>
-        <Fmt13>I2C_TypeDef-CR1	1	0</Fmt13>
-        <Fmt14>I2C_TypeDef-CR2	1	0</Fmt14>
-        <Fmt15>I2C_TypeDef-ISR	1	0</Fmt15>
-        <Fmt16>I2C_TypeDef-OAR1	1	0</Fmt16>
-        <Fmt17>I2C_TypeDef-RXDR	1	0</Fmt17>
-        <Fmt18>Motor_t-Statusword	4	0</Fmt18>
-        <Fmt19>Motor_t-Target_torque	3	0</Fmt19>
-        <Fmt20>USART_TypeDef-ISR	4	0</Fmt20>
+        <Fmt11>Motor_t-Statusword	4	0</Fmt11>
+        <Fmt12>Motor_t-Target_torque	3	0</Fmt12>
+        <Fmt13>USART_TypeDef-ISR	1	0</Fmt13>
     </struct_types>
     <array_types>
         <Fmt0>uint16_t[5]	4	0</Fmt0>
@@ -192,10 +185,17 @@
         <Bp6>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp6>
         <Bp7>_ 0 "EMUL_DATA_LOG" "pin_state2" 0 0</Bp7>
         <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.351.4" 0 0 1 "" 0 "" 0</Bp8>
-        <Bp9>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.244.3" 0 0 1 "" 0 "" 0</Bp9>
-        <Bp10>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.372.4" 0 0 1 "" 0 "" 0</Bp10>
-        <Count>11</Count>
+        <Bp9>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.708.3" 0 0 1 "" 0 "" 0</Bp9>
+        <Bp10>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.244.3" 0 0 1 "" 0 "" 0</Bp10>
+        <Bp11>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.354.4" 0 0 1 "" 0 "" 0</Bp11>
+        <Bp12>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.531.2" 0 0 1 "" 0 "" 0</Bp12>
+        <Bp13>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.539.2" 0 0 1 "" 0 "" 0</Bp13>
+        <Count>14</Count>
     </Breakpoints2>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
     <LogFile>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
@@ -218,8 +218,4 @@
     <CallStackStripe>
         <ShowTiming>1</ShowTiming>
     </CallStackStripe>
-    <TermIOLog>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-    </TermIOLog>
 </settings>

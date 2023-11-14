@@ -35,7 +35,7 @@ CAN_HandleTypeDef hcan = {
 double FA_limit_angle[2]	= {1.9628, 0};			//	112.46도, 0도
 double UA_limit_angle[2]	= {2.5187, -1.321};	//144.31도, -75.69도
 uint8_t CST_mode[4] = {1, 1, 1, 1};
-uint32_t max_timeout_cnt = 100000;
+uint32_t max_timeout_cnt = 10000;
 bool RECV_FLAG = false;
 bool TRQ_ON_FLAG = false;
 bool TRQ_OFF_FLAG = false;
@@ -43,7 +43,7 @@ bool TRQ_OFF_FLAG = false;
 char arms = 'B';
 double f1[2], f2[2] = {0, };
 double torque[4] = {0, };
-double deg2rad_5 = 0.0873; // 상, 하방 limit  5도
+double deg2rad_2 = 0.0349; // 상, 하방 limit  2도
 double gear_static_friction_trq[2] = {0.55, 0.35};
 uint8_t torque_profile[2] = {1, 1};
 uint16_t cnt_max = 2000;
@@ -133,7 +133,7 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
     GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF9_FDCAN1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -239,7 +239,7 @@ void DS_TRANS(uint8_t id, DS_state_t state)
   SET_SDO(id, sizeof(uint16_t), CONTROLWORD, 0, state);	// RECV_FLAG = false;
   if(motor[id-1].Object != PDO_OBJ)
   {
-	while(!RECV_FLAG && motor[id-1].Object != CONTROLWORD){
+	while((!RECV_FLAG) && (motor[id-1].Object != CONTROLWORD)){
 	  if(++timeout[0] >= max_timeout_cnt){
 		error_res[0] = 5;
 		Error_Handler();
@@ -346,8 +346,10 @@ void READ_STATUS(uint8_t id)
 {
   timeout[0] = 0;
   GET_SDO(id, STATUSWORD, 0);		// RECV_FLAG = false;
-  while(!RECV_FLAG && motor[id-1].Object != STATUSWORD){
+  while(!RECV_FLAG && (motor[id-1].Object != STATUSWORD)){
 	if(++timeout[0] >= max_timeout_cnt){
+	  GET_SDO(id, STATUSWORD, 0);
+	  if(motor[id-1].Object == STATUSWORD)	break;
 	  error_res[0] = 5;
 	  Error_Handler();
 	}
@@ -356,7 +358,14 @@ void READ_STATUS(uint8_t id)
   arm_max_no_idx_f32(timeout, 2, &error_res[1]);
   if((motor[id-1].Statusword >> 3) & 0x01){	// if error states
 	GET_SDO(id, Error_code, 0);						// RECV_FLAG = false;, get error code
-	while(!RECV_FLAG || (motor[id-1].Object != Error_code));		// while(대기) when not received && errorcode
+	while(!RECV_FLAG || (motor[id-1].Object != Error_code)){	// while(대기) when not received && errorcode
+	  if(++timeout[0] >= max_timeout_cnt){
+	  GET_SDO(id, Error_code, 0);
+	  if(motor[id-1].Object == Error_code)	break;
+	  error_res[0] = 5;
+	  Error_Handler();
+	  }
+	}
 	if(motor[id-1].Error_code[(motor[id-1].error_index+4)%5] == (uint16_t)0x8110){
 	  Clear_Device_Errors(id);
 	}
@@ -472,11 +481,11 @@ void TRQ_F(double *angle1, double *angle2, uint8_t *trq_prof){
 	break;
   } 
 }
-
+bool Sensor_FLAG = true;
 void TRQ_Calc()
 {  
-  const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_5, FA_limit_angle[1] + deg2rad_5};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
-  const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_5, UA_limit_angle[1] + deg2rad_5};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
+  const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_2, FA_limit_angle[1] + deg2rad_2};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
+  const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_2, UA_limit_angle[1] + deg2rad_2};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
   static double theta1[2] = {0, };
   static double theta2[2] = {0, };
   static double target_force = 2 * 9.80665;
@@ -529,63 +538,55 @@ void TRQ_Calc()
 	}
   }
   
-	for(int i=0;i<2;i++)
+  for(int i=0;i<2;i++)
+  {
+	torque[i+2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[i];
+	torque[i] = torque[i+2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[i];
+	if(TRQ_ON_FLAG)
 	{
-	  torque[i+2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[i];
-	  torque[i] = torque[i+2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[i];
-	  if(TRQ_ON_FLAG)
-	  {
-		if(torque[i+2] <= gear_static_friction_trq[1])	torque[i+2] = gear_static_friction_trq[1];
-		if(torque[i] <= gear_static_friction_trq[0])	torque[i] = gear_static_friction_trq[0];
-	  }else if(!TRQ_OFF_FLAG)
-	  {
-		torque[i] = 0;
-		torque[i+2] = 0;
-	  }
+	  if(torque[i+2] <= gear_static_friction_trq[1])	torque[i+2] = gear_static_friction_trq[1];
+	  if(torque[i] <= gear_static_friction_trq[0])	torque[i] = gear_static_friction_trq[0];
+	}else if(!TRQ_OFF_FLAG)
+	{
+	  torque[i] = 0;
+	  torque[i+2] = 0;
 	}
-//	torque[2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[0];
-//	torque[3] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[1];
-//	torque[0] = torque[2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[0];
-//	torque[1] = torque[3] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[1];	
-	
-	switch(arms)
-	{
-	  /* actuating Right arm, node id 1, 3(motor[0], motor[2]) */
-	case 'R' :
-	  torque[1] = 0;
-	  torque[3] = 0;	  
+  }
+  //	torque[2] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[0];
+  //	torque[3] = (link[1].cog * link[1].weight + link[1].length * assist_force) * f2[1];
+  //	torque[0] = torque[2] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[0];
+  //	torque[1] = torque[3] + (link[0].cog * link[0].weight + link[0].length * assist_force + link[0].length * link[1].weight) * f1[1];	
+  
+  if(Sensor_FLAG){
+	if(stretch_btn_r){	/* actuating Right arm, node id 1, 3(motor[0], motor[2]) */
 	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
 	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
-	  
 	  torque[2] = torque[2] * trq_offset[2];
-	  torque[0] = torque[0] * trq_offset[0];	
-	  break;
-	  
-	  /* actuating Left arm, node id 2, 4(motor[1], motor[3]) */
-	case 'L' :
+	  torque[0] = torque[0] * trq_offset[0];
+	}else{
 	  torque[0] = 0;
-	  torque[2] = 0;	    
+	  torque[2] = 0;
+	}
+	if(stretch_btn_l){	/* actuating Left arm, node id 2, 4(motor[1], motor[3]) */	  
 	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;	  
 	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;	  
 	  torque[3] = torque[3] * trq_offset[3];
 	  torque[1] = torque[1] * trq_offset[1];	  
-	  break;
-	  /* actuating both arms */
-	case 'B' :
-	  if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
-	  else	torque[2] = torque[2] * trq_offset[2];
-	  if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
-	  else	torque[0] = torque[0] * trq_offset[0];	
-	  
-	  if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
-	  else	torque[3] = torque[3] * trq_offset[3];
-	  if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
-	  else	torque[1] = torque[1] * trq_offset[1];	  	  
-	  break;
-	  
-	default :
-	  torque[0] = 0;	torque[1] = 0;	torque[2] = 0;	torque[3] = 0;
+	}else{
+	  torque[1] = 0;
+	  torque[3] = 0;
 	}
+  }else{  /* actuating both arms */
+	if(motor[2].angle >= FA_limit_trq_angle[0]) torque[2] = 0;
+	else	torque[2] = torque[2] * trq_offset[2];
+	if(motor[0].angle >= UA_limit_trq_angle[0]) torque[0] = 0;
+	else	torque[0] = torque[0] * trq_offset[0];	
+	
+	if(motor[3].angle <= FA_limit_trq_angle[1]) torque[3] = 0;
+	else	torque[3] = torque[3] * trq_offset[3];
+	if(motor[1].angle <= UA_limit_trq_angle[1]) torque[1] = 0;
+	else	torque[1] = torque[1] * trq_offset[1];	  	  
+  }
 	
 //	if(TRQ_ON_FLAG)
 //	{
@@ -620,8 +621,8 @@ void TRQ_Calc()
 }
 void TRQ_Calc_2(void)
 {
-  const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_5, FA_limit_angle[1] + deg2rad_5};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
-  const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_5, UA_limit_angle[1] + deg2rad_5};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
+  const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_2, FA_limit_angle[1] + deg2rad_2};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
+  const double UA_limit_trq_angle[2] = {UA_limit_angle[0] - deg2rad_2, UA_limit_angle[1] + deg2rad_2};	// upperarm torque limit angle, 상방 limit angle - 5°, 하방 limit anlge + 5°
   static uint16_t trq_cnt_old;
   static uint16_t trq_cnt_new;
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
