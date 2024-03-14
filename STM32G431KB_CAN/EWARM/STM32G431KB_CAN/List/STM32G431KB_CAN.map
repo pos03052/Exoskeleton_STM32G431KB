@@ -1,52 +1,85 @@
 ###############################################################################
 #
-# IAR ELF Linker V9.10.2.313/W64 for ARM                  14/Nov/2023  16:38:31
+# IAR ELF Linker V9.10.2.313/W64 for ARM                  14/Mar/2024  11:29:42
 # Copyright 2007-2021 IAR Systems AB.
 #
 #    Output file  =
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out
+#        C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out
 #    Map file     =
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map
+#        C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map
 #    Command line =
-#        -f
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out.rsp
-#        (C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM\dlib_lock_glue.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\dma.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\fdcan.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\gpio.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\main.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\serial.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM\startup_stm32g431xx.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_cortex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_dma.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_dma_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_exti.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_fdcan.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash_ramfunc.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_gpio.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\stm32g4xx_hal_msp.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_rcc.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_rcc_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_tim.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_tim_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_uart.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_uart_ex.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\stm32g4xx_it.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS\system_stm32g4xx.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\usart.o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\utility.o
+#        -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out.rsp"
+#        ("C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM\dlib_lock_glue.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\dma.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\fdcan.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\gpio.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\main.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\serial.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM\startup_stm32g431xx.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_cortex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_dma.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_dma_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_exti.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_fdcan.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_flash_ramfunc.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_gpio.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\stm32g4xx_hal_msp.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_pwr_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_rcc.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_rcc_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_tim.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_tim_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_uart.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver\stm32g4xx_hal_uart_ex.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\stm32g4xx_it.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS\system_stm32g4xx.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\usart.o"
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core\utility.o"
 #        --no_out_extension -o
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out
+#        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out"
 #        --redirect _Printf=_PrintfFullNoMb --redirect _Scanf=_ScanfFullNoMb
-#        --map
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map
-#        --config
-#        C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM/stm32g431xx_flash.icf
+#        --map "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map"
+#        --config "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM/stm32g431xx_flash.icf"
 #        --semihosting --entry __iar_program_start "C:\Program Files\IAR
 #        Systems\Embedded Workbench
 #        9.0\arm\CMSIS\Lib\IAR\iar_cortexM4lf_math.a" --vfe --threaded_lib
@@ -360,13 +393,13 @@ command line/config:
     ---------------------------------------------------
     Total:
 
-C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM: [1]
+C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM: [1]
     dlib_lock_glue.o              468        4       40
     startup_stm32g431xx.o         728
     ---------------------------------------------------
     Total:                      1'196        4       40
 
-C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core: [2]
+C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core: [2]
     dma.o                          80
     fdcan.o                     6'248      157      678
     gpio.o                        140
@@ -378,12 +411,12 @@ C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\ST
     ---------------------------------------------------
     Total:                      9'570      289    1'963
 
-C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS: [3]
+C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS: [3]
     system_stm32g4xx.o             32        9        4
     ---------------------------------------------------
     Total:                         32        9        4
 
-C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver: [4]
+C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver: [4]
     stm32g4xx_hal.o               204        3       12
     stm32g4xx_hal_cortex.o        248
     stm32g4xx_hal_dma.o           944
@@ -953,10 +986,10 @@ uwTickPrio              0x2000'0428    0x4  Data  Gb  stm32g4xx_hal.o [4]
 vcp                     0x2000'0374   0xb0  Data  Gb  serial.o [2]
 
 
-[1] = C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM
-[2] = C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core
-[3] = C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS
-[4] = C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver
+[1] = C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM
+[2] = C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core
+[3] = C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS
+[4] = C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\STM32G4xx_HAL_Driver
 [5] = dl7M_tlf.a
 [6] = iar_cortexM4lf_math.a
 [7] = m7M_tls.a

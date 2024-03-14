@@ -1,5 +1,5 @@
-C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\EWARM\dlib_lock_glue.pbi: \
-  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\dlib_lock_glue.c \
+C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\BrowseInfo\Application\EWARM\dlib_lock_glue.pbi: \
+  C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\dlib_lock_glue.c \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Threads.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\stddef.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\ycheck.h \
@@ -11,8 +11,8 @@ C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\ST
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\stdio.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\stdlib.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_Product_stdlib.h \
-  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\stm32_lock.h \
+  C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\stm32_lock.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\stdint.h \
-  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\CMSIS\Include\cmsis_compiler.h \
-  C:\Users\jaesung\MRAS\GitHub\STM32\Projects\Exoskeleton\STM32G431KB_CAN\EWARM\..\Drivers\CMSIS\Include\cmsis_iccarm.h \
+  C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\..\Drivers\CMSIS\Include\cmsis_compiler.h \
+  C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\..\Drivers\CMSIS\Include\cmsis_iccarm.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\aarch32\iccarm_builtin.h
