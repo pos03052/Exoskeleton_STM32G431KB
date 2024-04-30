@@ -47,6 +47,8 @@ double deg2rad_2 = 0.0349; // 상, 하방 limit  2도
 double gear_static_friction_trq[2] = {0.55, 0.35};
 uint8_t torque_profile[2] = {1, 1};
 uint16_t cnt_max = 2000;
+double rad2cnt = 1303.7973; // 8192 : 2π = x : 1 → x = 1303.7973
+double ang2cnt = 22.7556; // 8192 : 360 = x : 1 → x = 22.7556
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -619,6 +621,11 @@ void TRQ_Calc()
 	motor[i].Target_torque = (int16_t)(torque[i] / gear_ratio[i] / rated_torque * 1000.0  * gear_efficiency[i]);
   }
 }
+/**
+  * @brief        정역학적 관계에 따른 토크 제어
+  * @param
+  * @return
+  */
 void TRQ_Calc_2(void)
 {
   const double FA_limit_trq_angle[2] = {FA_limit_angle[0] - deg2rad_2, FA_limit_angle[1] + deg2rad_2};	// forearm torque limit angle, 상방 limit angle - 5°, 하방 zero angle + 5°
@@ -690,6 +697,10 @@ void TRQ_Calc_2(void)
 GPIO_PinState pin_state_old = GPIO_PIN_RESET;
 double trq_target = 0;
 double pos_thld = 500;
+/**
+  * @brief motor3 position control, motor1 torque control, motor1 target torque ++ 0.0005;, if postion diff > 500 (cnt), stop
+  *
+  **/
 void TRQ_Calc_3(void){
   static int32_t pos_old;
   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
@@ -740,8 +751,7 @@ Motor_t motor[4] = {
 * @brief  position target calculation 1
 * @param 
 * @retval 
-* @description	처음 tp[1]=actual position에 있다가 inc1에 따라 tp[1] --- elbow angle 증가/감소, m1_flag On -> tp[0] --- shoulder angle 증가/감소
-
+* @description	처음 tp[1]=motor[3].actual position에 있다가 inc1에 따라 tp[1] --- elbow angle 증가/감소, m1_flag On -> tp[0] --- shoulder angle 증가/감소
 */
 void POS_Calc()
 {
@@ -755,12 +765,12 @@ void POS_Calc()
 	{
 	  //	  tp[0] = motor[1].Postion_actual;
 	  tp[1] = motor[3].Position_actual;
-	  sign3_flag = !sign3_flag;
+	  sign3_flag = !sign3_flag;     // direction change
 	  pin_state_old = pin_state;
 	}
   }else
   {
-	pin_state_old = pin_state;
+	pin_state_old = pin_state;      // GPIO_PIN_RESET
 	if(sign3_flag)
 	{
 	  inc1 = abs(inc1);	  
@@ -773,9 +783,9 @@ void POS_Calc()
 	  tp[1] = tp[1] + inc1;
 	}
   }
-  if(tp[1] <= motor[3].Position_zero + FA_limit_angle[0] * gear_ratio[3]*1303.7973)	tp[1] = (int32_t)(motor[3].Position_zero + FA_limit_angle[0]*gear_ratio[3] * 1303.7973 + abs(inc1));
-  if(tp[1] >= motor[3].Position_zero)		tp[1] = motor[3].Position_zero;
-  
+  if(tp[1] <= motor[3].Position_zero + FA_limit_angle[0] * gear_ratio[3] * rad2cnt)     
+    tp[1] = (int32_t)(motor[3].Position_zero + FA_limit_angle[0]*gear_ratio[3] * rad2cnt + abs(inc1));
+  if(tp[1] >= motor[3].Position_zero)		tp[1] = motor[3].Position_zero;  
   
   /**		tp[0] shoulder angle torque check		**/
   
@@ -794,25 +804,24 @@ void POS_Calc()
 	{
 	  inc2 = abs(inc2);
 	  tp[0] = tp[0] + inc2;
-	  if(tp[0] >= motor[1].Position_zero + UA_limit_angle[0]*gear_ratio[1]*1303.7973)
-		tp[0] = (int32_t)(UA_limit_angle[0] * gear_ratio[1] * 1303.7973 + motor[1].Position_zero + abs(inc2));	// 8192 : 2π = x : 1 → x = 1303.7973, 90도 위치
+	  if(tp[0] >= motor[1].Position_zero + UA_limit_angle[0]*gear_ratio[1]*rad2cnt)
+		tp[0] = (int32_t)(UA_limit_angle[0] * gear_ratio[1] * rad2cnt + motor[1].Position_zero + abs(inc2));	// 90도 위치
 	}else
 	{
 	  inc2 = (-1) * abs(inc2);
 	  tp[0] = tp[0] + inc2;
-	  if(tp[0] <= motor[1].Position_zero - UA_limit_angle[1]*gear_ratio[1]*1303.7923 + 1)
-		tp[0] = (int32_t)(motor[1].Position_zero - UA_limit_angle[1]*gear_ratio[1]*1303.7923 + abs(inc2));
+	  if(tp[0] <= motor[1].Position_zero - UA_limit_angle[1]*gear_ratio[1]*rad2cnt + 1)
+		tp[0] = (int32_t)(motor[1].Position_zero - UA_limit_angle[1]*gear_ratio[1]*rad2cnt + abs(inc2));
 	}	
   }  
   motor[1].Target_position = tp[0];
   motor[3].Target_position = tp[1];
 }
-
 /**
 * @brief  position target calculation 2
 * @param 
 * @retval 
-* @description cnt_max(=3000) 내에 tp_degree에 입력된 각도만큼 이동, 예) tp_degree[0] = 10 -> 3초동안 10도만큼 이동
+* @description cnt_max(=2000) 내에 tp_degree에 입력된 각도만큼 이동, 예) tp_degree[0] = 10 -> 2초동안 10도만큼 이동
 */
 void POS_Calc_2(void)
 {
@@ -834,8 +843,8 @@ void POS_Calc_2(void)
 	{
 	  cnt = HAL_GetTick();
 	  pin_state_old = pin_state;
-	  tp_goal[0] = motor[1].Position_zero + (int32_t)(tp_degree[0] * 22.7556 * gear_ratio[1]);	// 8192:360°=x:1° → x = 22.7556
-	  tp_goal[1] = motor[3].Position_zero + (int32_t)(tp_degree[1] * 22.7556 * gear_ratio[3]);	// 8192:360°=x:1° → x = 22.7556
+	  tp_goal[0] = motor[1].Position_zero + (int32_t)(tp_degree[0] * ang2cnt * gear_ratio[1]);	
+	  tp_goal[1] = motor[3].Position_zero + (int32_t)(tp_degree[1] * ang2cnt * gear_ratio[3]);	
 	  tp_old[0] = motor[1].Position_actual;
 	  tp_old[1] = motor[3].Position_actual;
 	}

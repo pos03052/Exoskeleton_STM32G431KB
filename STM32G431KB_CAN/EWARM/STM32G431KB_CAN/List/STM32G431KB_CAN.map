@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# IAR ELF Linker V9.10.2.313/W64 for ARM                  14/Mar/2024  11:29:42
+# IAR ELF Linker V9.10.2.313/W64 for ARM                  30/Apr/2024  09:50:18
 # Copyright 2007-2021 IAR Systems AB.
 #
 #    Output file  =
@@ -11,7 +11,7 @@
 #        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map
 #    Command line =
 #        -f "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
-#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Exe\STM32G431KB_CAN.out.rsp"
+#        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\List\STM32G431KB_CAN.map.rsp"
 #        ("C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
 #        Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM\dlib_lock_glue.o"
 #        "C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.
@@ -125,7 +125,7 @@ initialize by copy { rw };
   .intvec                ro code   0x800'0000   0x1d8  startup_stm32g431xx.o [1]
                                  - 0x800'01d8   0x1d8
 
-"P1":                                          0x867d
+"P1":                                          0x8677
   .text                  ro code   0x800'01d8  0x1868  fdcan.o [2]
   .text                  ro code   0x800'1a40   0x714  stm32g4xx_hal_fdcan.o [4]
   .text                  ro code   0x800'2154   0x874  main.o [2]
@@ -308,59 +308,59 @@ initialize by copy { rw };
   .text                  ro code   0x800'8708     0x0  cstart_clearlocks.o [8]
   .rodata                const     0x800'8708     0x0  zero_init3.o [8]
   .rodata                const     0x800'8708     0x0  lz77_init_single.o [8]
-  Initializer bytes      const     0x800'8708   0x14d  <for P2-1>
-                                 - 0x800'8855  0x867d
+  Initializer bytes      const     0x800'8708   0x147  <for P2-1>
+                                 - 0x800'884f  0x8677
 
-"P2", part 1 of 3:                              0x4d4
-  P2-1                            0x2000'0000   0x4d4  <Init block>
+"P2", part 1 of 3:                              0x4cc
+  P2-1                            0x2000'0000   0x4cc  <Init block>
     .data                inited   0x2000'0000   0x16c  fdcan.o [2]
-    .data                inited   0x2000'0170    0x80  fdcan.o [2]
-    .data                inited   0x2000'01f0    0x42  fdcan.o [2]
-    .data                inited   0x2000'0238    0x74  main.o [2]
+    .data                inited   0x2000'0170    0x78  fdcan.o [2]
+    .data                inited   0x2000'01e8    0x42  fdcan.o [2]
+    .data                inited   0x2000'0230    0x74  main.o [2]
+    .data                inited   0x2000'02a8     0x8  main.o [2]
     .data                inited   0x2000'02b0     0x8  main.o [2]
-    .data                inited   0x2000'02b8     0x8  main.o [2]
-    .data                inited   0x2000'02c0    0x20  main.o [2]
-    .data                inited   0x2000'02e0    0x20  main.o [2]
-    .data                inited   0x2000'0300    0x30  main.o [2]
-    .data                inited   0x2000'0330    0x30  main.o [2]
-    .data                inited   0x2000'0360     0x4  fdcan.o [2]
-    .data                inited   0x2000'0364    0x10  fdcan.o [2]
-    .data                inited   0x2000'0374    0xb0  serial.o [2]
-    .data                inited   0x2000'0424     0xc  stm32g4xx_hal.o [4]
-    .data                inited   0x2000'0430    0x20  stm32g4xx_hal_flash.o [4]
-    .data                inited   0x2000'0450     0x4  system_stm32g4xx.o [3]
-    .data                inited   0x2000'0454    0x38  xlocale_c.o [5]
-    .data                inited   0x2000'048c    0x48  xlocale_c.o [5]
-                                - 0x2000'04d4   0x4d4
+    .data                inited   0x2000'02b8    0x20  main.o [2]
+    .data                inited   0x2000'02d8    0x20  main.o [2]
+    .data                inited   0x2000'02f8    0x30  main.o [2]
+    .data                inited   0x2000'0328    0x30  main.o [2]
+    .data                inited   0x2000'0358     0x4  fdcan.o [2]
+    .data                inited   0x2000'035c    0x10  fdcan.o [2]
+    .data                inited   0x2000'036c    0xb0  serial.o [2]
+    .data                inited   0x2000'041c     0xc  stm32g4xx_hal.o [4]
+    .data                inited   0x2000'0428    0x20  stm32g4xx_hal_flash.o [4]
+    .data                inited   0x2000'0448     0x4  system_stm32g4xx.o [3]
+    .data                inited   0x2000'044c    0x38  xlocale_c.o [5]
+    .data                inited   0x2000'0484    0x48  xlocale_c.o [5]
+                                - 0x2000'04cc   0x4cc
 
 "P2", part 2 of 3:                              0x3d8
-  .bss                   zero     0x2000'04d4   0x100  usart.o [2]
-  .bss                   zero     0x2000'05d4    0xc0  usart.o [2]
-  .bss                   zero     0x2000'0694    0x90  usart.o [2]
-  .bss                   zero     0x2000'0724    0x80  usart.o [2]
-  .bss                   zero     0x2000'07a4    0x64  fdcan.o [2]
-  .bss                   zero     0x2000'0808     0x4  dlib_lock_glue.o [1]
-  .bss                   zero     0x2000'0810    0x60  main.o [2]
-  .bss                   zero     0x2000'0870    0x20  xfiles.o [5]
-  .bss                   zero     0x2000'0890    0x10  xsyslock_mtx.o [10]
-  .bss                   zero     0x2000'08a0     0x4  strtok.o [5]
-  .bss                   zero     0x2000'08a4     0x4  xfail_s.o [5]
-  .bss                   zero     0x2000'08a8     0x1  main.o [2]
-                                - 0x2000'08a9   0x3d5
+  .bss                   zero     0x2000'04cc   0x100  usart.o [2]
+  .bss                   zero     0x2000'05cc    0xc0  usart.o [2]
+  .bss                   zero     0x2000'068c    0x90  usart.o [2]
+  .bss                   zero     0x2000'071c    0x80  usart.o [2]
+  .bss                   zero     0x2000'079c    0x64  fdcan.o [2]
+  .bss                   zero     0x2000'0800     0x4  dlib_lock_glue.o [1]
+  .bss                   zero     0x2000'0808    0x60  main.o [2]
+  .bss                   zero     0x2000'0868    0x20  xfiles.o [5]
+  .bss                   zero     0x2000'0888    0x10  xsyslock_mtx.o [10]
+  .bss                   zero     0x2000'0898     0x4  strtok.o [5]
+  .bss                   zero     0x2000'089c     0x4  xfail_s.o [5]
+  .bss                   zero     0x2000'08a0     0x1  main.o [2]
+                                - 0x2000'08a1   0x3d5
 
 "P2", part 3 of 3:                              0x624
-  .noinit                uninit   0x2000'08ac    0x18  dlib_lock_glue.o [1]
-  .noinit                uninit   0x2000'08c4     0xc  dlib_lock_glue.o [1]
-  CSTACK                          0x2000'08d0   0x600  <Block>
-    CSTACK               uninit   0x2000'08d0   0x600  <Block tail>
-                                - 0x2000'0ed0   0x624
+  .noinit                uninit   0x2000'08a4    0x18  dlib_lock_glue.o [1]
+  .noinit                uninit   0x2000'08bc     0xc  dlib_lock_glue.o [1]
+  CSTACK                          0x2000'08c8   0x600  <Block>
+    CSTACK               uninit   0x2000'08c8   0x600  <Block tail>
+                                - 0x2000'0ec8   0x624
 
 Unused ranges:
 
          From           To      Size
          ----           --      ----
-   0x800'8855   0x801'ffff  0x1'77ab
-  0x2000'0ed0  0x2000'7fff    0x7130
+   0x800'884f   0x801'ffff  0x1'77b1
+  0x2000'0ec8  0x2000'7fff    0x7138
 
 
 *******************************************************************************
@@ -371,13 +371,13 @@ Unused ranges:
           -------      ----
 Zero (__iar_zero_init3)
     1 destination range, total size 0x3d5:
-          0x2000'04d4  0x3d5
+          0x2000'04cc  0x3d5
 
 Copy/lz77 (__iar_lz77_init_single3)
-    1 source range, total size 0x14d (26% of destination):
-           0x800'8708  0x14d
-    1 destination range, total size 0x4d4:
-          0x2000'0000  0x4d4
+    1 source range, total size 0x147 (26% of destination):
+           0x800'8708  0x147
+    1 destination range, total size 0x4cc:
+          0x2000'0000  0x4cc
 
 Extra (__iar_cstart_call_ctors)
 
@@ -401,15 +401,15 @@ C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G43
 
 C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\User\Core: [2]
     dma.o                          80
-    fdcan.o                     6'248      157      678
+    fdcan.o                     6'248      153      670
     gpio.o                        140
-    main.o                      2'164       81      389
+    main.o                      2'164       80      389
     serial.o                      320       51      176
     stm32g4xx_hal_msp.o           100
     stm32g4xx_it.o                106
     usart.o                       412               720
     ---------------------------------------------------
-    Total:                      9'570      289    1'963
+    Total:                      9'570      284    1'955
 
 C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Drivers\CMSIS: [3]
     system_stm32g4xx.o             32        9        4
@@ -421,7 +421,7 @@ C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G43
     stm32g4xx_hal_cortex.o        248
     stm32g4xx_hal_dma.o           944
     stm32g4xx_hal_fdcan.o       1'830
-    stm32g4xx_hal_flash.o         240        9       32
+    stm32g4xx_hal_flash.o         240        8       32
     stm32g4xx_hal_flash_ex.o      140
     stm32g4xx_hal_gpio.o          476
     stm32g4xx_hal_pwr_ex.o        240
@@ -430,7 +430,7 @@ C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G43
     stm32g4xx_hal_uart.o        3'250
     stm32g4xx_hal_uart_ex.o       298
     ---------------------------------------------------
-    Total:                     10'212       12       44
+    Total:                     10'212       11       44
 
 dl7M_tlf.a: [5]
     abort.o                         6
@@ -521,7 +521,7 @@ th7M_tlf.a: [10]
     Gaps                           27        2       18
     Linker created                          36    1'536
 -------------------------------------------------------
-    Grand Total:               32'377    2'524    3'789
+    Grand Total:               32'377    2'518    3'781
 
 
 *******************************************************************************
@@ -534,14 +534,14 @@ Entry                       Address   Size  Type      Object
 .iar.init_table$$Limit   0x800'854c          --   Gb  - Linker created -
 ?main                    0x800'85a5         Code  Gb  cmain.o [8]
 AHBPrescTable            0x800'855c   0x10  Data  Gb  system_stm32g4xx.o [3]
-ANGLE_FLAG              0x2000'023f    0x1  Data  Gb  main.o [2]
+ANGLE_FLAG              0x2000'0237    0x1  Data  Gb  main.o [2]
 APBPrescTable            0x800'8608    0x8  Data  Gb  system_stm32g4xx.o [3]
 BusFault_Handler         0x800'83e5    0x2  Code  Gb  stm32g4xx_it.o [2]
-CAN_cnt                 0x2000'02a4    0x4  Data  Gb  main.o [2]
-CLEAR_ERROR_FLAG        0x2000'0240    0x1  Data  Gb  main.o [2]
-CSTACK$$Base            0x2000'08d0          --   Gb  - Linker created -
-CSTACK$$Limit           0x2000'0ed0          --   Gb  - Linker created -
-CST_mode                0x2000'0360    0x4  Data  Gb  fdcan.o [2]
+CAN_cnt                 0x2000'029c    0x4  Data  Gb  main.o [2]
+CLEAR_ERROR_FLAG        0x2000'0238    0x1  Data  Gb  main.o [2]
+CSTACK$$Base            0x2000'08c8          --   Gb  - Linker created -
+CSTACK$$Limit           0x2000'0ec8          --   Gb  - Linker created -
+CST_mode                0x2000'0358    0x4  Data  Gb  fdcan.o [2]
 Check_status             0x800'1975   0x8a  Code  Gb  fdcan.o [2]
 Clear_Device_Errors      0x800'085d   0x1a  Code  Gb  fdcan.o [2]
 DLCtoBytes               0x800'2144   0x10  Data  Lc  stm32g4xx_hal_fdcan.o [4]
@@ -554,13 +554,13 @@ DMA_CalcDMAMUXChannelBaseAndMask
 DMA_CalcDMAMUXRequestGenBaseAndMask
                          0x800'5abb   0x1c  Code  Lc  stm32g4xx_hal_dma.o [4]
 DMA_SetConfig            0x800'5a45   0x42  Code  Lc  stm32g4xx_hal_dma.o [4]
-DS_FLAG                 0x2000'023c    0x1  Data  Gb  main.o [2]
+DS_FLAG                 0x2000'0234    0x1  Data  Gb  main.o [2]
 DS_TRANS                 0x800'03e7   0x74  Code  Gb  fdcan.o [2]
-DS_state                0x2000'024a    0x1  Data  Gb  main.o [2]
+DS_state                0x2000'0242    0x1  Data  Gb  main.o [2]
 DebugMon_Handler         0x800'83eb    0x2  Code  Gb  stm32g4xx_it.o [2]
 Dtentox                  0x800'50c5  0x14a  Code  Lc  strto32.o [7]
-EPOS4_CTRL_PERIOD       0x2000'024e    0x1  Data  Gb  main.o [2]
-ERROR_FLAG              0x2000'0244    0x1  Data  Gb  main.o [2]
+EPOS4_CTRL_PERIOD       0x2000'0246    0x1  Data  Gb  main.o [2]
+ERROR_FLAG              0x2000'023c    0x1  Data  Gb  main.o [2]
 EXTI15_10_IRQHandler     0x800'8439    0x8  Code  Gb  stm32g4xx_it.o [2]
 EXTI9_5_IRQHandler       0x800'841b    0x8  Code  Gb  stm32g4xx_it.o [2]
 Error_Handler            0x800'2957   0x28  Code  Gb  main.o [2]
@@ -576,7 +576,7 @@ FLASH_PageErase          0x800'82d1   0x26  Code  Gb  stm32g4xx_hal_flash_ex.o [
 FPU_IRQHandler           0x800'8441    0x2  Code  Gb  stm32g4xx_it.o [2]
 GET_Angle                0x800'07ed   0x70  Code  Gb  fdcan.o [2]
 GET_SDO                  0x800'06a9   0x24  Code  Gb  fdcan.o [2]
-GET_SDO_FLAG            0x2000'0241    0x1  Data  Gb  main.o [2]
+GET_SDO_FLAG            0x2000'0239    0x1  Data  Gb  main.o [2]
 HAL_DMA_Abort            0x800'589b   0x6c  Code  Gb  stm32g4xx_hal_dma.o [4]
 HAL_DMA_Abort_IT         0x800'5907   0x7a  Code  Gb  stm32g4xx_hal_dma.o [4]
 HAL_DMA_IRQHandler       0x800'5981   0xc4  Code  Gb  stm32g4xx_hal_dma.o [4]
@@ -687,7 +687,7 @@ HAL_UART_TxCpltCallback
 HAL_UART_TxHalfCpltCallback
                          0x800'5e3b    0x2  Code  Gb  stm32g4xx_hal_uart.o [4]
 HardFault_Handler        0x800'83e1    0x2  Code  Gb  stm32g4xx_it.o [2]
-I2C_TRQ_FLAG            0x2000'0243    0x1  Data  Gb  main.o [2]
+I2C_TRQ_FLAG            0x2000'023b    0x1  Data  Gb  main.o [2]
 INIT_CAN                 0x800'184d  0x11a  Code  Gb  fdcan.o [2]
 MX_DMA_Init              0x800'3945   0x50  Code  Gb  dma.o [2]
 MX_FDCAN1_Init           0x800'01d9   0x7c  Code  Gb  fdcan.o [2]
@@ -695,52 +695,52 @@ MX_GPIO_Init             0x800'38b9   0x8c  Code  Gb  gpio.o [2]
 MX_USART2_UART_Init      0x800'3995   0x6a  Code  Gb  usart.o [2]
 MemManage_Handler        0x800'83e3    0x2  Code  Gb  stm32g4xx_it.o [2]
 NMI_Handler              0x800'83d9    0x8  Code  Gb  stm32g4xx_it.o [2]
-NMT_FLAG                0x2000'023b    0x1  Data  Gb  main.o [2]
+NMT_FLAG                0x2000'0233    0x1  Data  Gb  main.o [2]
 NMT_TRANS                0x800'03bd   0x2a  Code  Gb  fdcan.o [2]
-NMT_state               0x2000'0249    0x1  Data  Gb  main.o [2]
+NMT_state               0x2000'0241    0x1  Data  Gb  main.o [2]
 NVIC_EncodePriority      0x800'2ea5   0x36  Code  Lc  stm32g4xx_hal_cortex.o [4]
 Parsing_PDO              0x800'0545   0x74  Code  Gb  fdcan.o [2]
 Parsing_SDO              0x800'045b   0xea  Code  Gb  fdcan.o [2]
 PendSV_Handler           0x800'83ed    0x2  Code  Gb  stm32g4xx_it.o [2]
-QS_flag                 0x2000'023a    0x1  Data  Gb  main.o [2]
+QS_flag                 0x2000'0232    0x1  Data  Gb  main.o [2]
 RCC_GetSysClockFreqFromPLLSource
                          0x800'4397   0x42  Code  Lc  stm32g4xx_hal_rcc.o [4]
 RCC_IRQHandler           0x800'8401    0x2  Code  Gb  stm32g4xx_it.o [2]
 READ_STATUS              0x800'06cd  0x120  Code  Gb  fdcan.o [2]
-RECV_FLAG               0x2000'0364    0x1  Data  Gb  fdcan.o [2]
+RECV_FLAG               0x2000'035c    0x1  Data  Gb  fdcan.o [2]
 Region$$Table$$Base      0x800'8528          --   Gb  - Linker created -
 Region$$Table$$Limit     0x800'854c          --   Gb  - Linker created -
 SEND_FRAME               0x800'05d7   0xd2  Code  Gb  fdcan.o [2]
-SET_ANGLE_ZERO_FLAG     0x2000'023e    0x1  Data  Gb  main.o [2]
+SET_ANGLE_ZERO_FLAG     0x2000'0236    0x1  Data  Gb  main.o [2]
 SET_PDO                  0x800'036f   0x4e  Code  Gb  fdcan.o [2]
 SET_SDO                  0x800'02ff   0x70  Code  Gb  fdcan.o [2]
-SET_SDO_FLAG            0x2000'0242    0x1  Data  Gb  main.o [2]
-SET_ZERO_BTN            0x2000'024f    0x1  Data  Gb  main.o [2]
+SET_SDO_FLAG            0x2000'023a    0x1  Data  Gb  main.o [2]
+SET_ZERO_BTN            0x2000'0247    0x1  Data  Gb  main.o [2]
 SHT$$INIT_ARRAY$$Base    0x800'8704          --   Gb  - Linker created -
 SHT$$INIT_ARRAY$$Limit   0x800'8708          --   Gb  - Linker created -
 SHT$$PREINIT_ARRAY$$Base
                          0x800'8704          --   Gb  - Linker created -
 SHT$$PREINIT_ARRAY$$Limit
                          0x800'8704          --   Gb  - Linker created -
-STATUS_FLAG             0x2000'023d    0x1  Data  Gb  main.o [2]
+STATUS_FLAG             0x2000'0235    0x1  Data  Gb  main.o [2]
 SVC_Handler              0x800'83e9    0x2  Code  Gb  stm32g4xx_it.o [2]
 SYNC_FRAME               0x800'05b9   0x1e  Code  Gb  fdcan.o [2]
-Sensor_FLAG             0x2000'01f0    0x1  Data  Gb  fdcan.o [2]
+Sensor_FLAG             0x2000'01e8    0x1  Data  Gb  fdcan.o [2]
 SysTick_Config           0x800'2edb   0x2e  Code  Lc  stm32g4xx_hal_cortex.o [4]
 SysTick_Handler          0x800'83ef    0xe  Code  Gb  stm32g4xx_it.o [2]
 SystemClock_Config       0x800'2183   0x76  Code  Gb  main.o [2]
-SystemCoreClock         0x2000'0450    0x4  Data  Gb  system_stm32g4xx.o [3]
+SystemCoreClock         0x2000'0448    0x4  Data  Gb  system_stm32g4xx.o [3]
 SystemInit               0x800'854d    0xc  Code  Gb  system_stm32g4xx.o [3]
 TRQ_Calc                 0x800'13a9  0x490  Code  Gb  fdcan.o [2]
-TRQ_Calc::target_force  0x2000'0228    0x8  Data  Lc  fdcan.o [2]
-TRQ_Calc::theta1        0x2000'0208   0x10  Data  Lc  fdcan.o [2]
-TRQ_Calc::theta2        0x2000'0218   0x10  Data  Lc  fdcan.o [2]
-TRQ_Calc::trq_cnt_new   0x2000'01f4    0x2  Data  Lc  fdcan.o [2]
-TRQ_Calc::trq_cnt_old   0x2000'01f2    0x2  Data  Lc  fdcan.o [2]
+TRQ_Calc::target_force  0x2000'0220    0x8  Data  Lc  fdcan.o [2]
+TRQ_Calc::theta1        0x2000'0200   0x10  Data  Lc  fdcan.o [2]
+TRQ_Calc::theta2        0x2000'0210   0x10  Data  Lc  fdcan.o [2]
+TRQ_Calc::trq_cnt_new   0x2000'01ec    0x2  Data  Lc  fdcan.o [2]
+TRQ_Calc::trq_cnt_old   0x2000'01ea    0x2  Data  Lc  fdcan.o [2]
 TRQ_Calc_2::trq_cnt_new
-                        0x2000'017a    0x2  Data  Lc  fdcan.o [2]
-TRQ_Calc_2::trq_cnt_old
                         0x2000'0178    0x2  Data  Lc  fdcan.o [2]
+TRQ_Calc_2::trq_cnt_old
+                        0x2000'0176    0x2  Data  Lc  fdcan.o [2]
 TRQ_F                    0x800'08a9  0xa94  Code  Gb  fdcan.o [2]
 TRQ_OFF_FLAG            0x2000'0171    0x1  Data  Gb  fdcan.o [2]
 TRQ_ON_FLAG             0x2000'0170    0x1  Data  Gb  fdcan.o [2]
@@ -762,12 +762,12 @@ UART_DMATxHalfCplt       0x800'4f87    0x6  Code  Lc  stm32g4xx_hal_uart.o [4]
 UART_EndRxTransfer       0x800'4eb9   0x58  Code  Lc  stm32g4xx_hal_uart.o [4]
 UART_EndTransmit_IT      0x800'5099   0x22  Code  Lc  stm32g4xx_hal_uart.o [4]
 UART_EndTxTransfer       0x800'4e83   0x36  Code  Lc  stm32g4xx_hal_uart.o [4]
-UART_FLAG               0x2000'0239    0x1  Data  Gb  main.o [2]
+UART_FLAG               0x2000'0231    0x1  Data  Gb  main.o [2]
 UART_SetConfig           0x800'4919  0x296  Code  Gb  stm32g4xx_hal_uart.o [4]
 UART_Start_Receive_DMA   0x800'4dcf   0xb4  Code  Gb  stm32g4xx_hal_uart.o [4]
 UART_WaitOnFlagUntilTimeout
                          0x800'4cf9   0xd6  Code  Gb  stm32g4xx_hal_uart.o [4]
-UART_cnt                0x2000'02a8    0x4  Data  Gb  main.o [2]
+UART_cnt                0x2000'02a0    0x4  Data  Gb  main.o [2]
 UA_limit_angle          0x2000'01b0   0x10  Data  Gb  fdcan.o [2]
 USART2_IRQHandler        0x800'8423    0x6  Code  Gb  stm32g4xx_it.o [2]
 UsageFault_Handler       0x800'83e7    0x2  Code  Gb  stm32g4xx_it.o [2]
@@ -777,12 +777,12 @@ _LocaleC_islower         0x800'743d    0x4  Code  Gb  xlocale_c.o [5]
 _LocaleC_isspace         0x800'7459   0x14  Code  Gb  xlocale_c.o [5]
 _LocaleC_isupper         0x800'7441    0x2  Code  Gb  xlocale_c.o [5]
 _LocaleC_tolower         0x800'746d    0xc  Code  Gb  xlocale_c.o [5]
-_Locale_lconv           0x2000'0454   0x38  Data  Lc  xlocale_c.o [5]
+_Locale_lconv           0x2000'044c   0x38  Data  Lc  xlocale_c.o [5]
 _PrintfFullNoMb          0x800'64b1  0xd06  Code  Gb  xprintffull_nomb.o [5]
 _PutcharFullNoMb         0x800'7349   0x20  Code  Lc  xprintffull_nomb.o [5]
 _PutcharsFullNoMb        0x800'7369   0x2e  Code  Lc  xprintffull_nomb.o [5]
 _SProut                  0x800'2a03    0xa  Code  Gb  xsprout.o [5]
-_Strtok_ssave           0x2000'08a0    0x4  Data  Lc  strtok.o [5]
+_Strtok_ssave           0x2000'0898    0x4  Data  Lc  strtok.o [5]
 __NVIC_EnableIRQ         0x800'2e75   0x16  Code  Lc  stm32g4xx_hal_cortex.o [4]
 __NVIC_GetPriorityGrouping
                          0x800'2e6b    0xa  Code  Lc  stm32g4xx_hal_cortex.o [4]
@@ -840,12 +840,12 @@ __iar_file_FOPEN_MAX     0x800'81cd    0x4  Code  Gb  xfiles.o [5]
 __iar_file_LockRef       0x800'81d1   0x14  Code  Gb  xlockref.o [5]
 __iar_file_Mtxdst        0x800'810b   0x32  Code  Gb  dlib_lock_glue.o [1]
 __iar_file_Mtxinit       0x800'80bf   0x4c  Code  Gb  dlib_lock_glue.o [1]
-__iar_file_mtx          0x2000'0870   0x20  Data  Gb  xfiles.o [5]
+__iar_file_mtx          0x2000'0868   0x20  Data  Gb  xfiles.o [5]
 __iar_frexp              0x800'7595         Code  Gb  frexp.o [7]
 __iar_frexp32            0x800'5e41         Code  Gb  frexpf.o [7]
 __iar_frexpf             0x800'5e55         Code  Gb  frexpf.o [7]
 __iar_frexpl             0x800'7595         Code  Gb  frexp.o [7]
-__iar_globLocale        0x2000'048c   0x48  Data  Lc  xlocale_c.o [5]
+__iar_globLocale        0x2000'0484   0x48  Data  Lc  xlocale_c.o [5]
 __iar_global_Locale      0x800'7479    0x4  Code  Gb  xlocale_c.o [5]
 __iar_init_vfp           0x800'8505         Code  Gb  fpinit_M.o [7]
 __iar_ldexp32            0x800'5e89         Code  Gb  ldexpf.o [7]
@@ -873,65 +873,63 @@ __vector_table           0x800'0000         Data  Gb  startup_stm32g431xx.o [1]
 _call_main               0x800'85b1         Code  Gb  cmain.o [8]
 _exit                    0x800'85cd         Code  Gb  cexit.o [8]
 abort                    0x800'7757    0x6  Code  Gb  abort.o [5]
-angles                  0x2000'0338   0x20  Data  Gb  main.o [2]
+angles                  0x2000'0330   0x20  Data  Gb  main.o [2]
 arm_cos_f32              0x800'54a5   0x90  Code  Gb  arm_cos_f32.o [6]
 arm_max_no_idx_f32       0x800'3361   0x80  Code  Gb  arm_max_no_idx_f32.o [6]
 arm_sin_f32              0x800'36a9   0x8c  Code  Gb  arm_sin_f32.o [6]
-assist_force            0x2000'02b0    0x8  Data  Gb  main.o [2]
+assist_force            0x2000'02a8    0x8  Data  Gb  main.o [2]
 atoi                     0x800'5479    0x2  Code  Gb  iar_Stoulx.o [5]
-cnt_max                 0x2000'0176    0x2  Data  Gb  fdcan.o [2]
-data_temp               0x2000'0298    0x4  Data  Gb  main.o [2]
+cnt_max                 0x2000'0174    0x2  Data  Gb  fdcan.o [2]
+data_temp               0x2000'0290    0x4  Data  Gb  main.o [2]
 deg2rad_2               0x2000'01e0    0x8  Data  Gb  fdcan.o [2]
 digits                   0x800'847c   0x28  Data  Lc  iar_Stoulx.o [5]
-error_res               0x2000'029c    0x8  Data  Gb  main.o [2]
+error_res               0x2000'0294    0x8  Data  Gb  main.o [2]
 exit                     0x800'85c7    0x4  Code  Gb  exit.o [5]
 f1                      0x2000'01c0   0x10  Data  Gb  fdcan.o [2]
 f2                      0x2000'01d0   0x10  Data  Gb  fdcan.o [2]
 frexpf                   0x800'5e41         Code  Gb  frexpf.o [7]
-gear_efficiency         0x2000'02e0   0x20  Data  Gb  main.o [2]
-gear_ratio              0x2000'02c0   0x20  Data  Gb  main.o [2]
+gear_efficiency         0x2000'02d8   0x20  Data  Gb  main.o [2]
+gear_ratio              0x2000'02b8   0x20  Data  Gb  main.o [2]
 gear_static_friction_trq
-                        0x2000'01f8   0x10  Data  Gb  fdcan.o [2]
+                        0x2000'01f0   0x10  Data  Gb  fdcan.o [2]
 hcan                    0x2000'0100   0x6c  Data  Gb  fdcan.o [2]
-hdma_usart2_rx          0x2000'05d4   0x60  Data  Gb  usart.o [2]
-hdma_usart2_tx          0x2000'0634   0x60  Data  Gb  usart.o [2]
-hfdcan1                 0x2000'07a4   0x64  Data  Gb  fdcan.o [2]
-huart2                  0x2000'0694   0x90  Data  Gb  usart.o [2]
-id_cnt                  0x2000'024c    0x1  Data  Gb  main.o [2]
-id_sum                  0x2000'024b    0x1  Data  Gb  main.o [2]
-id_temp                 0x2000'0247    0x1  Data  Gb  main.o [2]
-inc1                    0x2000'01e8    0x4  Data  Gb  fdcan.o [2]
-inc2                    0x2000'01ec    0x4  Data  Gb  fdcan.o [2]
+hdma_usart2_rx          0x2000'05cc   0x60  Data  Gb  usart.o [2]
+hdma_usart2_tx          0x2000'062c   0x60  Data  Gb  usart.o [2]
+hfdcan1                 0x2000'079c   0x64  Data  Gb  fdcan.o [2]
+huart2                  0x2000'068c   0x90  Data  Gb  usart.o [2]
+id_cnt                  0x2000'0244    0x1  Data  Gb  main.o [2]
+id_sum                  0x2000'0243    0x1  Data  Gb  main.o [2]
+id_temp                 0x2000'023f    0x1  Data  Gb  main.o [2]
 init_vcp                 0x800'3bab   0x16  Code  Gb  serial.o [2]
 isalpha                  0x800'7427   0x14  Code  Gb  isalpha.o [5]
 isspace                  0x800'6431   0x14  Code  Gb  isspace.o [5]
 ldexp                    0x800'75f9         Code  Gb  ldexp.o [7]
 ldexpf                   0x800'5e89         Code  Gb  ldexpf.o [7]
 ldexpl                   0x800'75f9         Code  Gb  ldexp.o [7]
-length_temp             0x2000'0248    0x1  Data  Gb  main.o [2]
-link                    0x2000'0300   0x30  Data  Gb  main.o [2]
+length_temp             0x2000'0240    0x1  Data  Gb  main.o [2]
+link                    0x2000'02f8   0x30  Data  Gb  main.o [2]
 localeconv               0x800'747d    0x4  Code  Gb  xlocale_c.o [5]
 loop_async               0x800'25c1  0x206  Code  Gb  main.o [2]
 loop_sync                0x800'2381  0x236  Code  Gb  main.o [2]
-loop_sync::angles_old   0x2000'0278   0x10  Data  Lc  main.o [2]
+loop_sync::angles_old   0x2000'0270   0x10  Data  Lc  main.o [2]
 main                     0x800'2155   0x2e  Code  Gb  main.o [2]
-max_timeout_cnt         0x2000'0370    0x4  Data  Gb  fdcan.o [2]
+max_timeout_cnt         0x2000'0368    0x4  Data  Gb  fdcan.o [2]
 memchr                   0x800'6459         Code  Gb  memchr.o [8]
 motor                   0x2000'0000  0x100  Data  Gb  fdcan.o [2]
-mtx                     0x2000'0890   0x10  Data  Lc  xsyslock_mtx.o [10]
+mtx                     0x2000'0888   0x10  Data  Lc  xsyslock_mtx.o [10]
 ndigs                    0x800'8454   0x28  Data  Lc  iar_Stoulx.o [5]
-node_id                 0x2000'0238    0x1  Data  Gb  main.o [2]
-object                  0x2000'0288    0x2  Data  Gb  main.o [2]
-object_sub              0x2000'0252    0x2  Data  Gb  main.o [2]
-pFlash                  0x2000'0430   0x20  Data  Gb  stm32g4xx_hal_flash.o [4]
+node_id                 0x2000'0230    0x1  Data  Gb  main.o [2]
+object                  0x2000'0280    0x2  Data  Gb  main.o [2]
+object_sub              0x2000'024a    0x2  Data  Gb  main.o [2]
+pFlash                  0x2000'0428   0x20  Data  Gb  stm32g4xx_hal_flash.o [4]
 parse_vcp                0x800'22cf   0xae  Code  Gb  main.o [2]
-parse_vcp::deg2rad      0x2000'0358    0x8  Data  Lc  main.o [2]
-pin_state               0x2000'0245    0x1  Data  Gb  main.o [2]
+parse_vcp::deg2rad      0x2000'0350    0x8  Data  Lc  main.o [2]
+pin_state               0x2000'023d    0x1  Data  Gb  main.o [2]
 pin_state_old           0x2000'0172    0x1  Data  Gb  fdcan.o [2]
 pows                     0x800'5320   0x18  Data  Lc  strto32.o [7]
-prot_info               0x2000'0250    0x2  Data  Gb  main.o [2]
-rad_i2c                 0x2000'0810   0x60  Data  Gb  main.o [2]
-rated_torque            0x2000'02b8    0x8  Data  Gb  main.o [2]
+prot_info               0x2000'0248    0x2  Data  Gb  main.o [2]
+rad_i2c                 0x2000'0808   0x60  Data  Gb  main.o [2]
+rated_torque            0x2000'02b0    0x8  Data  Gb  main.o [2]
 run_vcp                  0x800'3bd5   0x9c  Code  Gb  serial.o [2]
 scalbln                  0x800'75f9         Code  Gb  ldexp.o [7]
 scalblnf                 0x800'5e89         Code  Gb  ldexpf.o [7]
@@ -940,50 +938,48 @@ scalbn                   0x800'75f9         Code  Gb  ldexp.o [7]
 scalbnf                  0x800'5e89         Code  Gb  ldexpf.o [7]
 scalbnl                  0x800'75f9         Code  Gb  ldexp.o [7]
 scale                    0x800'72f1   0x46  Code  Lc  xprintffull_nomb.o [5]
-sec_hand                0x2000'08a4    0x4  Data  Lc  xfail_s.o [5]
+sec_hand                0x2000'089c    0x4  Data  Lc  xfail_s.o [5]
 serial_available         0x800'3b6f   0x18  Code  Gb  serial.o [2]
 serial_flush             0x800'3ba5    0x6  Code  Gb  serial.o [2]
 serial_print             0x800'3b87   0x1e  Code  Gb  serial.o [2]
 serial_read              0x800'3b45   0x2a  Code  Gb  serial.o [2]
 serial_write             0x800'3b31   0x14  Code  Gb  serial.o [2]
 setup                    0x800'21f9   0xd6  Code  Gb  main.o [2]
-sign1_flag              0x2000'0173    0x1  Data  Gb  fdcan.o [2]
-sign3_flag              0x2000'0174    0x1  Data  Gb  fdcan.o [2]
 sinTable_f32             0x800'7770  0x804  Data  Gb  arm_common_tables.o [6]
 sprintf                  0x800'5535   0x40  Code  Gb  sprintf.o [5]
-static_file_list_lock   0x2000'080a    0x2  Data  Lc  dlib_lock_glue.o [1]
-static_file_lock        0x2000'08ac   0x18  Data  Lc  dlib_lock_glue.o [1]
+static_file_list_lock   0x2000'0802    0x2  Data  Lc  dlib_lock_glue.o [1]
+static_file_lock        0x2000'08a4   0x18  Data  Lc  dlib_lock_glue.o [1]
 static_system_list_lock
-                        0x2000'0808    0x2  Data  Lc  dlib_lock_glue.o [1]
-static_system_lock      0x2000'08c4    0xc  Data  Lc  dlib_lock_glue.o [1]
-status                  0x2000'024d    0x1  Data  Gb  main.o [2]
+                        0x2000'0800    0x2  Data  Lc  dlib_lock_glue.o [1]
+static_system_lock      0x2000'08bc    0xc  Data  Lc  dlib_lock_glue.o [1]
+status                  0x2000'0245    0x1  Data  Gb  main.o [2]
 stm32_lock_acquire       0x800'7f8b   0x3a  Code  Lc  dlib_lock_glue.o [1]
 stm32_lock_init          0x800'7f75   0x16  Code  Lc  dlib_lock_glue.o [1]
 stm32_lock_release       0x800'7fc5   0x30  Code  Lc  dlib_lock_glue.o [1]
 strchr                   0x800'7489         Code  Gb  strchr.o [8]
 strcpy                   0x800'5afd         Code  Gb  strcpy.o [8]
 strcspn                  0x800'7401   0x22  Code  Gb  strcspn.o [5]
-stretch_btn_l           0x2000'0330    0x1  Data  Gb  main.o [2]
-stretch_btn_r           0x2000'0331    0x1  Data  Gb  main.o [2]
+stretch_btn_l           0x2000'0328    0x1  Data  Gb  main.o [2]
+stretch_btn_r           0x2000'0329    0x1  Data  Gb  main.o [2]
 strlen                   0x800'5b15         Code  Gb  strlen.o [8]
 strspn                   0x800'73df   0x22  Code  Gb  strspn.o [5]
 strtof                   0x800'5319    0x6  Code  Gb  strto32.o [7]
 strtok                   0x800'5b4d   0x4c  Code  Gb  strtok.o [5]
-tick                    0x2000'0294    0x4  Data  Gb  main.o [2]
-timeout                 0x2000'0368    0x8  Data  Gb  fdcan.o [2]
-timer                   0x2000'0246    0x1  Data  Gb  main.o [2]
+tick                    0x2000'028c    0x4  Data  Gb  main.o [2]
+timeout                 0x2000'0360    0x8  Data  Gb  fdcan.o [2]
+timer                   0x2000'023e    0x1  Data  Gb  main.o [2]
 tolower                  0x800'6445   0x14  Code  Gb  tolower.o [5]
 torque                  0x2000'0180   0x20  Data  Gb  fdcan.o [2]
-torque_profile          0x2000'0230    0x2  Data  Gb  fdcan.o [2]
-tp                      0x2000'028c    0x8  Data  Gb  main.o [2]
-trq_offset              0x2000'0258   0x20  Data  Gb  main.o [2]
-txfifoemptycheck        0x2000'08a8    0x1  Data  Gb  main.o [2]
-uart2_rx_buffer         0x2000'04d4  0x100  Data  Gb  usart.o [2]
-uart2_tx_buffer         0x2000'0724   0x80  Data  Gb  usart.o [2]
-uwTick                  0x2000'0424    0x4  Data  Gb  stm32g4xx_hal.o [4]
-uwTickFreq              0x2000'042c    0x4  Data  Gb  stm32g4xx_hal.o [4]
-uwTickPrio              0x2000'0428    0x4  Data  Gb  stm32g4xx_hal.o [4]
-vcp                     0x2000'0374   0xb0  Data  Gb  serial.o [2]
+torque_profile          0x2000'0228    0x2  Data  Gb  fdcan.o [2]
+tp                      0x2000'0284    0x8  Data  Gb  main.o [2]
+trq_offset              0x2000'0250   0x20  Data  Gb  main.o [2]
+txfifoemptycheck        0x2000'08a0    0x1  Data  Gb  main.o [2]
+uart2_rx_buffer         0x2000'04cc  0x100  Data  Gb  usart.o [2]
+uart2_tx_buffer         0x2000'071c   0x80  Data  Gb  usart.o [2]
+uwTick                  0x2000'041c    0x4  Data  Gb  stm32g4xx_hal.o [4]
+uwTickFreq              0x2000'0424    0x4  Data  Gb  stm32g4xx_hal.o [4]
+uwTickPrio              0x2000'0420    0x4  Data  Gb  stm32g4xx_hal.o [4]
+vcp                     0x2000'036c   0xb0  Data  Gb  serial.o [2]
 
 
 [1] = C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03. Software\STM32G431KB\STM32G431KB_CAN\EWARM\STM32G431KB_CAN\Obj\Application\EWARM
@@ -998,8 +994,8 @@ vcp                     0x2000'0374   0xb0  Data  Gb  serial.o [2]
 [10] = th7M_tlf.a
 
   32'377 bytes of readonly  code memory
-   2'524 bytes of readonly  data memory
-   3'789 bytes of readwrite data memory
+   2'518 bytes of readonly  data memory
+   3'781 bytes of readwrite data memory
 
 Errors: none
 Warnings: none
