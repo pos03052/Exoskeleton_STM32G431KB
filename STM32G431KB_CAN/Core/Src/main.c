@@ -27,8 +27,6 @@
 /* USER CODE BEGIN Includes */
 #include "serial.h"
 #include "utility.h"
-#include "stdbool.h"
-#include "arm_math.h"
 //#include "CO_app_STM32.h"	// CANOpen STM32, route = C:\Users\jaesung\MRAS\GitHub\STM32\CANopenNode\CanOpenSTM32-master\CANopenNode_STM32
 /* USER CODE END Includes */
 
@@ -52,7 +50,7 @@
 /* USER CODE BEGIN PV */
 uint8_t PDO_id_cnt			= 0;
 uint8_t node_id;
-int16_t sine_val			= 0;
+int16_t sine_val		      	= 0;
 Prot_info_t prot_info;
 
 
@@ -67,55 +65,54 @@ void loop_async(void);
 int16_t func_sin(uint32_t freq);
 //void I2C_DMA_COMM();
 
-double assist_force		= 1.9985 * 9.80665;	// 2kgf
-double rated_torque 	= 167.001;
 double gear_ratio[4] 	= {-96.875, 96.875, 48.82, -48.82};
 
 double period			= 2000.0;
 double amp				= 50.0;
-double gear_efficiency[4] 	= {1.0, 1.0, 1.0, 1.0};
-double trq_offset[4]	= {0.9, 0.9, 0.9, 0.9};
-double tp_degree[2] = {0, 0};
+double gear_efficiency[4] 	= {1.05, 1.05, 1.1, 1.1};
+double trq_offset[4]    	= {1.0, 1.0, 1.0, 1.0};
+//double trq_offset[4]	= {0.0, 0.0, 0.0, 0.0};
+double tp_degree[2]           = {0, 0};
 
-bool UART_FLAG		 		= false;
-bool QS_flag				= false;
-bool NMT_FLAG				= true;
-bool DS_FLAG				= false;
-bool STATUS_FLAG			= false;
+bool UART_FLAG		 	= false;
+bool QS_flag			= false;
+bool NMT_FLAG			= true;
+bool DS_FLAG			= false;
+bool STATUS_FLAG		      = false;
 bool SET_ANGLE_ZERO_FLAG 	= false;
-bool ANGLE_FLAG				= false;
+bool ANGLE_FLAG			= false;
 bool CLEAR_ERROR_FLAG		= false;
 bool GET_SDO_FLAG			= false;
 bool SET_SDO_FLAG			= false;
 bool I2C_TRQ_FLAG			= false;
-bool ERROR_FLAG				= false;
+bool ERROR_FLAG			= false;
 uint8_t I2C_FLAG			= false;
-uint8_t m1_flag 			= false;
-uint8_t m1_flag_old 		= false;
+
+float theta_temp[2] = {0, }, torque_temp[2] = {0, }, coord_temp1[2] = {0, };
 
 GPIO_PinState pin_state;
 GPIO_PinState NMT_pin;
 GPIO_PinState DS_pin;
 uint32_t freq_cnt			= 0;
-uint32_t tick 				= 0;	// async timer tick
-uint8_t timer				= 0;	// async period
+uint32_t tick 			= 0;	// async timer tick
+uint8_t timer			= 0;	// async period
 
 uint8_t id_temp 			= 0;
 uint8_t length_temp 		= 0;
-Obj_dict_t object 			= def;
+Obj_dict_t object 		= DEFAULT;
 uint16_t object_sub 		= 0x00;
-int32_t data_temp 			= 0;
+int32_t data_temp 		= 0;
 
 NMT_state_t	NMT_state		= PRE;
 DS_state_t	DS_state		= DV;
 
 uint8_t txfifoemptycheck 	= 0;
-uint8_t id_sum			 	= 0;
-uint8_t id_cnt				= 0;
-uint8_t status				= 0;
+uint8_t id_sum		 	= 0;
+uint8_t id_cnt			= 0;
+uint8_t status			= 0;
 
-uint8_t EPOS4_CTRL_PERIOD	= 10;
-float error_res[2]		= {0, };
+uint8_t EPOS4_CTRL_PERIOD	= 6; // 7ms
+float error_res[2]		= {0.0, };
 
 //////////////////////////////////////// I2C sensor variables
 //uint8_t data1[6] = {0, };
@@ -135,19 +132,10 @@ float error_res[2]		= {0, };
 //uint32_t time_interval;
 ////////////////////////////////////////
 
-
-
-
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-link_t link[2] = {
-  // length, weight, center of gravity
-  {0.4225, 0.55392 * 9.80665, 0.26887},	// link 0: upper arm
-  {0.315, 0.17462 * 9.80665, 0.16001}		// link 1: forearm
-};
 
 /* Timer interrupt function executes every 1 ms */
 
@@ -160,7 +148,7 @@ link_t link[2] = {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  
+   
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -169,14 +157,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  
+   
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  
+   
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -189,16 +177,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setup();
-  serial_print(&vcp, "s;");
-  while (1)
-  {
+   setup();
+   serial_print(&vcp, "s;");
+   while (1)
+   {
 	
 	loop_async();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+   }
   /* USER CODE END 3 */
 }
 
@@ -254,54 +242,54 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void setup(void)
 {  
-  __disable_irq();
-  
-  /* USART for Virtual com port */
-  vcp.init(&vcp);
-  
-  __HAL_UART_ENABLE_IT(vcp.huart, UART_IT_ERR);
-  
-  if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK)		//UART_RX_BUFF_SIZE = 256, TX = 128
-  {
+   __disable_irq();
+   
+   /* USART for Virtual com port */
+   vcp.init(&vcp);
+   
+   __HAL_UART_ENABLE_IT(vcp.huart, UART_IT_ERR);
+   
+   if (HAL_UART_Receive_DMA(vcp.huart, (uint8_t *)vcp.rx_buffer, UART_RX_BUFF_SIZE) != HAL_OK)		//UART_RX_BUFF_SIZE = 256, TX = 128
+   {
 	Error_Handler();
-  }  
-  if (HAL_FDCAN_Start(hcan.module) != HAL_OK)
-  {
+   }  
+   if (HAL_FDCAN_Start(hcan.module) != HAL_OK)
+   {
 	Error_Handler();
-  }  
-  if (HAL_FDCAN_ActivateNotification(hcan.module, hcan.activeITs, 0) != HAL_OK)
-  {
+   }  
+   if (HAL_FDCAN_ActivateNotification(hcan.module, hcan.activeITs, 0) != HAL_OK)
+   {
 	Error_Handler();
-  }  
-  if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_TX_FIFO_EMPTY|FDCAN_IT_TX_COMPLETE, FDCAN_TX_BUFFER0 | FDCAN_TX_BUFFER1 | FDCAN_TX_BUFFER2) != HAL_OK)
-  {	
+   }  
+   if (HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_TX_FIFO_EMPTY|FDCAN_IT_TX_COMPLETE, FDCAN_TX_BUFFER0 | FDCAN_TX_BUFFER1 | FDCAN_TX_BUFFER2) != HAL_OK)
+   {	
 	Error_Handler();	
-  }  
-  hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;						// FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
-  hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;					// FDCAN_DATA_FRAME, FDCAN_REMOTE_FRAME(FDCAN High Priority MEssage Storage)
-  hcan.txmsg.header.DataLength = FDCAN_DLC_BYTES_8;					// FDCAN_DLC_BYTES_0~64: FDCAN Data Length Code
-  hcan.txmsg.header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;			// Transmitting node is error active, FDCAN_ESI_PASSIVE: Transmitting node is error passive
-  hcan.txmsg.header.BitRateSwitch = FDCAN_BRS_OFF;					// Tx frame w/ or w/o bit rate switching
-  hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;					// Tx frame classic or FD
-  hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;		// store or not store Tx events
-  hcan.txmsg.header.MessageMarker = 0;								// message marker copied into Tx Event FIFO element 0 ~ 0xFF
-  //  hcan.txmsg.header.Identifier;
-  //	hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;				// or FDCAN_EXTENDED_ID
-  //	hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;			// or FDCAN_REMOTE_FRAME
-  //	hcan.txmsg.header.DataLength;								// 8 bytes
-  //	hcan.txmsg.header.ErrorStateIndicator = FDCAN_ESI_ACTIVE; 	// or FDCAN_ESI_PASSIVE,역할?
-  //	hcan.txmsg.header.BitRateSwitch = FDCAN_BRS_OFF;			// FDCAN에서만 BRS 가능 https://www.datajob.com/en/definition/101/bit-rate-switch-(brs)
-  //	hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;				/* NO CAN-FD */
-  //	hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;	// or FDCAN_STORE_TX_EVENTS, 역할?
-  //	hcan.txmsg.header.MessageMarker = 0;						// Specifies the message marker to be copied into Tx Event FIFO element\
-  for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
+   }  
+   hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;						// FDCAN_STANDARD_ID, FDCAN_EXTENDED_ID
+   hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;					// FDCAN_DATA_FRAME, FDCAN_REMOTE_FRAME(FDCAN High Priority MEssage Storage)
+   hcan.txmsg.header.DataLength = FDCAN_DLC_BYTES_8;					// FDCAN_DLC_BYTES_0~64: FDCAN Data Length Code
+   hcan.txmsg.header.ErrorStateIndicator = FDCAN_ESI_ACTIVE;			// Transmitting node is error active, FDCAN_ESI_PASSIVE: Transmitting node is error passive
+   hcan.txmsg.header.BitRateSwitch = FDCAN_BRS_OFF;					// Tx frame w/ or w/o bit rate switching
+   hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;					// Tx frame classic or FD
+   hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;		// store or not store Tx events
+   hcan.txmsg.header.MessageMarker = 0;								// message marker copied into Tx Event FIFO element 0 ~ 0xFF
+   //  hcan.txmsg.header.Identifier;
+   //	hcan.txmsg.header.IdType = FDCAN_STANDARD_ID;				// or FDCAN_EXTENDED_ID
+   //	hcan.txmsg.header.TxFrameType = FDCAN_DATA_FRAME;			// or FDCAN_REMOTE_FRAME
+   //	hcan.txmsg.header.DataLength;								// 8 bytes
+   //	hcan.txmsg.header.ErrorStateIndicator = FDCAN_ESI_ACTIVE; 	// or FDCAN_ESI_PASSIVE,역할?
+   //	hcan.txmsg.header.BitRateSwitch = FDCAN_BRS_OFF;			// FDCAN에서만 BRS 가능 https://www.datajob.com/en/definition/101/bit-rate-switch-(brs)
+   //	hcan.txmsg.header.FDFormat = FDCAN_CLASSIC_CAN;				/* NO CAN-FD */
+   //	hcan.txmsg.header.TxEventFifoControl = FDCAN_NO_TX_EVENTS;	// or FDCAN_STORE_TX_EVENTS, 역할?
+   //	hcan.txmsg.header.MessageMarker = 0;						// Specifies the message marker to be copied into Tx Event FIFO element\
+   for identification of Tx message status. This parameter must be a number between 0 and 0xFF 역할?
 	__enable_irq();		// iar enable interrupt
-  INIT_CAN();
-  for(int i=0;i<4;i++){
+   INIT_CAN();
+   for(int i=0;i<4;i++){
 	if(motor[i].Statusword != 0x40)	error_res[0] = 6;
-  }
-  motor[0].Error_code[(motor[0].error_index+5)%5] = 0x01;
-  pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
+   }
+   motor[0].Error_code[(motor[0].error_index+5)%5] = 0x01;
+   pin_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
 }
 
 /**
@@ -309,10 +297,10 @@ void setup(void)
 'vcp.rx_buffer' parsing function
 rx buff size 256
 (parsing되어 저장될 곳)
-rad_i2c[0]: right arm roll
-rad_i2c[1]: right arm pitch
-rad_i2c[3]: left arm roll
-rad_i2c[4]: left arm pitch
+ahrsRad[0]: right arm roll
+ahrsRad[1]: right arm pitch
+ahrsRad[3]: left arm roll
+ahrsRad[4]: left arm pitch
 trq on: stretch_btn true
 
 'vcp.tx_buffer' data 
@@ -337,221 +325,223 @@ START BIT(0x02) END BIT (0x03 or 전체 데이터 길이)
 
 bool stretch_btn_l	= false;
 bool stretch_btn_r	= false;
-double angles[4]	= {0, };
-double rad_i2c[12]	= {0, };
+double ahrsDeg[4]	= {0, };
+double ahrsRad[5]	= {0, };
 void parse_vcp(SerialHandler *h)
 {	
-  /* h->tx_buffer parsing */
-  // CAN1_x,CAN1_y,CAN2_x,CAN2_y,trigger\r
-  static double deg2rad = 0.017453;
-  for(int i=0;i<4;i++){
-	angles[i] = strtof(h->parsing.toks[i], NULL);
-	angles[i] /= 100.0;
-  }  
-  rad_i2c[0] = angles[0] * deg2rad;
-  rad_i2c[1] = angles[1] * deg2rad;
-  rad_i2c[3] = angles[2] * deg2rad;
-  rad_i2c[4] = angles[3] * deg2rad;
-  stretch_btn_l = atoi(h->parsing.toks[4]);
-  stretch_btn_r = atoi(h->parsing.toks[5]);
+   /* h->tx_buffer parsing */
+   // CAN1_x,CAN1_y,CAN2_x,CAN2_y,trigger\r
+   static double deg2rad = 0.017453;
+   for(int i=0;i<4;i++){
+	ahrsDeg[i] = strtof(h->parsing.toks[i], NULL);
+	ahrsDeg[i] /= 100.0;
+   }  
+   ahrsRad[0] = ahrsDeg[0] * deg2rad;
+   ahrsRad[1] = ahrsDeg[1] * deg2rad;
+   ahrsRad[3] = ahrsDeg[2] * deg2rad;
+   ahrsRad[4] = ahrsDeg[3] * deg2rad;
+   stretch_btn_l = atoi(h->parsing.toks[4]);
+   stretch_btn_r = atoi(h->parsing.toks[5]);
 }
 int32_t tp[2] = {0, };
 uint32_t CAN_cnt = 0;		//	PDO timer
 uint32_t UART_cnt = 0;		//	UART timer
 void loop_sync(void)
 {  
-  static double angles_old[2] = {0, 0};
-  UART_cnt++;
-  CAN_cnt++;
-  //  sine_val = func_sin(freq_cnt ++);
-  status = Check_status();
-  if(status == 0)
-  {
+   static double angles_old[2] = {0, 0};
+   UART_cnt++;
+   CAN_cnt++;
+   //  sine_val = func_sin(freq_cnt ++);
+   status = Check_status();
+   if(status == 0)
+   {
 	NMT_state	= PRE;
 	DS_state	= DV;	
-  }
-  //  else if(status == 1)
-  //  {
-  //	if(CAN_cnt > 100)	STATUS_FLAG = true;
-  //  }
-  else if(status != 2)
-  {
-	if(CAN_cnt>=EPOS4_CTRL_PERIOD)
+   }
+   //  else if(status == 1)
+   //  {
+   //	if(CAN_cnt > 100)	STATUS_FLAG = true;
+   //  }
+   else if(status != 2)
+   {
+	if( CAN_cnt >= EPOS4_CTRL_PERIOD )
 	{	
-	  id_cnt = 0;
-	  id_sum = 0;
-	  SYNC_FRAME();
-	  CAN_cnt = 0;
+         id_cnt = 0;
+         id_sum = 0;
+         SYNC_FRAME();
+         CAN_cnt = 0;
 	}
 	if(id_cnt == 4)
 	{
-	  if(id_sum == 6)
-	  {
+         if(id_sum == 6)
+         {
 		if(I2C_TRQ_FLAG)
 		{
-		  if(angles[2] != 0 || angles[3] != 0)
-		  {
-			motor[0].angle = motor[0].angle - rad_i2c[1];
-			motor[1].angle = motor[1].angle + rad_i2c[4];
-			trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
-			trq_offset[1] = arm_cos_f32(rad_i2c[3]-PI/2);	trq_offset[3] = arm_cos_f32(rad_i2c[3]-PI/2);
-			angles_old[0] = rad_i2c[3];
-			angles_old[1] = rad_i2c[4];
-		  }else
-		  {
-			motor[0].angle = motor[0].angle - rad_i2c[1];
+               if(ahrsDeg[2] != 0 || ahrsDeg[3] != 0)
+               {
+			motor[0].angle = motor[0].angle - ahrsRad[1];
+			motor[1].angle = motor[1].angle + ahrsRad[4];
+			trq_offset[0] = arm_cos_f32(ahrsRad[0]-PI/2);	trq_offset[2] = arm_cos_f32(ahrsRad[0]-PI/2);
+			trq_offset[1] = arm_cos_f32(ahrsRad[3]-PI/2);	trq_offset[3] = arm_cos_f32(ahrsRad[3]-PI/2);
+			angles_old[0] = ahrsRad[3];
+			angles_old[1] = ahrsRad[4];
+               }else
+               {
+			motor[0].angle = motor[0].angle - ahrsRad[1];
 			motor[1].angle = motor[1].angle + angles_old[1];
-			trq_offset[0] = arm_cos_f32(rad_i2c[0]-PI/2);	trq_offset[2] = arm_cos_f32(rad_i2c[0]-PI/2);
+			trq_offset[0] = arm_cos_f32(ahrsRad[0]-PI/2);	trq_offset[2] = arm_cos_f32(ahrsRad[0]-PI/2);
 			trq_offset[1] = arm_cos_f32(angles_old[0]-PI/2);trq_offset[3] = arm_cos_f32(angles_old[0]-PI/2);
-		  }
+               }
 		}
-		TRQ_Calc();
-		//		POS_Calc();
-		//	  TRQ_Calc_2();
-		//		POS_Calc_2();
-		//		TRQ_Calc_3();
+            TRQ_Calc();
+		//	POS_Calc();
+            //    TRQ_Calc_2();
+            //POS_Calc_2();
+		//	TRQ_Calc_3();
 		for(int i=1;i<5;i++){SET_PDO(i);}	id_cnt = 0; id_sum = 0;
-	  }else
-	  {
+         }else
+         {
 		error_res[0] = 1;
 		id_cnt = 0;
 		id_sum = 0;
-	  }
+         }
 	}
-  }
+   }
 }
 void loop_async(void)
 {
-  tick = HAL_GetTick();  
-  vcp.run(&vcp);
-  //  UART_FLAG = CAN_cnt % 1000 ? false : true; // 1~5초 사이 보내지게
-  if(UART_cnt >= 50)
-  {
+   tick = HAL_GetTick();  
+   vcp.run(&vcp);
+   //  UART_FLAG = CAN_cnt % 1000 ? false : true; // 1~5초 사이 보내지게
+   if(UART_cnt >= 50)
+   {
 	UART_FLAG = true;
 	UART_cnt = 0;
-  }else
-  {
+   }else
+   {
 	UART_FLAG = false;
-  }
-  if(UART_FLAG)
-  {     
+   }
+   if(UART_FLAG)
+   {     
 	//sprintf((char *)vcp.tx_buffer, "%d\n\r", idx++); 
 	//serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); UART_FLAG = false;
 	
 	sprintf((char *)vcp.tx_buffer, "\n%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\r",
-			NMT_state, DS_state, 
-			motor[0].Statusword, motor[1].Statusword, motor[2].Statusword, motor[3].Statusword,
-			motor[0].Error_code[(motor[0].error_index+4)%5],
-			motor[1].Error_code[(motor[1].error_index+4)%5],
-			motor[2].Error_code[(motor[2].error_index+4)%5],
-			motor[3].Error_code[(motor[3].error_index+4)%5]); 
+              NMT_state, DS_state, 
+              motor[0].Statusword, motor[1].Statusword, motor[2].Statusword, motor[3].Statusword,
+              motor[0].Error_code[(motor[0].error_index+4)%5],
+              motor[1].Error_code[(motor[1].error_index+4)%5],
+              motor[2].Error_code[(motor[2].error_index+4)%5],
+              motor[3].Error_code[(motor[3].error_index+4)%5]); 
 	//UART_FLAG = false;
-//	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
-  }
-  if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	STATUS_FLAG = true;}
-  if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	}//STATUS_FLAG = true;}
-  if(QS_flag){	for(int i=1;i<5;i++){DS_TRANS(i, QS);}			QS_flag	= false;}    
-  if(ANGLE_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);}	ANGLE_FLAG = false;}
-  if(CLEAR_ERROR_FLAG){		for(int i=1;i<5;i++){Clear_Device_Errors(i);}	CLEAR_ERROR_FLAG = false;	STATUS_FLAG = true;}
-  if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	motor[i-1].Position_zero = motor[i-1].Position_actual;}	tp[0] = motor[1].Position_zero; tp[1] = motor[3].Position_zero - 100; SET_ANGLE_ZERO_FLAG = false;}
-  if(GET_SDO_FLAG){	GET_SDO(id_temp, object, object_sub);	GET_SDO_FLAG = false;}
-  if(SET_SDO_FLAG){	SET_SDO(id_temp, length_temp, object, object_sub, data_temp);	SET_SDO_FLAG = false;}  
-  if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}	STATUS_FLAG = false;}
-//  if(I2C_FLAG){	I2C_DMA_COMM();}
-  timer = HAL_GetTick() - tick;
+      //	serial_write(&vcp, strlen(vcp.tx_buffer)*sizeof(char)); 	
+   }
+   if(NMT_FLAG){	NMT_TRANS(NMT_state);	NMT_FLAG = false;	STATUS_FLAG = true;}
+   if(DS_FLAG){	for(int i=1;i<5;i++){DS_TRANS(i, DS_state);}	DS_FLAG = false;	}//STATUS_FLAG = true;}
+   if(QS_flag){	for(int i=1;i<5;i++){DS_TRANS(i, QS);}			QS_flag	= false;}    
+   if(ANGLE_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);}	ANGLE_FLAG = false;}
+   if(CLEAR_ERROR_FLAG){		for(int i=1;i<5;i++){Clear_Device_Errors(i);}	CLEAR_ERROR_FLAG = false;	STATUS_FLAG = true;}
+   if(SET_ANGLE_ZERO_FLAG){	for(int i=1;i<5;i++){GET_Angle(i);	motor[i-1].Position_zero = motor[i-1].Position_actual;}	tp[0] = motor[0].Position_zero; tp[1] = motor[2].Position_zero; SET_ANGLE_ZERO_FLAG = false;}
+   if(GET_SDO_FLAG){	GET_SDO(id_temp, object, object_sub);	GET_SDO_FLAG = false;}
+   if(SET_SDO_FLAG){	SET_SDO(id_temp, length_temp, object, object_sub, data_temp);	SET_SDO_FLAG = false;}  
+   if(STATUS_FLAG){	for(int i=1;i<5;i++){READ_STATUS(i);}	STATUS_FLAG = false;}
+   //  if(I2C_FLAG){	I2C_DMA_COMM();}
+   timer = HAL_GetTick() - tick;
 }
 int16_t func_sin(uint32_t freq)
 {  
-  if(freq <= period/2){
+   if(freq <= period/2){
 	sine_val = (int16_t)(amp);
-  }else if(freq <= period){
+   }else if(freq <= period){
 	sine_val = (int16_t)(-amp);
-  }else{
+   }else{
 	freq = 0;
-  }
-  return (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq/period)); // 주기 0.5초 
+   }
+   return (int16_t)(amp*arm_sin_f32(2.0*PI*(double)freq/period)); // 주기 0.5초 
 }
 void HAL_FDCAN_TxFifoEmptyCallback(FDCAN_HandleTypeDef *hfdcan)
 {
-  txfifoemptycheck ++;
+   txfifoemptycheck ++;
 }
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
-  if(__HAL_FDCAN_GET_FLAG(hfdcan, FDCAN_FLAG_RX_FIFO0_MESSAGE_LOST)){
+   if(__HAL_FDCAN_GET_FLAG(hfdcan, FDCAN_FLAG_RX_FIFO0_MESSAGE_LOST)){
 	__HAL_FDCAN_CLEAR_FLAG(hfdcan, FDCAN_FLAG_RX_FIFO0_MESSAGE_LOST);
-  } 
-  if ((hfdcan->Instance == hcan.module->Instance) && ((RxFifo0ITs & hcan.activeITs) != 0))
-  {
+   } 
+   if ((hfdcan->Instance == hcan.module->Instance) && ((RxFifo0ITs & hcan.activeITs) != 0))
+   {
 	if (HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK)
 	{	  
-	  // hcan.rxloc = FDCAN_RX_FIFO0(0x00000040U)	  
-	  // hcan.rxmsg.header.IdType				
-	  // hcan.rxmsg.header.RxFrame				
-	  // hcan.rxmsg.header.ErrorStateIndicator
-	  // hcan.rxmsg.header.DataLength
-	  // hcan.rxmsg.header.data	  
-	  error_res[0] = 2;
-	  Error_Handler();
+         // hcan.rxloc = FDCAN_RX_FIFO0(0x00000040U)	  
+         // hcan.rxmsg.header.IdType				
+         // hcan.rxmsg.header.RxFrame				
+         // hcan.rxmsg.header.ErrorStateIndicator
+         // hcan.rxmsg.header.DataLength
+         // hcan.rxmsg.header.data	  
+         error_res[0] = 2;
+         Error_Handler();
 	}else{
-	  node_id = (hcan.rxmsg.header.Identifier & 0x7F) - 1;
-	  prot_info= (Prot_info_t)(hcan.rxmsg.header.Identifier & 0x780);
-	  if(hcan.rxmsg.data[0] == 0x80){
+         node_id = (hcan.rxmsg.header.Identifier & 0x7F) - 1;
+         prot_info= (Prot_info_t)(hcan.rxmsg.header.Identifier & 0x780);
+         if(hcan.rxmsg.data[0] == 0x80){
 		// ABORT SDO PROTOCOL
-	  }
-	  switch(prot_info){
-	  case SDO:
+         }
+         switch(prot_info){
+         case SDO:
 		motor[node_id].parsing_SDO(&motor[node_id], node_id);		  
 		break;
-	  case PDO1:
+         case PDO1:
 		id_cnt ++;
 		id_sum = id_sum + node_id;
 		if(motor[node_id].parsing_PDO(&motor[node_id], node_id) != 1){
-		  QS_flag = true;
-		  NMT_state = PRE;
-		  NMT_FLAG = true;
+               QS_flag = true;
+               NMT_state = PRE;
+               NMT_FLAG = true;
+               error_res[0] = node_id;
+               //READ_STATUS(node_id + 1);
 		}
 		break;
 		// case PDO2:
-	  }
+         }
 	}
 	if(HAL_FDCAN_GetRxFifoFillLevel(&hfdcan1, FDCAN_RX_FIFO0) >= 2){	
-	  while(HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK);
+         while(HAL_FDCAN_GetRxMessage(hcan.module, hcan.rxloc, &hcan.rxmsg.header, hcan.rxmsg.data) != HAL_OK);
 	}
-  }
+   }
 }
 void HAL_SYSTICK_Callback(void)	// 1mhz timer
 {
-  loop_sync();
+   loop_sync();
 }
 bool SET_ZERO_BTN = false;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  if(GPIO_Pin == GPIO_PIN_9 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_RESET)
-  {
+   if(GPIO_Pin == GPIO_PIN_9 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) == GPIO_PIN_RESET)
+   {
 	status = Check_status();
 	if(status == 2)	NMT_state = OP;		//  Pre Operational	-> Operational
 	else			NMT_state = PRE;	//	Operational		-> Pre Operational
 	
 	/** (to be fixed) PRE -> OP OK, OP -> PRE Transition Not working **/
 	NMT_FLAG = true;
-  }else if(GPIO_Pin == GPIO_PIN_10 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10) == GPIO_PIN_RESET)
-  {
+   }else if(GPIO_Pin == GPIO_PIN_10 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10) == GPIO_PIN_RESET)
+   {
 	if(!SET_ZERO_BTN)
 	{
-	  SET_ANGLE_ZERO_FLAG = true;
-	  SET_ZERO_BTN = true;
-	  motor[0].Error_code[(motor[0].error_index)%5] = 0x00;
+         SET_ANGLE_ZERO_FLAG = true;
+         SET_ZERO_BTN = true;
+         motor[0].Error_code[(motor[0].error_index)%5] = 0x00;
 	}
 	else
 	{
-	  status = Check_status();
-	  if(status == 3)		DS_state = SD;	// if PDO + DV
-	  else if(status == 4)	DS_state = EN;	// if PDO + SD
-	  else if(status == 5)	DS_state = DV;	// if PDO + EN
-	  else					DS_state = DV;
-	  DS_FLAG = true;
+         status = Check_status();
+         if(status == 3)		DS_state = SD;	// if PDO + DV
+         else if(status == 4)	DS_state = EN;	// if PDO + SD
+         else if(status == 5)	DS_state = DV;	// if PDO + EN
+         else				DS_state = DV;
+         DS_FLAG = true;
 	}
-  }
+   }
 }
 uint8_t tx_buff[1] = {1};
 uint8_t rx_buff[12] = {0, };
@@ -621,12 +611,12 @@ double angle_i2c[12] = {0, };
 //  angle_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef1;
 //  
 //  
-//  rad_i2c[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef2;
-//  rad_i2c[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef2;
-//  rad_i2c[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef2;
-//  rad_i2c[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef2;
-//  rad_i2c[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef2;
-//  rad_i2c[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef2;  
+//  ahrsRad[0] = ((int16_t)(rx_buff[0] | rx_buff[1] << 8)) * coef2;
+//  ahrsRad[1] = ((int16_t)(rx_buff[2] | rx_buff[3] << 8)) * coef2;
+//  ahrsRad[2] = ((int16_t)(rx_buff[4] | rx_buff[5] << 8)) * coef2;
+//  ahrsRad[3] = ((int16_t)(rx_buff[6] | rx_buff[7] << 8)) * coef2;
+//  ahrsRad[4] = ((int16_t)(rx_buff[8] | rx_buff[9] << 8)) * coef2;
+//  ahrsRad[5] = ((int16_t)(rx_buff[10] | rx_buff[11] << 8)) * coef2;  
 //  
 //}
 //void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){ //1khz timer
@@ -684,10 +674,10 @@ double angle_i2c[12] = {0, };
 //////////////////////////////////////
 */
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
-  serial_flush(&vcp, 1);
-  __HAL_UART_CLEAR_FLAG(vcp.huart, UART_CLEAR_OREF|UART_CLEAR_IDLEF|UART_CLEAR_NEF);
-  UART_cnt ++;
-  HAL_UART_DMAResume(vcp.huart);
+   serial_flush(&vcp, 1);
+   __HAL_UART_CLEAR_FLAG(vcp.huart, UART_CLEAR_OREF|UART_CLEAR_IDLEF|UART_CLEAR_NEF);
+   UART_cnt ++;
+   HAL_UART_DMAResume(vcp.huart);
 }
 /* USER CODE END 4 */
 
@@ -698,17 +688,17 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  ERROR_FLAG = true;
-  NMT_state = PRE;
-  DS_state = SD;
-  for(int i=1;i<5;i++){
+   /* User can add his own implementation to report the HAL error return state */
+   ERROR_FLAG = true;
+   NMT_state = PRE;
+   DS_state = SD;
+   for(int i=1;i<5;i++){
 	DS_TRANS(i, DS_state);
-  }
-  __disable_irq();
-  while (1)
-  {
-  }
+   }
+   __disable_irq();
+   while (1)
+   {
+   }
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -723,8 +713,8 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-  ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+   /* User can add his own implementation to report the file name and line number,
+   ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

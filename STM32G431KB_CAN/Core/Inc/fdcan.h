@@ -29,33 +29,38 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-  
+   //#include "torque_lut.h"
 /* USER CODE END Includes */
 
 extern FDCAN_HandleTypeDef hfdcan1;
 
 /* USER CODE BEGIN Private defines */
-#define MOTOR_DEFAULT	{  0, def, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
+#define MOTOR_DEFAULT	      {  0, DEFAULT, 0, 0, 0, 0.0, 0, 0, 0, 0, {0, },0 ,0, (void (*)(uint32_t))Parsing_SDO,  (uint8_t (*)(uint32_t))Parsing_PDO}
 #define rad30			0.5236
 #define rad60			1.0472
 #define rad90			1.5708
 #define rad120			2.0944
 #define rad135			2.3562
-#define trq_offset_u	5
-#define trq_offset_f	2.5
-  
-  typedef enum{
+#define trq_offset_u	      5
+#define trq_offset_f    	2.5
+//#define targetForce           19.6133
+#define TARGET_FORCE          20
+#define RATED_TORQUE          167.001
+#define FLW_ERR_WINDOW        4000
+   
+
+   typedef enum{
 	OP			=	0x01,
 	PRE			=	0x80,
-	STOP		=	0x02,
-	RESET_COMM	=	0x82,
-	RESET_NODE	=	0x81
-  }NMT_state_t;
-  
-  /*
-  (FR ->) DV -> SD ->EN
-  */
-  typedef enum{
+	STOP		      =	0x02,
+	RESET_COMM	      =	0x82,
+	RESET_NODE	      =	0x81
+   }NMT_state_t;
+   
+   /*
+   (FR ->) DV -> SD ->EN
+   */
+   typedef enum{
 	FR	=	0x0080,		// Fault Reset
 	SD	=	0x0006,		// Shut Down
 	DO	=	0x0007,		// Disable Operation
@@ -63,10 +68,10 @@ extern FDCAN_HandleTypeDef hfdcan1;
 	DV	=	0x0000,		// Disable Voltage
 	SW	=	0x0004,		// Switch On
 	QS	=	0x000B		// Quick Stop
-  }DS_state_t;
-  
-  typedef enum{
-	def				= 0x0000,
+   }DS_state_t;
+   
+   typedef enum{
+	DEFAULT		= 0x0000,
 	MOP 			= 0x6060,
 	CONTROLWORD		= 0x6040,
 	STATUSWORD		= 0x6041,
@@ -81,46 +86,49 @@ extern FDCAN_HandleTypeDef hfdcan1;
 	MAX_MOTOR_SPEED	= 0x6080,
 	TRQ_CONST		= 0x3001,
 	Target_position	= 0x607A,
-	RXPDO1			= 0x1600,
+	RXPDO1		= 0x1600,
+      TXPDO1            = 0x1A00,
 	Temperature		= 0x3201,
 	FlW_ERR_WIN		= 0x6065,
+      POS_GAIN          = 0x30A1,
+      CUR_GAIN          = 0x30A0,
 	PDO_OBJ
-  }Obj_dict_t;
-  
-  typedef enum{
+   }Obj_dict_t;
+   
+   typedef enum{
 	SDO	= 0x580,
 	PDO1	= 0x180,
 	PDO2	= 0x280,
 	PDO3	= 0x380
-  }Prot_info_t;
-  
-  typedef enum{
+   }Prot_info_t;
+   
+   typedef enum{
 	Overvoltage = 0x3210
-  }Error_code_t;
-  
-  typedef struct {
+   }Error_code_t;
+   
+   typedef struct {
 	FDCAN_TxHeaderTypeDef header;
 	uint8_t data[8];
-  } CAN_TxMsgTypeDef;
-  
-  typedef struct {
+   } CAN_TxMsgTypeDef;
+   
+   typedef struct {
 	FDCAN_RxHeaderTypeDef header;
 	uint8_t data[8];
-  } CAN_RxMsgTypeDef;
-  
-  typedef struct {
+   } CAN_RxMsgTypeDef;
+   
+   typedef struct {
 	FDCAN_HandleTypeDef* module;
 	CAN_TxMsgTypeDef txmsg;
 	CAN_RxMsgTypeDef rxmsg;
 	uint32_t txloc;
 	uint32_t rxloc;
 	uint32_t activeITs;
-  } CAN_HandleTypeDef;
-  extern CAN_HandleTypeDef hcan;
-  
-  extern FDCAN_HandleTypeDef hfdcan1;
-  
-  typedef struct{
+   } CAN_HandleTypeDef;
+   extern CAN_HandleTypeDef hcan;
+   
+   extern FDCAN_HandleTypeDef hfdcan1;
+   
+   typedef struct{
 	uint8_t		id;
 	Obj_dict_t	Object;
 	uint16_t	Statusword;
@@ -136,35 +144,42 @@ extern FDCAN_HandleTypeDef hfdcan1;
 	int32_t		value;
 	void (*parsing_SDO)();
 	uint8_t (*parsing_PDO)();
-  } Motor_t;
-  extern Motor_t motor[4];
-  
+   } Motor_t;
+   extern Motor_t motor[4];   
+   
+   typedef struct{
+      double length;
+      double weight;
+      double cog;  
+   }link_t;
+   extern link_t link[2];
+   
 /* USER CODE END Private defines */
 
 void MX_FDCAN1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-  
-  //  void NMT_TRANS(uint8_t id, NMT_state_t state);
-  void NMT_TRANS(NMT_state_t state);
-  void DS_TRANS(uint8_t id, DS_state_t state); // device status transistion
-  void SET_SDO(uint8_t id, uint8_t length, Obj_dict_t addr, uint8_t addr_sub, int32_t data);
-  void GET_SDO(uint8_t id, Obj_dict_t addr, uint8_t addr_sub);
-  //void SET_PDO(const Motor_t* motor);
-  void SET_PDO(uint8_t id);
-  void SYNC_FRAME(void);
-  void READ_STATUS(uint8_t id);
-  void SEND_FRAME(CAN_HandleTypeDef *h);
-  void GET_Angle(uint8_t id);
-  void INIT_CAN();
-  void Clear_Device_Errors(uint8_t id);
-  void TRQ_Calc(void);
-  void POS_Calc(void);
-  int Check_status(void);
-  void TRQ_Calc_2(void);
-  void POS_Calc_2(void);
-  void TRQ_F(double *angle1, double *angle2, uint8_t *trq_prof);
-  void TRQ_Calc_3(void);
+   
+   //  void NMT_TRANS(uint8_t id, NMT_state_t state);
+   void NMT_TRANS(NMT_state_t state);
+   void DS_TRANS(uint8_t id, DS_state_t state); // device status transistion
+   void SET_SDO(uint8_t id, uint8_t length, Obj_dict_t addr, uint8_t addr_sub, int32_t data);
+   void GET_SDO(uint8_t id, Obj_dict_t addr, uint8_t addr_sub);
+   //void SET_PDO(const Motor_t* motor);
+   void SET_PDO(uint8_t id);
+   void SYNC_FRAME(void);
+   void READ_STATUS(uint8_t id);
+   void SEND_FRAME(CAN_HandleTypeDef *h);
+   void GET_Angle(uint8_t id);
+   void INIT_CAN();
+   void Clear_Device_Errors(uint8_t id);
+   void TRQ_Calc(void);
+   void POS_Calc(void);
+   int Check_status(void);
+   void TRQ_Calc_2(void);
+   void POS_Calc_2(void);
+   void TRQ_F(double angle1[], double angle2[], uint8_t trq_prof[]);
+   void TRQ_Calc_3(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

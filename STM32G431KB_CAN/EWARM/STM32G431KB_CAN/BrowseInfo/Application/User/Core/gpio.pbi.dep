@@ -51,4 +51,5 @@ C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G4
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\math.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\DLib_float_setup.h \
   C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\float.h \
-  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\limits.h
+  C:\Program\ Files\IAR\ Systems\Embedded\ Workbench\ 9.0\arm\inc\c\limits.h \
+  C:\Users\jaesung\MRAS\Project\Exoskeleton\2023\03.\ Software\STM32G431KB\STM32G431KB_CAN\EWARM\..\Core\Inc\torque_lut.h

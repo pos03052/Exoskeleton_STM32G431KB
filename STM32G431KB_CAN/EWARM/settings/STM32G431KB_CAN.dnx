@@ -27,7 +27,7 @@
         <EnableCache>0</EnableCache>
     </ArmDriver>
     <DebugChecksum>
-        <Checksum>3842580518</Checksum>
+        <Checksum>95858376</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -113,7 +113,8 @@
         <Fmt7>{W}42:id_sum	3	0</Fmt7>
         <Fmt8>{W}42:motor[1].Statusword &gt;&gt; 3	4	0</Fmt8>
         <Fmt9>{W}42:object	4	0</Fmt9>
-        <Fmt10>{W}42:timer	3	0</Fmt10>
+        <Fmt10>{W}42:object_sub	4	0</Fmt10>
+        <Fmt11>{W}42:timer	3	0</Fmt11>
     </watch_formats>
     <Trace2>
         <Enabled>0</Enabled>
@@ -176,6 +177,11 @@
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
     </TermIOLog>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </LogFile>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>3</Mode>
@@ -193,26 +199,8 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 0 "EMUL_DATA_LOG" "NMT_FLAG" 0 0</Bp0>
-        <Bp1>_ 0 "EMUL_DATA_LOG" "amp" 0 0</Bp1>
-        <Bp2>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp2>
-        <Bp3>_ 1 "EMUL_DATA_LOG" "motor[1].angle" 0 0</Bp3>
-        <Bp4>_ 1 "EMUL_DATA_LOG" "motor[3].angle" 0 0</Bp4>
-        <Bp5>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp5>
-        <Bp6>_ 0 "EMUL_DATA_LOG" "weight" 0 0</Bp6>
-        <Bp7>_ 0 "EMUL_DATA_LOG" "pin_state2" 0 0</Bp7>
-        <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.353.4" 0 0 1 "" 0 "" 0</Bp8>
-        <Bp9>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.708.3" 0 0 1 "" 0 "" 0</Bp9>
-        <Bp10>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\fdcan.c}.356.4" 0 0 1 "" 0 "" 0</Bp10>
-        <Bp11>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.531.2" 0 0 1 "" 0 "" 0</Bp11>
-        <Bp12>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Core\Src\main.c}.539.2" 0 0 1 "" 0 "" 0</Bp12>
-        <Count>13</Count>
+        <Count>0</Count>
     </Breakpoints2>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category>_ 0</Category>
-    </LogFile>
     <Aliases>
         <Count>0</Count>
         <SuppressDialog>0</SuppressDialog>

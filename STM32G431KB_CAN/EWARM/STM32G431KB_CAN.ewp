@@ -242,6 +242,18 @@
           <state></state>
           <state></state>
           <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
+          <state></state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1084,6 +1096,9 @@
     <group>
       <name>EWARM</name>
       <file>
+        <name>$PROJ_DIR$\dlib_lock_glue.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\startup_stm32g431xx.s</name>
       </file>
       <file>
@@ -1096,6 +1111,9 @@
         <name>Core</name>
         <file>
           <name>$PROJ_DIR$\..\Core\Src\serial.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Core\Src\torque_lut.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\Core\Src\utility.c</name>
